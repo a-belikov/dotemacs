@@ -10,6 +10,7 @@
     dired-launch
     which-key
     overcast-theme
+    color-theme-sanityinc-tomorrow
     web-mode
     php-mode
     angular-mode

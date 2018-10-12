@@ -368,4 +368,4 @@ If the file is emacs lisp, run the byte compiled version if exist."
 ;;   (alarm))
 
 
-(alarm)
+;; (alarm)
