@@ -47,9 +47,11 @@
 (projectile-mode +1)                    
 ;; (setq projectile-project-root-cache-predicate 'file-remote-p)
 (setq projectile-mode-line " Projectile ")
-(setq projectile-indexing-method 'native)
+(setq projectile-indexing-method 'alien)
 (setq projectile-enable-caching t)
-(projectile-global-mode)
+;; (projectile-global-mode)
+(setq tramp-verbose 6)
+
 
 ;;(require 'server)
 ;;(unless (server-running-p)
@@ -312,7 +314,7 @@ If the file is emacs lisp, run the byte compiled version if exist."
 )    
 (defun ab-xfk-insert-color ()
   ;; (set-background-color "#282828")
-  (set-face-background 'fringe "#767676")
+  (set-face-background 'fringe "dim gray")
   (global-hl-line-mode 1)
   ;; (set-face-background 'mode-line "#767676") 
   ;; (set-face-background 'mode-line-inactive "#767676")   
@@ -320,6 +322,8 @@ If the file is emacs lisp, run the byte compiled version if exist."
   )  
 
 
+(global-hl-line-mode 0)
+(set-face-background hl-line-face "DarkOliveGreen")
 
 
 

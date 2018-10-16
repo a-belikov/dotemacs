@@ -8,6 +8,8 @@
 (load-file "~/.emacs.d/ab/02-packages.el")
 (load-file "~/.emacs.d/ab/03-settings.el")
 (load-file "~/.emacs.d/ab/04-keybindings.el")
-(load-file "~/.emacs.d/ab/09-show-messages.el")
 
+
+;; Shows fortune with cowsay on start screen. Uncomment it if you want to it.
+;; (load-file "~/.emacs.d/ab/09-show-messages.el")
 

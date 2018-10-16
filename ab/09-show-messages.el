@@ -3,7 +3,7 @@
 
 (princ (shell-command-to-string
         (cl-concatenate 'string
-                        "(fortune ru ; echo '\n\nЗапуск в "
+                        "(fortune ; echo '\n\nЗапуск в "
                         (number-to-string (cadr (time-subtract (current-time) ab-start-time)))
                         " сек.\n"
                         "Сегодня: "

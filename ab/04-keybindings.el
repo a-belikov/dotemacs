@@ -48,7 +48,7 @@
     ("M-;" . xah-end-of-line-or-block)
     ("M-." . dumb-jump-go)
     ("M-," . dumb-jump-back)
-    ("<f5>" . run-current-file)
+    ("<f5>" . call-last-kbd-macro)
     ("<f8>" . other-frame)
     )
   )
@@ -112,7 +112,6 @@
 ;; (define-key xah-fly-key-map (kbd "2") (lambda ()(interactive)  (bookmark-jump "2"))) 
 ;; (define-key xah-fly-e-keymap (kbd "u") 'calendar)
 
-
 (add-hook 'xah-fly-command-mode-activate-hook
           (function (lambda ()
 
@@ -125,13 +124,62 @@
                       (define-key xah-fly-key-map (kbd "2") (lambda ()(interactive)  (bookmark-jump "2")))
                       (define-key xah-fly-key-map (kbd "C-1") (lambda ()(interactive)  (bookmark-jump "1")))
                       (define-key xah-fly-key-map (kbd "C-2") (lambda ()(interactive)  (bookmark-jump "2")))
-                      (define-key xah-fly-key-map (kbd "q") 'indent-for-tab-command)                      
 
                       (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-insert-mode-activate)
                       (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-insert-mode-activate)
-                      (define-key xah-fly-key-map (kbd "g") (kbd "C-g") )
 
-                      ))) 
+
+
+
+
+
+;; Set xah fly for russian keyboard
+(xah-fly--define-keys
+   xah-fly-key-map
+   '(
+     ("й" . xah-reformat-lines)
+     ("ц" . xah-shrink-whitespaces)
+     ("э" . xah-cycle-hyphen-underscore-space)
+     ("у" . xah-backward-kill-word)
+     ("я" . xah-comment-dwim)
+     ("х" . hippie-expand)
+     ("ф" . execute-extended-command)
+     ("т" . isearch-forward)
+     ("ш" . previous-line)
+     ("р" . xah-beginning-of-line-or-block)
+     ("в" . xah-delete-backward-char-or-bracket-text)
+     ("н" . undo)
+     ("г" . backward-word)
+     ("о" . backward-char)
+     ("п" . xah-delete-current-text-block)
+     ("с" . xah-copy-line-or-region)
+     ("м" . xah-paste-or-paste-previous)
+     ("з" . xah-insert-space-before)
+     ("ь" . xah-backward-left-bracket)
+     ("д" . forward-char)
+     ("ы" . open-line)
+     ("к" . xah-kill-word)
+     ("ч" . xah-cut-line-or-region)
+     ("щ" . forward-word)
+     ("ж" . xah-end-of-line-or-block)
+     ("л" . next-line)
+     ("а" . xah-fly-insert-mode-activate)
+     ("б" . xah-next-window-or-frame)
+     ("и" . xah-toggle-letter-case)
+     ("е" . set-mark-command)
+     ))
+
+
+
+
+;; Customize xah fly for russian keyboard
+(xah-fly--define-keys 
+   xah-fly-key-map
+'(
+     ("g" . xah-reformat-lines)
+     ("п" . xah-shrink-whitespaces)
+     ))
+))) 
 
 (add-hook 'xah-fly-insert-mode-activate-hook
           (function (lambda ()
@@ -145,12 +193,51 @@
 
                       (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-command-mode-activate)
                       (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-command-mode-activate)
-                      ;; (define-key xah-fly-key-map (kbd "1") )                        
-                    )))
+                      ;; (define-key xah-fly-key-map (kbd "1") )
+
+                      ;; Set xah fly for russian keyboard
+                      (xah-fly--define-keys
+                       xah-fly-key-map
+                       '(
+                         ("й" . nil)
+                         ("ц" . nil)
+                         ("э" . nil)
+                         ("у" . nil)
+                         ("я" . nil)
+                         ("х" . nil)
+                         ("ф" . nil)
+                         ("т" . nil)
+                         ("ш" . nil)
+                         ("р" . nil)
+                         ("в" . nil)
+                         ("н" . nil)
+                         ("г" . nil)
+                         ("о" . nil)
+                         ("п" . nil)
+                         ("с" . nil)
+                         ("м" . nil)
+                         ("з" . nil)
+                         ("ь" . nil)
+                         ("д" . nil)
+                         ("ы" . nil)
+                         ("к" . nil)
+                         ("ч" . nil)
+                         ("щ" . nil)
+                         ("ж" . nil)
+                         ("л" . nil)
+                         ("а" . nil)
+                         ("б" . nil)
+                         ("и" . nil)
+                         ("е" . nil)
+                         ))
+
+)))
 
 
 
 (define-key xah-fly-c-keymap (kbd "j") 'helm-recentf)
+(define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
+
 
 
 (define-key xah-fly-comma-keymap (kbd "l") 'dumb-jump-go)
@@ -173,17 +260,6 @@
 
 
 
-
-;; (define-key helm-map (kbd "M-j") 'backward-char)
-
-;; (define-key helm-map (kbd "M-l") 'forward-char) 
-
-;; (define-key helm-map (kbd "M-k") 'helm-next-line)
-
-;; (define-key helm-map (kbd "M-i") 'helm-previous-line)
-
-
-;; M-i.(tab-to-tab-stop)
 ;; M-k.(kill-sentence &optional ARG)
 ;;https://www.alexkorablev.ru/2017/06/10/emacs-got-keys/
 (defun reverse-input-method (input-method)
