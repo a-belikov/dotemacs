@@ -22,8 +22,7 @@
 (setq large-file-warning-threshold 100000000)
 
 
-
-(normal-erase-is-backspace-mode 1)
+(normal-erase-is-backspace-mode 0)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
