@@ -100,7 +100,11 @@
                       (local-unset-key (kbd "C-2"))
                       )))
 
+
+;; (defun controlG() (interactive) (kbd "C-g"))
+
 (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
+
 (define-key xah-fly-key-map (kbd "<f9>") 'run-current-file)
 
 ;; (define-key xah-fly-key-map (kbd "`") 'xah-fly-leader-key-map) 
@@ -176,8 +180,8 @@
 (xah-fly--define-keys 
    xah-fly-key-map
 '(
-     ("g" . xah-reformat-lines)
-     ("п" . xah-shrink-whitespaces)
+     ("i" . keyboard-quit)
+     ("п" . keyboard-quit)
      ))
 ))) 
 

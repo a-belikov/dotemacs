@@ -11,7 +11,47 @@
       t)
 
 
-(setq backup-directory-alist `(("." . "~/.saves")))
+(setq make-backup-files t
+      vc-make-backup-files t
+      version-control t
+      kept-new-versions 256
+      kept-old-versions 0
+      delete-old-versions t
+      backup-by-copying t)
+
+(setq backup-dir (concat user-emacs-directory "backup/"))
+
+(if (not (file-exists-p backup-dir))
+    (make-directory backup-dir))
+
+(add-to-list 'backup-directory-alist
+             `(".*" . ,backup-dir))
+
+(defun force-backup-of-buffer ()
+  (setq buffer-backed-up nil))
+
+(add-hook 'before-save-hook 'force-backup-of-buffer)
+;; this is what tramp uses
+(setq tramp-backup-directory-alist backup-directory-alist)
+
+
+(setq autosave-dir (concat user-emacs-directory "autosaves/")
+      auto-save-list-file-prefix (concat user-emacs-directory "autosave-list"))
+
+(if (not (file-exists-p autosave-dir)) (make-directory autosave-dir t))
+
+(add-to-list 'auto-save-file-name-transforms
+             `("\\`/?\\([^/]*/\\)*\\([^/]*\\)\\'" ,(concat autosave-dir "\\2") t))
+
+;; tramp autosaves
+(setq tramp-auto-save-directory (concat user-emacs-directory "tramp-autosaves/"))
+
+(if (not (file-exists-p tramp-auto-save-directory))
+    (make-directory tramp-auto-save-directory))
+
+
+
+
 
 (setq delete-old-versions t
   kept-new-versions 6
@@ -20,6 +60,7 @@
 
 
 (setq large-file-warning-threshold 100000000)
+
 
 
 (normal-erase-is-backspace-mode 0)
@@ -44,7 +85,6 @@
 
 
 
-(setq ranger-override-dired-mode t)
 
 ;;  (add-hook 'dired-load-hook  (function (lambda () (load "dired-x"))))
 
@@ -52,10 +92,8 @@
 
 
 
-
-
 ;;Disable menu-bar
-(menu-bar-mode 1)
+(menu-bar-mode -1)
 
 ;;Disable tool-bar
 (tool-bar-mode -1)
