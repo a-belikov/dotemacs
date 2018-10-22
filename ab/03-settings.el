@@ -39,7 +39,7 @@
 
 ;;Show line number on keft side
 
-(add-hook 'prog-mode-hook 'linum-mode)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
 (save-place-mode 1)
 
@@ -50,7 +50,6 @@
 (setq projectile-indexing-method 'alien)
 (setq projectile-enable-caching t)
 ;; (projectile-global-mode)
-(setq tramp-verbose 6)
 
 
 ;;(require 'server)
@@ -244,6 +243,10 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 
 
+(setq ido-use-filename-at-point 'guess)
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(ido-mode 1)
 
 
 
@@ -345,31 +348,4 @@ If the file is emacs lisp, run the byte compiled version if exist."
  
  
 
-
 (defun alarm() (call-process "paplay" "~/.emacs.d/alarm3.wav"))
-;; (defun alarm() (call-process "mpg123" "~/.emacs.d/alarm.mp3"))
-
-     ;; (defadvice tramp-handle-file-equal-p
-     ;;        (after tramp-write-beep-advice activate)
-     ;;        "Make tramp beep after writing a file."
-     ;;        (interactive)
-     ;;        (beep))
-          
-     ;;      (defadvice tramp-handle-do-copy-or-rename-file
-     ;;        (after tramp-copy-beep-advice activate)
-     ;;        "Make tramp beep after copying a file."
-     ;;        (interactive)
-     ;;        (beep))
-          
-     ;;      (defadvice tramp-handle-insert-file-contents
-     ;;        (after tramp-insert-beep-advice activate)
-     ;;        "Make tramp beep after inserting a file."
-     ;;        (interactive)
-     ;;        (beep))
-
-;; (defadvice tramp-handle-write-region
-;;   (after tramp-write-beep-advice activate)
-;;   (alarm))
-
-
-;; (alarm)

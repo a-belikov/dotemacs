@@ -240,6 +240,7 @@
 
 
 (define-key xah-fly-c-keymap (kbd "j") 'helm-recentf)
+(define-key xah-fly-c-keymap (kbd "d") 'list-buffers)
 (define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
 
 
@@ -256,7 +257,7 @@
 (define-key xah-fly-comma-keymap (kbd "r") 'rgrep)
 ;; (define-key xah-fly-c-keymap (kbd "q") 'helm-recentf)
 
-(define-key xah-fly-leader-key-map (kbd "f") 'ibuffer) 
+(define-key xah-fly-leader-key-map (kbd "f") 'ibuffer)  
 
 (define-key xah-fly-leader-key-map (kbd "p") 'projectile-command-map)
 

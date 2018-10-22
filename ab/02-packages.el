@@ -18,6 +18,8 @@
     phpcbf
     php-eldoc
     projectile
+    nginx-mode
+    apache-mode
     magit
     duplicate-thing
     ag
@@ -99,10 +101,10 @@
 
 
 
-;;(global-flycheck-mode t)
+(global-flycheck-mode t)
 
-(add-hook 'prog-mode-hook 'flycheck-mode)
-(add-hook 'text-mode-hook 'flycheck-mode)
+;; (add-hook 'prog-mode-hook 'flycheck-mode)
+;; (add-hook 'text-mode-hook 'flycheck-mode)
 
  (setq flycheck-phpmd-rulesets '("unusedcode"))
 
