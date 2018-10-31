@@ -5,7 +5,8 @@
 ;; powerline
 ;; Declare a list of required packages
 (defvar emacs-required-packages
-  '(helm
+  '(
+    ivy
     auto-complete
     dired-launch
     which-key
@@ -48,8 +49,7 @@
 
 
 ;;Set hooks for dired-launch-mode
-(add-hook 'dired-mode-hook
-          'dired-launch-mode)
+(add-hook 'dired-mode-hook 'dired-launch-mode)
 
 ;;Start which-key-mode
 (which-key-mode)
@@ -80,10 +80,9 @@
 ;; (load-theme 'gruvbox t)
 
 ;;Set up helm-mode
-(helm-mode 1)
-(helm-autoresize-mode 1)
-(setq helm-split-window-in-side-p
-      t)
+;; (helm-mode 1)                           ;
+;; (helm-autoresize-mode 1)
+;; (setq helm-split-window-in-side-p t)
 
 
 
@@ -125,7 +124,8 @@
 (require 'recentf)
 ;; (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
 (recentf-mode 1)
-(setq recentf-max-menu-items 99)
-(setq recentf-max-saved-items 99)
+(setq recentf-max-menu-items 250)
+(setq recentf-max-saved-items 250)
+
 
 

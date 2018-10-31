@@ -6,13 +6,12 @@
 
 
 
+    ;; ("M-x" . helm-M-x)
 
 (defvar major-keyboard-bindings
   '(
-    ("M-x" . helm-M-x)
     ("C-x C-f" . ido-find-file )
     ("C-x C-r" . helm-recentf)
-    ("M-y" . helm-show-kill-ring)
     ("C-x k" . kill-this-buffer)
     ("C-w" . kill-this-buffer)
     ("<M-tab>" . other-window)
@@ -23,22 +22,12 @@
     ("M-S-<left>" . buf-move-left)
     ("M-S-<right>" . buf-move-right)
     ("C-r" . emacs-reload-current-file)
-    ("C-o" . helm-find-files)
     ("C-f" . isearch-forward)
     ;; ("<escape>" . keyboard-escape-quit)
     ("C-;" . finish-line)
     ("C-d" . duplicate-thing)
     ("C-c w" . copy-word)
-    ("C-c s" . copy-string)  
-    ("C-c l" . copy-line)
-    ("C-c p" . copy-paragraph)
-    ("C-S-v" . yank-pop)
-    ("C-x b" . bookmark-set)
-    ("C-h" . query-replace )
-    ("C-M-<up>" . move-line-up)
-    ("C-M-<down>" . move-line-down)
     ("C-x g" . magit-status)
-    ("C-x s" . ag)
     ("M-d" . xah-delete-backward-char-or-bracket-text)
     ("M-e" . xah-backward-kill-word)
     ("M-r" . xah-kill-word)
@@ -95,7 +84,7 @@
 
 (add-hook 'xah-fly-key-hook
           (function (lambda ()
-                      (local-unset-key (kbd "<f9>"))
+                      (local-unset-key (kbd "<f7>"))
                       (local-unset-key (kbd "C-1"))
                       (local-unset-key (kbd "C-2"))
                       )))
@@ -105,7 +94,7 @@
 
 (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 
-(define-key xah-fly-key-map (kbd "<f9>") 'run-current-file)
+(define-key xah-fly-key-map (kbd "<f7>") 'run-current-file)
 
 ;; (define-key xah-fly-key-map (kbd "`") 'xah-fly-leader-key-map) 
 (global-set-key (kbd "`") 'xah-fly-command-mode-activate)
@@ -191,7 +180,7 @@
                       (local-unset-key (kbd "1"))
                       (local-unset-key (kbd "2"))
                       (local-unset-key (kbd "<f8>"))
-                      (local-unset-key (kbd "<f9>"))
+                      (local-unset-key (kbd "<f7>"))
 
                       (local-unset-key (kbd "g"))                      
 
@@ -239,8 +228,8 @@
 
 
 
-(define-key xah-fly-c-keymap (kbd "j") 'helm-recentf)
-(define-key xah-fly-c-keymap (kbd "d") 'list-buffers)
+(define-key xah-fly-c-keymap (kbd "j") 'ab-goto-recent-file)
+(define-key xah-fly-c-keymap (kbd "d") 'ab-goto-recent-directory)
 (define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
 
 

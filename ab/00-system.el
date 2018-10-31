@@ -36,7 +36,6 @@
 
 (setq ange-ftp-ftp-program-name "pftp")
 (setq ange-ftp-try-passive-mode nil) 
-(setq dired-listing-switches "-aBhlF")
 (setq dired-listing-switches "-aBhlF --group-directories-first")
 
 (setq user-full-name "Alexey Belikov"
@@ -46,10 +45,6 @@
 ;; (setq epa-pinentry-mode 'loopback)
 
 
-
-
-
-;;  (add-hook 'dired-load-hook  (function (lambda () (load "dired-x"))))
 
 
 

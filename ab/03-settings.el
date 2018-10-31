@@ -46,7 +46,7 @@
 
 (projectile-mode +1)                    
 ;; (setq projectile-project-root-cache-predicate 'file-remote-p)
-(setq projectile-mode-line " Projectile ")
+(setq projectile-mode-line "x Projectile x")
 (setq projectile-indexing-method 'alien)
 (setq projectile-enable-caching t)
 ;; (projectile-global-mode)
@@ -116,53 +116,64 @@ If the file is emacs lisp, run the byte compiled version if exist."
         (message "No recognized program file suffix for this file.")))
     ))
 
- 
 
 
-
-;; move line up
-(defun move-line-up ()
-  (interactive)
-  (transpose-lines 1)
-  (previous-line 2))
-
-
-;; move line down
-(defun move-line-down ()
-  (interactive)
-  (next-line 1)
-  (transpose-lines 1)
-  (previous-line 1))
-
-
-
-
-
-
-
-
-
+(setq project-name (projectile-project-name))
 ;; Set my-projectile-project-name to projectile-project-name,
 ;; so that later I can also set projectile project name when in *Messages* buffer etc
 (defun my-projectile-switch-project-action ()
-  (set-frame-parameter nil 'my-projectile-project-name projectile-project-name)
-  (projectile-run-eshell)
-  (projectile-find-file))
+  (when (not (equal (projectile-project-name) "-"))
+    (progn
+     (setq project-name (projectile-project-name))
+     (setq frame-title-format '("Emacs: " "%b" (:eval (format " in [%s]" project-name) ))))))
 
-(setq projectile-switch-project-action 'my-projectile-switch-project-action)
+
+(add-hook 'projectile-after-switch-project-hook 'my-projectile-switch-project-action)
+(add-hook 'find-file-hook 'my-projectile-switch-project-action)
+
+
+(defun ab-set-project-name-manual ()
+  "Set project name manualy and put it to frame title"
+  (interactive)
+  (setq project-name (read-string "Enter project name: "))
+  (setq frame-title-format '("Emacs: " "%b" (:eval (format " in [%s] (m)" project-name) )))
+  )
+
+
+
+
+(defun ab-goto-recent-directory ()
+  "Open recent directory with dired"
+  (interactive)
+  (unless recentf-mode (recentf-mode 1))
+  (let ((collection
+         (delete-dups
+          (append (mapcar 'file-name-directory recentf-list)
+                  ;; fasd history
+                  (if (executable-find "fasd")
+                      (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
+    (ivy-read "Recent directories:" collection :action 'dired)))
+
+
+(defun ab-goto-recent-file ()
+  "Open recent directory with dired"
+  (interactive)
+  (unless recentf-mode (recentf-mode 1))
+  (ivy-read "Recent files:" recentf-list :action 'find-file))
 
 
 
 ;; Format win-windows title by project name
-(setq frame-title-format
-    '("Emacs: "
-      "%b"
-      (:eval
-       (let ((project-name (projectile-project-name)))
-           (if (not (string= "-" project-name))
-             (format " in [%s]" project-name)
-             (format " in [%s]" (frame-parameter nil 'my-projectile-project-name)))))))
+;; (setq frame-title-format
+    ;; '("Emacs: "
+      ;; "%b"
+      ;; (:eval
+       ;; (let ((project-name (projectile-project-name)))
+           ;; (if (not (string= "-" project-name))
+             ;; (format " in [%s]" project-name)
+             ;; (format " in [%s]" (frame-parameter nil 'my-projectile-project-name)))))))
 
+ 
 
 
 
@@ -187,56 +198,6 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 (define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file "..")))  ; was dired-up-directory
 
-;; Copy-Past-Advanced  https://www.emacswiki.org/emacs/CopyWithoutSelection
-
-    (defun get-point (symbol &optional arg)
-      "get the point"
-      (funcall symbol arg)
-      (point))
-     
-    (defun copy-thing (begin-of-thing end-of-thing &optional arg)
-      "Copy thing between beg & end into kill ring."
-      (save-excursion
-        (let ((beg (get-point begin-of-thing 1))
-              (end (get-point end-of-thing arg)))
-          (copy-region-as-kill beg end))))
-     
-    (defun paste-to-mark (&optional arg)
-      "Paste things to mark, or to the prompt in shell-mode."
-      (unless (eq arg 1)
-        (if (string= "shell-mode" major-mode)
-            (comint-next-prompt 25535)
-          (goto-char (mark)))
-        (yank)))
-     
-
-(defun copy-word (&optional arg)
-      "Copy words at point into kill-ring"
-       (interactive "P")
-       (copy-thing 'backward-word 'forward-word arg)
-       ;;(paste-to-mark arg)
-     )
- 
-  (defun copy-line (&optional arg)
-      "Save current line into Kill-Ring without mark the line "
-       (interactive "P")
-       (copy-thing 'beginning-of-line 'end-of-line arg)
-;;       (paste-to-mark arg)
-     )
-
-  (defun copy-paragraph (&optional arg)
-      "Copy paragraphes at point"
-       (interactive "P")
-       (copy-thing 'backward-paragraph 'forward-paragraph arg)
-  ;;     (paste-to-mark arg)
-     )
-
-
-
-
-
-
-
 
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
@@ -248,6 +209,8 @@ If the file is emacs lisp, run the byte compiled version if exist."
 (setq ido-everywhere t)
 (ido-mode 1)
 
+(setq ivy-use-virtual-buffers t)
+(ivy-mode 1)
 
 
 
