@@ -7,17 +7,22 @@
 (defvar emacs-required-packages
   '(
     ivy
-    auto-complete
+    imenu-list
+    anzu
+    company
+    company-php
     dired-launch
     which-key
     overcast-theme
     color-theme-sanityinc-tomorrow
+    doom-themes
+    doom-modeline
     web-mode
     php-mode
     angular-mode
     skewer-mode
     phpcbf
-    php-eldoc
+    ac-php
     projectile
     nginx-mode
     apache-mode
@@ -47,9 +52,11 @@
 ;;Load default auto-complete configs
 (ac-config-default)
 
+(setq imenu-list-focus-after-activation t)
 
 ;;Set hooks for dired-launch-mode
 (add-hook 'dired-mode-hook 'dired-launch-mode)
+(add-hook 'after-init-hook 'global-company-mode)
 
 ;;Start which-key-mode
 (which-key-mode)
@@ -64,39 +71,7 @@
   "Ace jump back:-"
   t)
 ;; 
-;;Enable powerline
-;; (powerline-default-theme)
 
-
-;; (setq powerline-default-separator 'slant)
-(setq custom-safe-themes t)
-
-(require 'color-theme-sanityinc-tomorrow)
-;; (color-theme-sanityinc-tomorrow-day)
-;; (color-theme-sanityinc-tomorrow-night)
-;; (color-theme-sanityinc-tomorrow-bright)
-(color-theme-sanityinc-tomorrow-eighties )
-
-;; (load-theme 'gruvbox t)
-
-;;Set up helm-mode
-;; (helm-mode 1)                           ;
-;; (helm-autoresize-mode 1)
-;; (setq helm-split-window-in-side-p t)
-
-
-
-(setq neo-vc-integration nil) 
-
-
-(setq browse-url-browser-function 'browse-url-chromium)
-(setq european-calendar-style 't)
-
-(setq calendar-week-start-day 1
-          calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
-          calendar-month-name-array ["Январь" "Февраль" "Март" "Апрель" "Май" 
-                                     "Июнь" "Июль" "Август" "Сентябрь"
-                                     "Октябрь" "Ноябрь" "Декабрь"])
 
 
 
@@ -105,10 +80,23 @@
 ;; (add-hook 'prog-mode-hook 'flycheck-mode)
 ;; (add-hook 'text-mode-hook 'flycheck-mode)
 
- (setq flycheck-phpmd-rulesets '("unusedcode"))
+
+;; /usr/share/php/data/PHPMD/resources/rulesets
+;; (setq flycheck-phpmd-rulesets '("cleancode"))
+;; (setq flycheck-phpmd-rulesets '("cleancode" "codesize" "controversial" "design" "naming" "unusedcode"))
+
 
 (add-hook 'php-mode-hook 'phpcbf-enable-on-save)
-(add-hook 'php-mode-hook 'php-eldoc-enable)
+
+(add-hook 'php-mode-hook
+          '(lambda ()
+             (require 'company-php)
+             (company-mode t)
+             ;; (ac-php-core-eldoc-setup) ;; enable eldoc
+             (make-local-variable 'company-backends)
+               (define-key php-mode-map  (kbd "M-g") 'ac-php-find-symbol-at-point)   ;goto define
+               (define-key php-mode-map  (kbd "M-b") 'ac-php-location-stack-back)    ;go back
+               (add-to-list 'company-backends 'company-ac-php-backend)))
 
 
 (setq bookmark-save-flag 1)
@@ -126,6 +114,9 @@
 (recentf-mode 1)
 (setq recentf-max-menu-items 250)
 (setq recentf-max-saved-items 250)
+
+(doom-modeline-init)
+(add-hook 'after-init-hook (lambda () (load-theme 'doom-one t)))
 
 
 

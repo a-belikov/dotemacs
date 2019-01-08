@@ -121,57 +121,53 @@
                       (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-insert-mode-activate)
                       (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-insert-mode-activate)
 
+                      ;; Set xah fly for russian keyboard
+                      (xah-fly--define-keys
+                       xah-fly-key-map
+                       '(
+                         ("й" . xah-reformat-lines)
+                         ("ц" . xah-shrink-whitespaces)
+                         ("э" . xah-cycle-hyphen-underscore-space)
+                         ("у" . xah-backward-kill-word)
+                         ("я" . xah-comment-dwim)
+                         ("х" . hippie-expand)
+                         ("ф" . execute-extended-command)
+                         ("т" . isearch-forward)
+                         ("ш" . previous-line)
+                         ("р" . xah-beginning-of-line-or-block)
+                         ("в" . xah-delete-backward-char-or-bracket-text)
+                         ("н" . undo)
+                         ("г" . backward-word)
+                         ("о" . backward-char)
+                         ("п" . xah-delete-current-text-block)
+                         ("с" . xah-copy-line-or-region)
+                         ("м" . xah-paste-or-paste-previous)
+                         ("з" . xah-insert-space-before)
+                         ("ь" . xah-backward-left-bracket)
+                         ("д" . forward-char)
+                         ("ы" . open-line)
+                         ("к" . xah-kill-word)
+                         ("ч" . xah-cut-line-or-region)
+                         ("щ" . forward-word)
+                         ("ж" . xah-end-of-line-or-block)
+                         ("л" . next-line)
+                         ("а" . xah-fly-insert-mode-activate)
+                         ("б" . xah-next-window-or-frame)
+                         ("и" . xah-toggle-letter-case)
+                         ("е" . set-mark-command)
+                         ))
 
 
 
 
-
-;; Set xah fly for russian keyboard
-(xah-fly--define-keys
-   xah-fly-key-map
-   '(
-     ("й" . xah-reformat-lines)
-     ("ц" . xah-shrink-whitespaces)
-     ("э" . xah-cycle-hyphen-underscore-space)
-     ("у" . xah-backward-kill-word)
-     ("я" . xah-comment-dwim)
-     ("х" . hippie-expand)
-     ("ф" . execute-extended-command)
-     ("т" . isearch-forward)
-     ("ш" . previous-line)
-     ("р" . xah-beginning-of-line-or-block)
-     ("в" . xah-delete-backward-char-or-bracket-text)
-     ("н" . undo)
-     ("г" . backward-word)
-     ("о" . backward-char)
-     ("п" . xah-delete-current-text-block)
-     ("с" . xah-copy-line-or-region)
-     ("м" . xah-paste-or-paste-previous)
-     ("з" . xah-insert-space-before)
-     ("ь" . xah-backward-left-bracket)
-     ("д" . forward-char)
-     ("ы" . open-line)
-     ("к" . xah-kill-word)
-     ("ч" . xah-cut-line-or-region)
-     ("щ" . forward-word)
-     ("ж" . xah-end-of-line-or-block)
-     ("л" . next-line)
-     ("а" . xah-fly-insert-mode-activate)
-     ("б" . xah-next-window-or-frame)
-     ("и" . xah-toggle-letter-case)
-     ("е" . set-mark-command)
-     ))
-
-
-
-
-;; Customize xah fly for russian keyboard
-(xah-fly--define-keys 
-   xah-fly-key-map
-'(
-     ("i" . keyboard-quit)
-     ("п" . keyboard-quit)
-     ))
+                      (xah-fly--define-keys 
+                       xah-fly-key-map
+                       '(
+                         ("i" . keyboard-quit)
+                         ("п" . keyboard-quit)
+                         ("u" . ibuffer)     
+                         ("а" . ibuffer)     
+                         ))
 ))) 
 
 (add-hook 'xah-fly-insert-mode-activate-hook
@@ -182,8 +178,9 @@
                       (local-unset-key (kbd "<f8>"))
                       (local-unset-key (kbd "<f7>"))
 
-                      (local-unset-key (kbd "g"))                      
-
+                      ;; (local-unset-key (kbd "g"))                      
+                      ;; (local-unset-key (kbd "g"))
+                      
                       (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-command-mode-activate)
                       (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-command-mode-activate)
                       ;; (define-key xah-fly-key-map (kbd "1") )
@@ -203,6 +200,7 @@
                          ("ш" . nil)
                          ("р" . nil)
                          ("в" . nil)
+                         ("а" . nil)
                          ("н" . nil)
                          ("г" . nil)
                          ("о" . nil)
@@ -231,7 +229,7 @@
 (define-key xah-fly-c-keymap (kbd "j") 'ab-goto-recent-file)
 (define-key xah-fly-c-keymap (kbd "d") 'ab-goto-recent-directory)
 (define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
-
+(define-key xah-fly-n-keymap (kbd "e") 'revert-buffer-with-coding-system)
 
 
 (define-key xah-fly-comma-keymap (kbd "l") 'dumb-jump-go)
@@ -244,10 +242,13 @@
 (define-key xah-fly-comma-keymap (kbd "j") 'find-tag)
 (define-key xah-fly-comma-keymap (kbd "a") 'ag)
 (define-key xah-fly-comma-keymap (kbd "r") 'rgrep)
+(define-key xah-fly-comma-keymap (kbd "g") 'find-grep)
 ;; (define-key xah-fly-c-keymap (kbd "q") 'helm-recentf)
 
-(define-key xah-fly-leader-key-map (kbd "f") 'ibuffer)  
+(define-key xah-fly-leader-key-map (kbd "f") 'find-file)  
 
+(define-key xah-fly-leader-key-map (kbd "z") 'anzu-replace-at-cursor-thing)
+(define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
 (define-key xah-fly-leader-key-map (kbd "p") 'projectile-command-map)
 
 

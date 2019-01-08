@@ -8,7 +8,8 @@
                         " сек.\n"
                         "Сегодня: "
                         (format-time-string "%d %B %Y")
-                        "') | cowsay -n -f turtle"
-                        ))
-(get-buffer-create (current-buffer)))
-
+                        "'; ) | cowsay -n -f turtle; 
+                        echo '\n\n'; 
+                        wget -q -O - ru.wttr.in/Ростов-на-Дону?T0
+                        "))
+       (get-buffer-create (current-buffer)))

@@ -2,6 +2,24 @@
 ;; ab-PACKAGES SETS
 ;;
 
+
+(setq custom-safe-themes t)
+
+(setq neo-vc-integration nil) 
+
+
+(setq browse-url-browser-function 'browse-url-chromium)
+(setq european-calendar-style 't)
+
+(setq calendar-week-start-day 1
+          calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
+          calendar-month-name-array ["Январь" "Февраль" "Март" "Апрель" "Май" 
+                                     "Июнь" "Июль" "Август" "Сентябрь"
+                                     "Октябрь" "Ноябрь" "Декабрь"])
+
+
+
+
 (defun finish-line ()
   (interactive)
   (end-of-line)
@@ -62,15 +80,17 @@
 (add-hook 'prog-mode-hook #'yas-minor-mode)
 
 
-;; (eval-after-load 'php-mode           
-  ;; (require 'php-extras))
-
 
 (defun flush-empty-lines()
   "Remove emty string from buffer"
     (interactive)
     (flush-lines "^[[:space:]]*$"))
 
+(defun eshell-clear ()
+  "Clear the eshell buffer."
+  (let ((inhibit-read-only t))
+    (erase-buffer)
+    (eshell-send-input)))
 
 
 (defun run-current-file ()
@@ -202,6 +222,8 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
+(setq grep-find-template "find . <X> -type f <F> -exec grep <C> -nH -e <R> \\{\\} +")
+
 
 
 (setq ido-use-filename-at-point 'guess)
@@ -212,7 +234,7 @@ If the file is emacs lisp, run the byte compiled version if exist."
 (setq ivy-use-virtual-buffers t)
 (ivy-mode 1)
 
-
+(global-subword-mode 1)
 
 ;; Crypt org files 
 (require 'org-crypt)
@@ -257,6 +279,9 @@ If the file is emacs lisp, run the byte compiled version if exist."
 	  (ding))))
 
 
+(global-set-key [remap query-replace] 'anzu-query-replace)
+(global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+
 
 (setq background-color (face-attribute 'default :background)) ;; #2d2d2d
 
@@ -265,7 +290,7 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 (defun ab-xfk-command-color ()
   ;; (set-background-color background-color)
-  (set-face-background 'fringe fringe-color)
+  ;; (set-face-background 'fringe fringe-color)
   (global-hl-line-mode 0)
 
   ;; (set-face-background 'mode-line fringe-color) 
@@ -280,7 +305,7 @@ If the file is emacs lisp, run the byte compiled version if exist."
 )    
 (defun ab-xfk-insert-color ()
   ;; (set-background-color "#282828")
-  (set-face-background 'fringe "dim gray")
+  ;; (set-face-background 'fringe "dim gray")
   (global-hl-line-mode 1)
   ;; (set-face-background 'mode-line "#767676") 
   ;; (set-face-background 'mode-line-inactive "#767676")   
@@ -289,8 +314,9 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 
 (global-hl-line-mode 0)
-(set-face-background hl-line-face "DarkOliveGreen")
+;; (set-face-background hl-line-face "DarkOliveGreen")
 
+(setq dumb-jump-max-find-time 10)
 
 
 (add-hook 'xah-fly-command-mode-activate-hook 'ab-xfk-command-color)
@@ -312,3 +338,10 @@ If the file is emacs lisp, run the byte compiled version if exist."
  
 
 (defun alarm() (call-process "paplay" "~/.emacs.d/alarm3.wav"))
+
+
+
+;; https://stackoverflow.com/a/9270663/2905946
+;; PECL regex in Emacs
+
+
