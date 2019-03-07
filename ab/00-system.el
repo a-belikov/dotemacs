@@ -3,13 +3,13 @@
 ;;
 
 ;;Set custom-file so that Emacs does not use init.el
-(setq custom-file
-      "~/.emacs.d/custom.el")
+(setq custom-file "~/.emacs.d/custom.el")
 
 ;;Stop Emacs from writing package information to init.el
-(setq package--init-file-ensured
-      t)
-   (customize-set-variable 'tramp-use-ssh-controlmaster-options t)
+(setq package--init-file-ensured t)
+(customize-set-variable 'tramp-use-ssh-controlmaster-options t)
+(setq tramp-inline-compress-start-size 1000000)
+
 
 (setq
    backup-by-copying t      ; don't clobber symlinks

@@ -120,3 +120,7 @@
 
 
 
+
+
+
+(add-hook 'magit-mode-hook 'xah-fly-insert-mode-activate)

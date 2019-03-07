@@ -340,6 +340,25 @@ If the file is emacs lisp, run the byte compiled version if exist."
 (defun alarm() (call-process "paplay" "~/.emacs.d/alarm3.wav"))
 
 
+(defun ab-run-lastcommand-in-next-eshell-window () 
+ (xah-next-window-or-frame)
+ (end-of-buffer)
+ (eshell-previous-matching-input-from-input 1)
+ ;; (newline)
+ (eshell-send-input)
+ (xah-next-window-or-frame)
+)
+ 
+(defun ab-eshell-start-lastcommand-by-save () 
+  (interactive)
+  (add-hook 'after-save-hook 'ab-run-lastcommand-in-next-eshell-window)
+)
+     
+(defun ab-eshell-stop-lastcommand-by-save () 
+  (interactive)
+  (remove-hook 'after-save-hook 'ab-run-lastcommand-in-next-eshell-window)
+)
+
 
 ;; https://stackoverflow.com/a/9270663/2905946
 ;; PECL regex in Emacs

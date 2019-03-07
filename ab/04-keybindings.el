@@ -55,7 +55,7 @@
 ;; (global-set-key (kbd "<menu>") ctl-x-map)
 (define-key projectile-mode-map (kbd "C-p") 'projectile-command-map)
 (define-key projectile-command-map (kbd "m") 'magit-status)
-
+(define-key projectile-command-map (kbd "n") 'ab-set-project-name-manual)
 
 
 (global-set-key (kbd "C-1") (lambda ()(interactive) (bookmark-jump "1")))
@@ -112,7 +112,8 @@
                       (local-unset-key (kbd "C-2"))
                       (local-unset-key (kbd "<f8>"))
                       (local-unset-key (kbd "<f9>"))
-
+                      (local-unset-key (kbd "p"))
+                      
                       (define-key xah-fly-key-map (kbd "1") (lambda ()(interactive)  (bookmark-jump "1")))  
                       (define-key xah-fly-key-map (kbd "2") (lambda ()(interactive)  (bookmark-jump "2")))
                       (define-key xah-fly-key-map (kbd "C-1") (lambda ()(interactive)  (bookmark-jump "1")))
@@ -167,8 +168,11 @@
                          ("п" . keyboard-quit)
                          ("u" . ibuffer)     
                          ("а" . ibuffer)     
+                         ("l" . projectile-command-map)
+                         ("з" . projectile-command-map)     
                          ))
-))) 
+                      ;; (define-key xah-fly-key-map (kbd "p") 'projectile-command-map)                             
+)))   
 
 (add-hook 'xah-fly-insert-mode-activate-hook
           (function (lambda ()
@@ -178,7 +182,7 @@
                       (local-unset-key (kbd "<f8>"))
                       (local-unset-key (kbd "<f7>"))
 
-                      ;; (local-unset-key (kbd "g"))                      
+                      ;; (local-unset-key (kbd "p"))                      
                       ;; (local-unset-key (kbd "g"))
                       
                       (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-command-mode-activate)
@@ -222,9 +226,8 @@
                          ("е" . nil)
                          ))
 
+                      ;; (define-key projectile-mode-map (kbd "p") nil)
 )))
-
-
 
 (define-key xah-fly-c-keymap (kbd "j") 'ab-goto-recent-file)
 (define-key xah-fly-c-keymap (kbd "d") 'ab-goto-recent-directory)
