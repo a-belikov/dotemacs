@@ -231,8 +231,11 @@
 
 (define-key xah-fly-c-keymap (kbd "j") 'ab-goto-recent-file)
 (define-key xah-fly-c-keymap (kbd "d") 'ab-goto-recent-directory)
+
 (define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
+
 (define-key xah-fly-n-keymap (kbd "e") 'revert-buffer-with-coding-system)
+(define-key xah-fly-n-keymap (kbd "i") 'file-metadata)
 
 
 (define-key xah-fly-comma-keymap (kbd "l") 'dumb-jump-go)

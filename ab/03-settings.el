@@ -161,6 +161,25 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 
 
+(defun file-metadata ()
+  (interactive)
+  (let* ((fname (buffer-file-name))
+         (data (file-attributes fname))
+         (access (current-time-string (nth 4 data)))
+         (mod (current-time-string (nth 5 data)))
+         (change (current-time-string (nth 6 data)))
+         (size (nth 7 data))
+         (mode (nth 8 data)))
+    (message
+     "%s:
+  Accessed: %s
+  Modified: %s
+  Changed: %s
+  Size: %s bytes
+  Mode: %s"
+     fname access mod change size mode)))
+
+
 
 (defun ab-goto-recent-directory ()
   "Open recent directory with dired"
@@ -286,6 +305,24 @@ If the file is emacs lisp, run the byte compiled version if exist."
 (setq background-color (face-attribute 'default :background)) ;; #2d2d2d
 
 (setq fringe-color "#323232")
+
+
+(defun highlight-selected-window ()
+  "Highlight selected window with a different background color."
+  (walk-windows (lambda (w)
+                  (unless (eq w (selected-window))
+                    (with-current-buffer (window-buffer w)
+                      (buffer-face-set '(:background "#1f2229"))))))
+  (buffer-face-set 'default))
+(add-hook 'buffer-list-update-hook 'highlight-selected-window)
+
+
+
+
+(defadvice delete-frame (after delete-frame-set-background)
+  (set-background-color "yellow"))
+(ad-activate 'delete-frame)
+
 
 
 (defun ab-xfk-command-color ()
