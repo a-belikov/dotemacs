@@ -37,6 +37,8 @@
     flymake-php
     rainbow-delimiters
     xah-fly-keys
+    org-bullets
+    htmlize
    )
 )
 ;; (require 'ripgrep)
@@ -124,3 +126,6 @@
 
 
 (add-hook 'magit-mode-hook 'xah-fly-insert-mode-activate)
+
+
+;; (edit-server-start)

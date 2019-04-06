@@ -10,9 +10,10 @@
 
 (defvar major-keyboard-bindings
   '(
-    ("C-x C-f" . ido-find-file )
-    ("C-x C-r" . helm-recentf)
-    ("C-x k" . kill-this-buffer)
+    ;; ("C-x C-f" . ido-find-file )
+    ;; ("C-x C-r" . helm-recentf)
+    ;; ("C-x k" . kill-this-buffer)
+    ("C-c a" . org-agenda)
     ("C-w" . kill-this-buffer)
     ("<M-tab>" . other-window)
     ("C-s" . save-buffer )
@@ -25,9 +26,9 @@
     ("C-f" . isearch-forward)
     ;; ("<escape>" . keyboard-escape-quit)
     ("C-;" . finish-line)
-    ("C-d" . duplicate-thing)
-    ("C-c w" . copy-word)
-    ("C-x g" . magit-status)
+    ;; ("C-d" . duplicate-thing)
+    ;; ("C-c w" . copy-word)
+    ;; ("C-x g" . magit-status)
     ("M-d" . xah-delete-backward-char-or-bracket-text)
     ("M-e" . xah-backward-kill-word)
     ("M-r" . xah-kill-word)
@@ -48,7 +49,6 @@
 
 (mapc 'apply-major-keyboard-bindings
       major-keyboard-bindings)
-
 
 
 ;; set Menu/App key to do emacs's C-x http://ergoemacs.org/emacs/emacs_dvorak_C-x.html
@@ -167,7 +167,7 @@
                          ("i" . keyboard-quit)
                          ("п" . keyboard-quit)
                          ("u" . ibuffer)     
-                         ("а" . ibuffer)     
+                         ("а" . ibuffer)
                          ("l" . projectile-command-map)
                          ("з" . projectile-command-map)     
                          ))
@@ -232,6 +232,7 @@
 (define-key xah-fly-c-keymap (kbd "j") 'ab-goto-recent-file)
 (define-key xah-fly-c-keymap (kbd "d") 'ab-goto-recent-directory)
 
+
 (define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
 
 (define-key xah-fly-n-keymap (kbd "e") 'revert-buffer-with-coding-system)
@@ -249,9 +250,14 @@
 (define-key xah-fly-comma-keymap (kbd "a") 'ag)
 (define-key xah-fly-comma-keymap (kbd "r") 'rgrep)
 (define-key xah-fly-comma-keymap (kbd "g") 'find-grep)
+
+(define-key xah-fly-comma-keymap (kbd "h") 'highlight-symbol-at-point)
+(define-key xah-fly-comma-keymap (kbd "x") 'highlight-regexp)
+
 ;; (define-key xah-fly-c-keymap (kbd "q") 'helm-recentf)
 
 (define-key xah-fly-leader-key-map (kbd "f") 'find-file)  
+(define-key xah-fly-leader-key-map (kbd "j") 'ab-goto-recent-file)
 
 (define-key xah-fly-leader-key-map (kbd "z") 'anzu-replace-at-cursor-thing)
 (define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)

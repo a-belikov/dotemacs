@@ -273,7 +273,7 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 
 (setq org-todo-keywords
-'((sequence "TODO" "|" "FEEDBACK" "PROCESS" "DELEGATED" "DONE")))
+'((sequence "TODO" "PROCESS" "DELEGATED" "|" "DONE")))
 
 
 
@@ -320,7 +320,7 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 
 (defadvice delete-frame (after delete-frame-set-background)
-  (set-background-color "yellow"))
+  (set-background-color "#1f2229"))
 (ad-activate 'delete-frame)
 
 
@@ -397,7 +397,14 @@ If the file is emacs lisp, run the byte compiled version if exist."
 )
 
 
-;; https://stackoverflow.com/a/9270663/2905946
-;; PECL regex in Emacs
 
 
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+(setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+
+(setq org-agenda-files '("~/Документы/org"))
