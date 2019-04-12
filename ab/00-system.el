@@ -8,7 +8,7 @@
 ;;Stop Emacs from writing package information to init.el
 (setq package--init-file-ensured t)
 (customize-set-variable 'tramp-use-ssh-controlmaster-options t)
-(setq tramp-inline-compress-start-size 1000000)
+(setq tramp-inline-compress-start-size 50000)
 
 
 (setq

@@ -14,6 +14,7 @@
     ;; ("C-x C-r" . helm-recentf)
     ;; ("C-x k" . kill-this-buffer)
     ("C-c a" . org-agenda)
+    ("C-c t" . org-capture)
     ("C-w" . kill-this-buffer)
     ("<M-tab>" . other-window)
     ("C-s" . save-buffer )
@@ -119,7 +120,7 @@
                       (define-key xah-fly-key-map (kbd "C-1") (lambda ()(interactive)  (bookmark-jump "1")))
                       (define-key xah-fly-key-map (kbd "C-2") (lambda ()(interactive)  (bookmark-jump "2")))
 
-                      (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-insert-mode-activate)
+                      ;; (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-insert-mode-activate)
                       (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-insert-mode-activate)
 
                       ;; Set xah fly for russian keyboard
@@ -185,7 +186,7 @@
                       ;; (local-unset-key (kbd "p"))                      
                       ;; (local-unset-key (kbd "g"))
                       
-                      (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-command-mode-activate)
+                      ;; (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-command-mode-activate)
                       (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-command-mode-activate)
                       ;; (define-key xah-fly-key-map (kbd "1") )
 
@@ -234,6 +235,7 @@
 
 
 (define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
+(define-key xah-fly-e-keymap (kbd "d") 'ab-change-bracket-pair)
 
 (define-key xah-fly-n-keymap (kbd "e") 'revert-buffer-with-coding-system)
 (define-key xah-fly-n-keymap (kbd "i") 'file-metadata)
@@ -266,6 +268,17 @@
 
 
 
+;; (add-hook 'org-mode-hook 
+          ;; (lambda ()
+            ;; (local-set-key "\C-y" 'yank)))
+
+(define-key key-translation-map (kbd "<menu>") (kbd "C-c"))
+
+;; (define-key key-translation-map (kbd "M-c") (kbd "C-c"))
+
+(define-key org-mode-map (kbd "C-c t") 'org-todo)
+(define-key org-mode-map (kbd "C-c e") 'org-export-dispatch)
+(define-key org-mode-map (kbd "C-c d") 'org-deadline)
 
 ;; M-k.(kill-sentence &optional ARG)
 ;;https://www.alexkorablev.ru/2017/06/10/emacs-got-keys/

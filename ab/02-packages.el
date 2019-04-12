@@ -38,6 +38,9 @@
     rainbow-delimiters
     xah-fly-keys
     org-bullets
+    org-caldav
+    org-gcal
+    oauth2
     htmlize
    )
 )
@@ -83,12 +86,18 @@
 ;; (add-hook 'text-mode-hook 'flycheck-mode)
 
 
-;; /usr/share/php/data/PHPMD/resources/rulesets
 ;; (setq flycheck-phpmd-rulesets '("cleancode"))
-;; (setq flycheck-phpmd-rulesets '("cleancode" "codesize" "controversial" "design" "naming" "unusedcode"))
+(setq flycheck-phpmd-rulesets '("cleancode" "codesize" "controversial" "design" "naming" "unusedcode"))
+(setq phpcbf-standard "PSR2")
 
+(add-hook 'php-mode-hook
+          (lambda ()
+            (setq flycheck-phpcs-standard "PSR2")))
+            
 
 (add-hook 'php-mode-hook 'phpcbf-enable-on-save)
+
+(setq php-mode-coding-style (quote psr2))
 
 (add-hook 'php-mode-hook
           '(lambda ()

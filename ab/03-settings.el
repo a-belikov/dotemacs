@@ -216,6 +216,31 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 
 
+;; Change (..) to [..], '..' to ".." and back
+(defun ab-change-bracket-pair ()
+    (interactive )
+    (xah-goto-matching-bracket)
+
+    ;; (backward-char)
+    (cua-set-mark)
+    ;; (forward-char)
+    (xah-goto-matching-bracket)
+
+    ;; cycle pair
+    (case (char-before)
+      ((?') (xah-insert-bracket-pair "\"" "\""))
+      ((?\") (xah-insert-bracket-pair "'" "'"))
+      ((?\)) (xah-insert-bracket-pair "[" "]"))
+      ((?\]) (xah-insert-bracket-pair "(" ")"))
+      )
+
+    
+    (backward-char)
+    (xah-delete-backward-bracket-pair)
+    (forward-char)
+
+    )
+
 
 
 (setq auto-save-default nil)
@@ -241,7 +266,9 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
-(setq grep-find-template "find . <X> -type f <F> -exec grep <C> -nH -e <R> \\{\\} +")
+
+;; grep search templete
+(setq grep-find-template "find . <X> -type f <F> -exec grep <C> -nH -e -i \"<R>\" \\{\\} +")
 
 
 
@@ -408,3 +435,45 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 
 (setq org-agenda-files '("~/Документы/org"))
+
+(setq org-default-notes-file (concat org-directory "~/Документы/org/toDo.org"))
+
+
+(setq org-capture-templates
+      '(
+        ("t" "Todo" entry (file "~/Документы/org/toDo.org" ) "* TODO %?\n  %i %a")
+        ("a" "Addresat-Todo" entry (file "~/Документы/org/adresat-ToDo.org") "* TODO %?\n  %i\n  %a") 
+        ))
+
+
+
+(org-babel-do-load-languages
+   'org-babel-do-load-languages
+   '(
+     (sh . t)
+     (python . t)
+     (php . t)
+     (js . t)
+     ))
+
+
+
+;; ("j" "Journal" entry (file+datetree "~/org/journal.org")"* %?\nEntered on %U\n  %i\n  %a")
+;; ("a" "Addresat-Todo" entry (file+headline "~/Документы/org/adresat-ToDo.org" "") "* TODO %?\n  %i\n  %a") 
+
+
+
+
+;; Export to ics for google
+
+
+
+
+;;; define categories that should be excluded
+
+
+
+
+
+
+
