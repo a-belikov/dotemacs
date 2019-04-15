@@ -70,13 +70,14 @@
 (custom-set-faces
  '(default ((t (:height 120)))))
 
+(delete-selection-mode 1)
 
 
 ;; /fix
-(cua-mode t)
-(setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
-(transient-mark-mode 1) ;; No region when it is not highlighted
-(setq cua-keep-region-after-copy t) ;; Standard Windows behaviour
+;; (cua-mode t)
+;; (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
+;; (transient-mark-mode 1) ;; No region when it is not highlighted
+;; (setq cua-keep-region-after-copy t) ;; Standard Windows behaviour
 ;; fix
 
 

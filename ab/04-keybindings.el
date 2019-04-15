@@ -14,17 +14,19 @@
     ;; ("C-x C-r" . helm-recentf)
     ;; ("C-x k" . kill-this-buffer)
     ("C-c a" . org-agenda)
+    ("C-c g" . org-caldav-sync)
+    
+    ;; ("C-c a c" . org-caldav-sync);; sync with google calendar
     ("C-c t" . org-capture)
     ("C-w" . kill-this-buffer)
     ("<M-tab>" . other-window)
-    ("C-s" . save-buffer )
-    ("C-S-s" . write-file )
-    ;; ("C-x d" . deer)
+    ;; ("C-s" . save-buffer )
+    ;; ("C-S-s" . write-file )
+    ("C-f" . isearch-forward)
     ("M-S-<down>" . buf-move-down)
     ("M-S-<left>" . buf-move-left)
     ("M-S-<right>" . buf-move-right)
     ("C-r" . emacs-reload-current-file)
-    ("C-f" . isearch-forward)
     ;; ("<escape>" . keyboard-escape-quit)
     ("C-;" . finish-line)
     ;; ("C-d" . duplicate-thing)
@@ -165,10 +167,15 @@
                       (xah-fly--define-keys 
                        xah-fly-key-map
                        '(
+                         ("b" . ab-swiper)
+                         ("т" . ab-swiper)
+                         
                          ("i" . keyboard-quit)
                          ("п" . keyboard-quit)
+                         
                          ("u" . ibuffer)     
                          ("а" . ibuffer)
+                         
                          ("l" . projectile-command-map)
                          ("з" . projectile-command-map)     
                          ))
@@ -233,7 +240,6 @@
 (define-key xah-fly-c-keymap (kbd "j") 'ab-goto-recent-file)
 (define-key xah-fly-c-keymap (kbd "d") 'ab-goto-recent-directory)
 
-
 (define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
 (define-key xah-fly-e-keymap (kbd "d") 'ab-change-bracket-pair)
 
@@ -248,10 +254,15 @@
 (define-key xah-fly-comma-keymap (kbd "o") 'dumb-jump-go-other-windocomma)
 (define-key xah-fly-comma-keymap (kbd "p") 'dumb-jump-go-prompt) 
 
+;; leader w
 (define-key xah-fly-comma-keymap (kbd "j") 'find-tag)
-(define-key xah-fly-comma-keymap (kbd "a") 'ag)
-(define-key xah-fly-comma-keymap (kbd "r") 'rgrep)
-(define-key xah-fly-comma-keymap (kbd "g") 'find-grep)
+(define-key xah-fly-comma-keymap (kbd "a") 'counsel-ag)
+(define-key xah-fly-comma-keymap (kbd "r") 'counsel-git-grep)
+(define-key xah-fly-comma-keymap (kbd "g") 'counsel-git)
+(define-key xah-fly-comma-keymap (kbd "f") 'find-grep)
+
+(define-key xah-fly-comma-keymap (kbd "w") 'ivy-resume)
+
 
 (define-key xah-fly-comma-keymap (kbd "h") 'highlight-symbol-at-point)
 (define-key xah-fly-comma-keymap (kbd "x") 'highlight-regexp)
@@ -260,6 +271,8 @@
 
 (define-key xah-fly-leader-key-map (kbd "f") 'find-file)  
 (define-key xah-fly-leader-key-map (kbd "j") 'ab-goto-recent-file)
+
+(define-key xah-fly-leader-key-map (kbd "y") 'ivy-resume)
 
 (define-key xah-fly-leader-key-map (kbd "z") 'anzu-replace-at-cursor-thing)
 (define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
@@ -279,6 +292,8 @@
 (define-key org-mode-map (kbd "C-c t") 'org-todo)
 (define-key org-mode-map (kbd "C-c e") 'org-export-dispatch)
 (define-key org-mode-map (kbd "C-c d") 'org-deadline)
+
+
 
 ;; M-k.(kill-sentence &optional ARG)
 ;;https://www.alexkorablev.ru/2017/06/10/emacs-got-keys/

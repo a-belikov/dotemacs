@@ -6,7 +6,11 @@
 ;; Declare a list of required packages
 (defvar emacs-required-packages
   '(
+    use-package
+    try
     ivy
+
+    
     imenu-list
     anzu
     company
@@ -44,11 +48,72 @@
     htmlize
    )
 )
-;; (require 'ripgrep)
+
 ;;Install required packages
 (mapc (lambda (p)
         (package-install p))
       emacs-required-packages)
+
+
+
+
+;; * Try
+(use-package try
+  :init
+  :config
+  )
+;; * Dired
+
+;; Need to load manualy
+;; https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
+(load-file "~/.emacs.d/dired+.el")
+(require 'dired+)
+
+
+;; * Swiper, counsel and Ivy
+
+(use-package counsel
+:ensure t
+)
+
+(use-package swiper
+:ensure try
+:config
+(progn
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+;; swiper for symbol at point
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+))
+
+(defun ab-swiper ()
+  (interactive)
+  (setq sym (symbol-at-point))
+  (if (not sym) (swiper) (swiper (symbol-name sym)) )
+)
+
+
+
+;; * Ibuffer
+
+;; (ibuffer-auto-mode 1)
+
+;; Don't ask for confirmation to delete marked buffers
+(setq ibuffer-expert t)
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;Configure and enable sublimity-mode
 ;;(require 'sublimity-scroll)
