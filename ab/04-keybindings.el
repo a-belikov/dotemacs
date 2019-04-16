@@ -280,18 +280,14 @@
 
 
 
-
-;; (add-hook 'org-mode-hook 
-          ;; (lambda ()
-            ;; (local-set-key "\C-y" 'yank)))
-
+;; * Org mode
 (define-key key-translation-map (kbd "<menu>") (kbd "C-c"))
 
-;; (define-key key-translation-map (kbd "M-c") (kbd "C-c"))
-
-(define-key org-mode-map (kbd "C-c t") 'org-todo)
+(define-key org-mode-map (kbd "C-c q") 'org-set-tags)
 (define-key org-mode-map (kbd "C-c e") 'org-export-dispatch)
 (define-key org-mode-map (kbd "C-c d") 'org-deadline)
+(define-key org-mode-map (kbd "C-c t") 'org-todo)
+
 
 
 

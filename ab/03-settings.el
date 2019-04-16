@@ -430,7 +430,7 @@ If the file is emacs lisp, run the byte compiled version if exist."
                         '(("^ *\\([-]\\) "
                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-(setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
+;; (setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
 

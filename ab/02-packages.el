@@ -31,7 +31,6 @@
     nginx-mode
     apache-mode
     magit
-    duplicate-thing
     ag
     ripgrep
     dumb-jump
