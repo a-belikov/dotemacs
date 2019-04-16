@@ -1,7 +1,7 @@
-
+;; Org mode setting 
 
 * Repositories
-#+BEGIN_SRC elisp
+#+BEGIN_SRC emacs-lisp
 
 (setq package--init-file-ensured t)
 
@@ -27,10 +27,10 @@
 
 * System
 
-  #+BEGIN_SRC elisp
-;; 
-;; ab-SYSTEM
-;;
+#+BEGIN_SRC emacs-lisp
+
+(setq epg-gpg-program "gpg") 
+
 
 (customize-set-variable 'tramp-use-ssh-controlmaster-options t)
 (setq tramp-inline-compress-start-size 50000)
@@ -59,14 +59,7 @@
 (unless (server-running-p) (server-start))
 
 
-(setq ange-ftp-ftp-program-name "pftp")
-(setq ange-ftp-try-passive-mode nil) 
-(setq dired-listing-switches "-aBhlF --group-directories-first")
 
-(setq user-full-name "Alexey Belikov"
-      user-mail-address "a@belikov.tech")
-
-(setq epg-gpg-program "gpg") 
 ;; (setq epa-pinentry-mode 'loopback)
 
 
@@ -90,9 +83,9 @@
 (delete-selection-mode 1)
   #+END_SRC
 
-
+  
 * Packages 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC emacs-lisp
 
 
 ;; Declare a list of required packages
@@ -107,12 +100,10 @@
     anzu
     company
     company-php
-    dired-launch
     which-key
     overcast-theme
     color-theme-sanityinc-tomorrow
-    doom-themes
-    doom-modeline
+    
     web-mode
     php-mode
     angular-mode
@@ -153,13 +144,6 @@
   :init
   :config
   )
-;; * Dired
-
-;; Need to load manualy
-;; https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
-(load-file "~/.emacs.d/dired+.el")
-(require 'dired+)
-
 
 ;; * Swiper, counsel and Ivy
 
@@ -215,8 +199,6 @@
 
 (setq imenu-list-focus-after-activation t)
 
-;;Set hooks for dired-launch-mode
-(add-hook 'dired-mode-hook 'dired-launch-mode)
 (add-hook 'after-init-hook 'global-company-mode)
 
 ;;Start which-key-mode
@@ -282,10 +264,6 @@
 (setq recentf-max-menu-items 250)
 (setq recentf-max-saved-items 250)
 
-(doom-modeline-init)
-(add-hook 'after-init-hook (lambda () (load-theme 'doom-one t)))
-
-
 
 
 
@@ -299,9 +277,52 @@
 #+END_SRC
 
 
+* Dired
+#+BEGIN_SRC emacs-lisp
+
+(use-package dired
+:ensure nil
+:config
+(progn
+(setq dired-dwim-target t)
+(define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file) ; was dired-advertised-find-file
+(define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file "..")))  ; was dired-up-directory
+;; to trump
+(setq ange-ftp-ftp-program-name "pftp")
+(setq ange-ftp-try-passive-mode nil) 
+(setq dired-listing-switches "-aBhlF --group-directories-first")
+
+;; Show file details by default
+(defun ab-dired-mode-setup () (dired-hide-details-mode 0))
+(add-hook 'dired-mode-hook 'ab-dired-mode-setup)
+
+))
+
+;; Dired-x. Extra features
+(use-package dired-x
+:ensure nil
+:config
+(add-hook 'dired-load-hook (function (lambda () (load "dired-x")))))
+
+;; Dired-launch. launch files in external app
+(use-package dired-launch
+:ensure nil
+:config
+;;Set hooks for dired-launch-mode
+(add-hook 'dired-mode-hook 'dired-launch-mode)
+)
+
+;; Dired+
+;; need to load manualy
+;; https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
+(load-file "~/.emacs.d/dired+.el")
+(require 'dired+)
+
+
+#+END_SRC
 
 * Package settigs
-#+BEGIN_SRC elisp
+#+BEGIN_SRC emacs-lisp
 ;; 
 ;; ab-PACKAGES SETS
 ;;
@@ -549,24 +570,6 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 (setq auto-save-default nil)
 
-(require 'dired )
-(require 'dired-x)
-
-(defun ab-dired-mode-setup ()
-  (dired-hide-details-mode 1))
-(add-hook 'dired-mode-hook 'ab-dired-mode-setup)
-
-(add-hook 'dired-load-hook
-          (function (lambda () (load "dired-x"))))
-
-(setq dired-dwim-target t)
-
-
-(define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file) ; was dired-advertised-find-file
-
-(define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file "..")))  ; was dired-up-directory
-
-
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
@@ -785,9 +788,10 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 #+END_SRC
 
+
 * Keybindings
 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC emacs-lisp
 ;; 
 ;; ab-KEYS
 ;;
@@ -1113,8 +1117,29 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 
 
+* Themes
+#+BEGIN_SRC emacs-lisp
+
+(use-package doom-themes
+:ensure t
+:config
+(load-theme 'doom-one t)
+)
+
+(use-package doom-modeline
+:ensure t
+:config
+(progn
+(doom-modeline-init)
+))
+
+#+END_SRC
+
+
+
+
 * Welcome messge 
-#+BEGIN_SRC elisp
+#+BEGIN_SRC emacs-lisp
   
 (princ (shell-command-to-string
         (cl-concatenate 'string
