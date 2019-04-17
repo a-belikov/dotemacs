@@ -321,6 +321,29 @@
 
 #+END_SRC
 
+
+
+* Trump 
+#+BEGIN_SRC emacs-lisp
+(setq explicit-shell-file-name "/bin/bash")
+(add-hook 'shell-mode-hook  'with-editor-export-editor)
+(add-hook 'term-exec-hook   'with-editor-export-editor)
+(add-hook 'eshell-mode-hook 'with-editor-export-editor)
+
+
+#+END_SRC
+
+* Grep 
+#+BEGIN_SRC emacs-lisp
+  ;; find-grep template command
+   (customize-set-variable 'grep-find-command
+     (quote
+      ("find . -type f -exec grep --color -nH --null -ie \"\" \\{\\} +" . 51)))
+
+
+#+END_SRC
+
+
 * Package settigs
 #+BEGIN_SRC emacs-lisp
 ;; 
