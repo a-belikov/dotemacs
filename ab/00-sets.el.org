@@ -277,6 +277,25 @@
 #+END_SRC
 
 
+* Themes
+#+BEGIN_SRC emacs-lisp
+
+(use-package doom-themes
+:ensure t
+:config
+(load-theme 'doom-one t)
+)
+
+(use-package doom-modeline
+:ensure t
+:config
+(progn
+(doom-modeline-init)
+))
+
+#+END_SRC
+
+
 * Dired
 #+BEGIN_SRC emacs-lisp
 
@@ -317,7 +336,9 @@
 ;; https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
 (load-file "~/.emacs.d/dired+.el")
 (require 'dired+)
-
+;; Style of omit files in dired
+(custom-set-faces
+'(diredp-omit-file-name ((t (:inherit diredp-ignored-file-name :foreground "gray29")))))
 
 #+END_SRC
 
@@ -335,10 +356,10 @@
 
 * Grep 
 #+BEGIN_SRC emacs-lisp
-  ;; find-grep template command
-   (customize-set-variable 'grep-find-command
-     (quote
-      ("find . -type f -exec grep --color -nH --null -ie \"\" \\{\\} +" . 51)))
+;; find-grep template command
+(customize-set-variable 'grep-find-command
+(quote
+("find . -type f -exec grep --color -nH --null -ie \"\" \\{\\} +" . 51)))
 
 
 #+END_SRC
@@ -1138,25 +1159,6 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 #+END_SRC
 
-
-
-* Themes
-#+BEGIN_SRC emacs-lisp
-
-(use-package doom-themes
-:ensure t
-:config
-(load-theme 'doom-one t)
-)
-
-(use-package doom-modeline
-:ensure t
-:config
-(progn
-(doom-modeline-init)
-))
-
-#+END_SRC
 
 
 
