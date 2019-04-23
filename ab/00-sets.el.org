@@ -14,6 +14,8 @@
              t)
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
 
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+
 ;;Initialize package.el
 (package-initialize)
 
@@ -127,7 +129,6 @@
     org-caldav
     org-gcal
     oauth2
-    htmlize
    )
 )
 
@@ -165,9 +166,9 @@
 (defun ab-swiper ()
   (interactive)
   (setq sym (symbol-at-point))
-  (if (not sym) (swiper) (swiper (symbol-name sym)) )
+  (if (not sym) (counsel-grep-or-swiper) (counsel-grep-or-swiper (symbol-name sym)) )
 )
-
+(setq counsel-grep-swiper-limit 300000)
 
 
 ;; * Ibuffer
@@ -299,60 +300,62 @@
 * Dired
 #+BEGIN_SRC emacs-lisp
 
-(use-package dired
-:ensure nil
-:config
-(progn
-(setq dired-dwim-target t)
-(define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file) ; was dired-advertised-find-file
-(define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file "..")))  ; was dired-up-directory
-;; to trump
-(setq ange-ftp-ftp-program-name "pftp")
-(setq ange-ftp-try-passive-mode nil) 
-(setq dired-listing-switches "-aBhlF --group-directories-first")
+  (use-package dired
+  :ensure nil
+  :config
+  (progn
+  (setq dired-dwim-target t)
+  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file) ; was dired-advertised-find-file
+  (define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file "..")))  ; was dired-up-directory
+  ;; to trump
+  (setq ange-ftp-ftp-program-name "pftp")
+  (setq ange-ftp-try-passive-mode nil) 
+  (setq dired-listing-switches "-aBhlF --group-directories-first")
 
-;; Show file details by default
-(defun ab-dired-mode-setup () (dired-hide-details-mode 0))
-(add-hook 'dired-mode-hook 'ab-dired-mode-setup)
+  ;; Show file details by default
+  (defun ab-dired-mode-setup () (dired-hide-details-mode 0))
+  (add-hook 'dired-mode-hook 'ab-dired-mode-setup)
 
-))
+  ))
 
-;; Dired-x. Extra features
-(use-package dired-x
-:ensure nil
-:config
-(add-hook 'dired-load-hook (function (lambda () (load "dired-x")))))
+  ;; Dired-x. Extra features
+  (use-package dired-x
+  :ensure nil
+  :config
+  (add-hook 'dired-load-hook (function (lambda () (load "dired-x")))))
 
-;; Dired-launch. launch files in external app
-(use-package dired-launch
-:ensure nil
-:config
-;;Set hooks for dired-launch-mode
-(add-hook 'dired-mode-hook 'dired-launch-mode)
-)
+  ;; Dired-launch. launch files in external app
+  ;; (use-package dired-launch
+  ;; :ensure nil
+  ;; :
+  ;; config
+  ;; ; ;Set hooks for dired-launch-mode
+  ;; (add-hook 'dired-mode-hook 'dired-launch-mode) )
 
-;; Dired+
-;; need to load manualy
-;; https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
-(load-file "~/.emacs.d/dired+.el")
-(require 'dired+)
-;; Style of omit files in dired
-(custom-set-faces
-'(diredp-omit-file-name ((t (:inherit diredp-ignored-file-name :foreground "gray29")))))
+  ;; Dired+
+  ;; need to load manualy
+  ;; https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
+  (load-file "~/.emacs.d/dired+.el")
+  (require 'dired+)
+  ;; Style of omit files in dired
+  (custom-set-faces
+  '(diredp-omit-file-name ((t (:inherit diredp-ignored-file-name :foreground "gray29")))))
 
 #+END_SRC
 
 
 
-* Trump 
+* Tramp 
 #+BEGIN_SRC emacs-lisp
 (setq explicit-shell-file-name "/bin/bash")
 (add-hook 'shell-mode-hook  'with-editor-export-editor)
 (add-hook 'term-exec-hook   'with-editor-export-editor)
 (add-hook 'eshell-mode-hook 'with-editor-export-editor)
 
+(setq tramp-ssh-controlmaster-options "")
 
 #+END_SRC
+
 
 * Grep 
 #+BEGIN_SRC emacs-lisp
@@ -361,6 +364,60 @@
 (quote
 ("find . -type f -exec grep --color -nH --null -ie \"\" \\{\\} +" . 51)))
 
+
+#+END_SRC
+
+
+* Org
+
+#+BEGIN_SRC emacs-lisp
+
+(use-package org
+:ensure t)
+
+
+
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+;; (setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
+(setq org-agenda-files '("~/Документы/org"))
+
+(setq org-default-notes-file (concat org-directory "~/Документы/org/toDo.org"))
+
+(setq org-capture-templates
+      '(
+        ("t" "Todo" entry (file "~/Документы/org/toDo.org" ) "* TODO %?\n  %i %a")
+        ("a" "Addresat-Todo" entry (file "~/Документы/org/adresat-ToDo.org") "* TODO %?\n  %i\n  %a") 
+        ))
+
+(org-babel-do-load-languages
+   'org-babel-do-load-languages
+   '(
+     (sh . t)
+     (python . t)
+     (php . t)
+     (js . t)
+     ))
+
+#+END_SRC
+
+
+* Reveal
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-re-reveal
+:ensure org-re-reveal
+:config
+(setq org-re-reveal-root "https://revealjs.com/")
+)
+
+(use-package htmlize
+:ensure t)
+  
 
 #+END_SRC
 
@@ -777,38 +834,6 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 
 
-(font-lock-add-keywords 'org-mode
-                        '(("^ *\\([-]\\) "
-                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
-;; (setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-
-
-(setq org-agenda-files '("~/Документы/org"))
-
-(setq org-default-notes-file (concat org-directory "~/Документы/org/toDo.org"))
-
-
-(setq org-capture-templates
-      '(
-        ("t" "Todo" entry (file "~/Документы/org/toDo.org" ) "* TODO %?\n  %i %a")
-        ("a" "Addresat-Todo" entry (file "~/Документы/org/adresat-ToDo.org") "* TODO %?\n  %i\n  %a") 
-        ))
-
-
-
-(org-babel-do-load-languages
-   'org-babel-do-load-languages
-   '(
-     (sh . t)
-     (python . t)
-     (php . t)
-     (js . t)
-     ))
-
-
-
 ;; ("j" "Journal" entry (file+datetree "~/org/journal.org")"* %?\nEntered on %U\n  %i\n  %a")
 ;; ("a" "Addresat-Todo" entry (file+headline "~/Документы/org/adresat-ToDo.org" "") "* TODO %?\n  %i\n  %a") 
 
@@ -1094,6 +1119,7 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 ;; leader w
 (define-key xah-fly-comma-keymap (kbd "j") 'find-tag)
+(define-key xah-fly-comma-keymap (kbd "s") 'ag)
 (define-key xah-fly-comma-keymap (kbd "a") 'counsel-ag)
 (define-key xah-fly-comma-keymap (kbd "r") 'counsel-git-grep)
 (define-key xah-fly-comma-keymap (kbd "g") 'counsel-git)
@@ -1180,3 +1206,4 @@ If the file is emacs lisp, run the byte compiled version if exist."
        (get-buffer-create (current-buffer)))
 
 #+END_SRC
+
