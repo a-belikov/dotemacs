@@ -442,10 +442,8 @@
 "Stage all commit and pusht."
   (interactive)
   (magit-stage-modified t)
-  
-(magit-run-git-with-editor "commit" "-a" )
+  (magit-run-git-with-editor "commit" "-a" )
   (magit-push-current-to-pushremote nil)
-
 )
 
 #+END_SRC
