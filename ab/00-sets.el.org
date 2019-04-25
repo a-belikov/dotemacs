@@ -434,17 +434,18 @@
 * Magit 
 
 #+BEGIN_SRC emacs-lisp
-(use-package magit
-:ensure t)
-(add-hook 'magit-mode-hook 'xah-fly-insert-mode-activate)
+  (use-package magit
+  :ensure t)
+  (add-hook 'magit-mode-hook 'xah-fly-insert-mode-activate)
 
-(defun ab-stage-commit-push()
-"Stage all commit and pusht."
-  (interactive)
-  (magit-stage-modified t)
-  (magit-run-git "commit" "-am" "Test")
-  (magit-push-current-to-pushremote nil)
-)
+  (defun ab-stage-commit-push(message)
+  "Stage all commit and pusht."
+    (interactive "sCommit Message: ")
+    ;; (magit-stage-modified t)
+
+    (magit-run-git "commit" "-am" message)
+    (magit-push-current-to-pushremote nil)
+  )
 
 #+END_SRC
 
