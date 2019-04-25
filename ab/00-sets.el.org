@@ -119,8 +119,6 @@
     ag
     ripgrep
     dumb-jump
-    yasnippet
-    yasnippet-snippets
     flycheck
     flymake-php
     rainbow-delimiters
@@ -265,13 +263,6 @@
 (setq recentf-max-menu-items 250)
 (setq recentf-max-saved-items 250)
 
-
-
-
-
-(add-hook 'magit-mode-hook 'xah-fly-insert-mode-activate)
-
-
 ;; (edit-server-start)
 
 
@@ -382,7 +373,10 @@
                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
 ;; (setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(add-hook 'org-mode-hook (lambda () 
+(org-bullets-mode 1)
+(yas-minor-mode)
+))
 
 (setq org-agenda-files '("~/Документы/org"))
 
@@ -406,6 +400,21 @@
 #+END_SRC
 
 
+* Yasnippet
+
+#+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+:ensure t
+:config
+(yas-reload-all))
+
+(use-package yasnippet-snippets
+:ensure t)
+
+(add-hook 'prog-mode-hook #'yas-minor-mode)
+#+END_SRC
+
+
 * Reveal
 
 #+BEGIN_SRC emacs-lisp
@@ -419,6 +428,33 @@
 :ensure t)
   
 
+#+END_SRC
+
+
+* Magit 
+
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+:ensure t)
+(add-hook 'magit-mode-hook 'xah-fly-insert-mode-activate)
+
+(defun ab-stage-commit-push()
+"Stage all commit and pusht."
+  (interactive)
+  (magit-stage-modified )
+  (magit-commit-create)
+  (magit-push-current-to-pushremote))
+
+#+END_SRC
+
+
+* PCRE2EL
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package pcre2el
+  ;; :ensure t
+  ;; :config
+  ;; (pcre-mode)
+  ;; )
 #+END_SRC
 
 
@@ -501,9 +537,6 @@
 ;;  (server-start))
 
 
-(require 'yasnippet)
-(yas-reload-all)
-(add-hook 'prog-mode-hook #'yas-minor-mode)
 
 
 
@@ -921,6 +954,7 @@ If the file is emacs lisp, run the byte compiled version if exist."
 ;; (global-set-key (kbd "<menu>") ctl-x-map)
 (define-key projectile-mode-map (kbd "C-p") 'projectile-command-map)
 (define-key projectile-command-map (kbd "m") 'magit-status)
+(define-key projectile-command-map (kbd "P") 'ab-stage-commit-push)
 (define-key projectile-command-map (kbd "n") 'ab-set-project-name-manual)
 
 
