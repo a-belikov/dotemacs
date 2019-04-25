@@ -441,9 +441,12 @@
 (defun ab-stage-commit-push()
 "Stage all commit and pusht."
   (interactive)
-  (magit-stage-modified )
+  (magit-stage-modified t)
   (magit-commit-create)
-  (magit-push-current-to-pushremote))
+  (magit-push-current-to-upstream)
+  (magit-push-current 'origin)
+  (magit-push-current-to-pushremote nil)
+)
 
 #+END_SRC
 
