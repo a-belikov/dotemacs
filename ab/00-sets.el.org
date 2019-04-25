@@ -442,7 +442,7 @@
 "Stage all commit and pusht."
   (interactive)
   (magit-stage-modified t)
-  (magit-run-git-with-editor "commit" "-a" )
+  (magit-run-git "commit" "-am" "Test")
   (magit-push-current-to-pushremote nil)
 )
 
