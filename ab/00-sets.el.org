@@ -106,7 +106,6 @@
     overcast-theme
     color-theme-sanityinc-tomorrow
     
-    web-mode
     php-mode
     angular-mode
     skewer-mode
@@ -447,10 +446,12 @@
     (magit-push-current-to-pushremote nil)
   )
 
+
+
 #+END_SRC
 
 
-* PCRE2EL
+* unset PCRE2EL
 #+BEGIN_SRC emacs-lisp
   ;; (use-package pcre2el
   ;; :ensure t
@@ -459,6 +460,24 @@
   ;; )
 #+END_SRC
 
+
+* Web-mode
+
+#+BEGIN_SRC emacs-lisp
+(use-package web-mode
+:ensure t
+:config
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(setq web-mode-engines-alist
+'(("django"    . "\\.html\\'")))
+(setq web-mode-ac-sources-alist
+'(("css" . (ac-source-css-property))
+("html" . (ac-source-words-in-buffer ac-source-abbrev))))
+
+(setq web-mode-enable-auto-closing t)
+(setq web-mode-enable-auto-quoting t)) ; this fixes the quote problem I mentioned
+
+#+END_SRC
 
 * Package settigs
 #+BEGIN_SRC emacs-lisp
@@ -957,6 +976,7 @@ If the file is emacs lisp, run the byte compiled version if exist."
 (define-key projectile-mode-map (kbd "C-p") 'projectile-command-map)
 (define-key projectile-command-map (kbd "m") 'magit-status)
 (define-key projectile-command-map (kbd "P") 'ab-stage-commit-push)
+(define-key projectile-command-map (kbd "F") (lambda ()(interactive) (magit-pull-from-pushremote nil)))
 (define-key projectile-command-map (kbd "n") 'ab-set-project-name-manual)
 
 
