@@ -95,11 +95,8 @@
   '(
     use-package
     try
-    ivy
-
     
     imenu-list
-    anzu
     company
     company-php
     which-key
@@ -111,7 +108,6 @@
     skewer-mode
     phpcbf
     ac-php
-    projectile
     nginx-mode
     apache-mode
     magit
@@ -136,36 +132,11 @@
 
 
 
-
 ;; * Try
 (use-package try
   :init
   :config
   )
-
-;; * Swiper, counsel and Ivy
-
-(use-package counsel
-:ensure t
-)
-
-(use-package swiper
-:ensure try
-:config
-(progn
-(ivy-mode 1)
-(setq ivy-use-virtual-buffers t)
-;; swiper for symbol at point
-(global-set-key (kbd "C-x l") 'counsel-locate)
-(define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-))
-
-(defun ab-swiper ()
-  (interactive)
-  (setq sym (symbol-at-point))
-  (if (not sym) (counsel-grep-or-swiper) (counsel-grep-or-swiper (symbol-name sym)) )
-)
-(setq counsel-grep-swiper-limit 300000)
 
 
 ;; * Ibuffer
@@ -358,6 +329,8 @@
 #+END_SRC
 
 
+
+
 * Org
 
 #+BEGIN_SRC emacs-lisp
@@ -451,13 +424,446 @@
 #+END_SRC
 
 
-* unset PCRE2EL
+* Package settigs
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package pcre2el
-  ;; :ensure t
-  ;; :config
-  ;; (pcre-mode)
-  ;; )
+  ;; 
+  ;; ab-PACKAGES SETS
+  ;;
+
+
+  (setq custom-safe-themes t)
+
+  (setq neo-vc-integration nil) 
+
+
+  (setq browse-url-browser-function 'browse-url-chromium)
+  (setq european-calendar-style 't)
+
+  (setq calendar-week-start-day 1
+            calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
+            calendar-month-name-array ["Январь" "Февраль" "Март" "Апрель" "Май" 
+                                       "Июнь" "Июль" "Август" "Сентябрь"
+                                       "Октябрь" "Ноябрь" "Декабрь"])
+
+
+
+
+  (defun finish-line ()
+    (interactive)
+    (end-of-line)
+    (when (not (looking-back ";"))
+      (insert ";")))
+
+ 
+
+  (defun emacs-reload-current-file ()
+    "Reload current buffer file from the disk"
+    (interactive)
+    (cond (buffer-file-name (progn (find-alternate-file buffer-file-name)
+                                   (message "File reloaded")))
+          (t (message "You're not editing a file!"))))
+
+  ;;Disable splash message, start *scratch* buffer by default
+  (setq initial-buffer-choice 
+        t)
+  (setq initial-scratch-message 
+        "")
+
+
+  ;;Enforce spaces for indentation, instead of tabs
+  (setq-default indent-tabs-mode 
+                nil)
+
+  ;;Enable show-paren-mode
+  (show-paren-mode 1)
+
+  ;;Enable winner-mode
+  (winner-mode t)
+
+  ;;Enable windmove
+  (windmove-default-keybindings 'meta)
+
+  ;;Show line number on keft side
+
+  ;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+
+  (save-place-mode 1)
+
+
+
+
+  ;;(require 'server)
+  ;;(unless (server-running-p)
+  ;;  (server-start))
+
+
+
+
+
+  (defun flush-empty-lines()
+    "Remove emty string from buffer"
+      (interactive)
+      (flush-lines "^[[:space:]]*$"))
+
+  (defun eshell-clear ()
+    "Clear the eshell buffer."
+    (let ((inhibit-read-only t))
+      (erase-buffer)
+      (eshell-send-input)))
+
+
+  (defun run-current-file ()
+    "Execute or compile the current file.
+  For example, if the current buffer is the file x.pl,
+  then it'll call “perl x.pl” in a shell.
+  The file can be php, perl, python, ruby, javascript, bash, ocaml, vb, elisp.
+  File suffix is used to determine what program to run.
+  If the file is modified, ask if you want to save first. (This command always run the saved version.)
+  If the file is emacs lisp, run the byte compiled version if exist."
+    (interactive)
+    (let (suffixMap fName fSuffix progName cmdStr)
+
+      ;; a keyed list of file suffix to comand-line program path/name
+      (setq suffixMap 
+            '(("php" . "php")
+              ;; ("coffee" . "coffee -p")
+              ("pl" . "perl")
+              ("py" . "python")
+              ("rb" . "ruby")
+              ("js" . "node")             ; node.js
+              ("sh" . "bash")
+              ("ml" . "ocaml")
+              ("vbs" . "cscript")))
+      (setq fName (buffer-file-name))
+      (setq fSuffix (file-name-extension fName))
+      (setq progName (cdr (assoc fSuffix suffixMap)))
+      (setq cmdStr (concat progName " \""   fName "\""))
+
+      (when (buffer-modified-p)
+        (progn 
+          (when (y-or-n-p "Buffer modified. Do you want to save first?")
+            (save-buffer) ) ) )
+
+      (if (string-equal fSuffix "el") ; special case for emacs lisp
+          (progn 
+            (load (file-name-sans-extension fName)))
+        (if progName
+            (progn
+              (message "Running…")
+              ;; (message progName)
+              (shell-command cmdStr "*run-current-file output*" ))
+          (message "No recognized program file suffix for this file.")))
+      ))
+
+
+
+
+  (defun file-metadata ()
+    (interactive)
+    (let* ((fname (buffer-file-name))
+           (data (file-attributes fname))
+           (access (current-time-string (nth 4 data)))
+           (mod (current-time-string (nth 5 data)))
+           (change (current-time-string (nth 6 data)))
+           (size (nth 7 data))
+           (mode (nth 8 data)))
+      (message
+       "%s:
+    Accessed: %s
+    Modified: %s
+    Changed: %s
+    Size: %s bytes
+    Mode: %s"
+       fname access mod change size mode)))
+
+
+
+  (defun ab-goto-recent-directory ()
+    "Open recent directory with dired"
+    (interactive)
+    (unless recentf-mode (recentf-mode 1))
+    (let ((collection
+           (delete-dups
+            (append (mapcar 'file-name-directory recentf-list)
+                    ;; fasd history
+                    (if (executable-find "fasd")
+                        (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
+      (ivy-read "Recent directories:" collection :action 'dired)))
+
+
+  (defun ab-goto-recent-file ()
+    "Open recent directory with dired"
+    (interactive)
+    (unless recentf-mode (recentf-mode 1))
+    (ivy-read "Recent files:" recentf-list :action 'find-file))
+
+
+
+
+
+  ;; Change (..) to [..], '..' to ".." and back
+  (defun ab-change-bracket-pair ()
+      (interactive )
+      (xah-goto-matching-bracket)
+
+      ;; (backward-char)
+      (cua-set-mark)
+      ;; (forward-char)
+      (xah-goto-matching-bracket)
+
+      ;; cycle pair
+      (case (char-before)
+        ((?') (xah-insert-bracket-pair "\"" "\""))
+        ((?\") (xah-insert-bracket-pair "'" "'"))
+        ((?\)) (xah-insert-bracket-pair "[" "]"))
+        ((?\]) (xah-insert-bracket-pair "(" ")"))
+        )
+
+    
+      (backward-char)
+      (xah-delete-backward-bracket-pair)
+      (forward-char)
+
+      )
+
+
+
+  (setq auto-save-default nil)
+
+
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+
+
+  ;; grep search templete
+  (setq grep-find-template "find . <X> -type f <F> -exec grep <C> -nH -e -i \"<R>\" \\{\\} +")
+
+
+
+  (setq ido-use-filename-at-point 'guess)
+  (setq ido-enable-flex-matching t)
+  (setq ido-everywhere t)
+  (ido-mode 1)
+
+  (setq ivy-use-virtual-buffers t)
+  (ivy-mode 1)
+
+  (global-subword-mode 1)
+
+  ;; Crypt org files 
+  (require 'org-crypt)
+  (org-crypt-use-before-save-magic)
+  (setq org-tags-exclude-from-inheritance (quote ("crypt")))
+    ;; GPG key to use for encryption
+    ;; Either the Key ID or set to nil to use symmetric encryption.
+  ;; (setq org-crypt-key nil)
+
+  (setq org-crypt-key "3FEE3795")   
+  (setq epa-file-select-keys nil)
+
+
+
+  (setq org-support-shift-select t)
+
+
+
+  (setq org-todo-keywords
+  '((sequence "TODO" "PROCESS" "DELEGATED" "|" "DONE")))
+
+
+
+  (setq xah-fly-use-meta-key nil) ; must come before loading xah-fly-keys
+  (require 'xah-fly-keys)
+
+  (xah-fly-keys-set-layout "qwerty") ; required if you use qwerty
+
+  (xah-fly-keys 1)
+
+
+
+  (electric-pair-mode 1)
+
+  (skewer-setup)
+
+  (setq visible-bell 1)
+   (setq ring-bell-function 
+        (lambda ()
+          (unless (memq this-command
+                        '(isearch-abort abort-recursive-edit exit-minibuffer keyboard-quit))
+            (ding))))
+
+
+
+  (setq background-color (face-attribute 'default :background)) ;; #2d2d2d
+
+  (setq fringe-color "#323232")
+
+
+  (defun highlight-selected-window ()
+    "Highlight selected window with a different background color."
+    (walk-windows (lambda (w)
+                    (unless (eq w (selected-window))
+                      (with-current-buffer (window-buffer w)
+                        (buffer-face-set '(:background "#1f2229"))))))
+    (buffer-face-set 'default))
+  (add-hook 'buffer-list-update-hook 'highlight-selected-window)
+
+
+
+
+  (defadvice delete-frame (after delete-frame-set-background)
+    (set-background-color "#1f2229"))
+  (ad-activate 'delete-frame)
+
+
+
+  (defun ab-xfk-command-color ()
+    ;; (set-background-color background-color)
+    ;; (set-face-background 'fringe fringe-color)
+    (global-hl-line-mode 0)
+
+    ;; (set-face-background 'mode-line fringe-color) 
+    ;; (set-face-background 'mode-line-inactive fringe-color)
+    ;; (shell-command "
+  ;; setxkbmap -layout 'us' &
+  ;; setxkbmap -layout 'us,ru' &
+  ;; setxkbmap -option 'ctrl:nocaps,grp:alt_shift_toggle,grp_led:caps' &
+    ;; 
+  ;; xmodmap -e 'keycode 66 = Menu' &
+  ;; ")
+  )    
+  (defun ab-xfk-insert-color ()
+    ;; (set-background-color "#282828")
+    ;; (set-face-background 'fringe "dim gray")
+    (global-hl-line-mode 1)
+    ;; (set-face-background 'mode-line "#767676") 
+    ;; (set-face-background 'mode-line-inactive "#767676")   
+
+    )  
+
+
+  (global-hl-line-mode 0)
+  ;; (set-face-background hl-line-face "DarkOliveGreen")
+
+  (setq dumb-jump-max-find-time 10)
+
+
+  (add-hook 'xah-fly-command-mode-activate-hook 'ab-xfk-command-color)
+  (add-hook 'xah-fly-insert-mode-activate-hook  'ab-xfk-insert-color)
+
+  (blink-cursor-mode 0)
+
+  (setq skewer-refresh-onsave nil) 
+
+  (defun ab-skewer-start-browser-refresh () (interactive) (setq skewer-refresh-onsave t) (run-skewer) )
+  (defun ab-skewer-stop-browser-refresh () (interactive) (setq skewer-refresh-onsave nil) )
+  ;; In skawer mode refresh linked browser page by save file
+  (defun my-after-save-actions () "Used refresh" (when skewer-refresh-onsave (skewer-eval "location.reload()" ) ))
+
+  (defun skawer-mode-hook-onsave () (add-hook 'after-save-hook 'my-after-save-actions) )
+
+  (add-hook 'skewer-mode-hook 'skawer-mode-hook-onsave)
+ 
+ 
+
+  (defun alarm() (call-process "paplay" "~/.emacs.d/alarm3.wav"))
+
+
+  (defun ab-run-lastcommand-in-next-eshell-window () 
+   (xah-next-window-or-frame)
+   (end-of-buffer)
+   (eshell-previous-matching-input-from-input 1)
+   ;; (newline)
+   (eshell-send-input)
+   (xah-next-window-or-frame)
+  )
+ 
+  (defun ab-eshell-start-lastcommand-by-save () 
+    (interactive)
+    (add-hook 'after-save-hook 'ab-run-lastcommand-in-next-eshell-window)
+  )
+     
+  (defun ab-eshell-stop-lastcommand-by-save () 
+    (interactive)
+    (remove-hook 'after-save-hook 'ab-run-lastcommand-in-next-eshell-window)
+  )
+
+
+
+
+  ;; ("j" "Journal" entry (file+datetree "~/org/journal.org")"* %?\nEntered on %U\n  %i\n  %a")
+  ;; ("a" "Addresat-Todo" entry (file+headline "~/Документы/org/adresat-ToDo.org" "") "* TODO %?\n  %i\n  %a") 
+
+
+
+
+  ;; Export to ics for google
+
+
+
+
+  ;;; define categories that should be excluded
+
+
+
+
+
+
+
+
+
+#+END_SRC
+
+
+
+* Swiper, counsel, anzu and Ivy
+#+BEGIN_SRC emacs-lisp
+
+(use-package counsel
+:ensure t
+)
+
+(use-package swiper
+:ensure try
+:config
+(progn
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(setq ivy-initial-inputs-alist nil)
+;; swiper for symbol at point
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+))
+
+(defun ab-swiper ()
+  (interactive)
+  (setq sym (symbol-at-point))
+  (if (not sym) (counsel-grep-or-swiper) (counsel-grep-or-swiper (symbol-name sym)) )
+)
+(setq counsel-grep-swiper-limit 300000)
+
+
+
+(use-package anzu
+:ensure t
+:config
+(global-anzu-mode +1)
+)
+(global-set-key [remap query-replace] 'anzu-query-replace)
+(global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+
+(define-key xah-fly-leader-key-map (kbd "z") 'anzu-replace-at-cursor-thing)
+
+
+#+END_SRC
+
+
+* PCRE2EL
+#+BEGIN_SRC emacs-lisp
+  (use-package pcre2el
+  :ensure t
+  :config
+  (pcre-mode)
+  )
 #+END_SRC
 
 
@@ -479,437 +885,73 @@
 
 #+END_SRC
 
-* Package settigs
+
+* Projectile 
+  
 #+BEGIN_SRC emacs-lisp
-;; 
-;; ab-PACKAGES SETS
-;;
 
 
-(setq custom-safe-themes t)
-
-(setq neo-vc-integration nil) 
-
-
-(setq browse-url-browser-function 'browse-url-chromium)
-(setq european-calendar-style 't)
-
-(setq calendar-week-start-day 1
-          calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
-          calendar-month-name-array ["Январь" "Февраль" "Март" "Апрель" "Май" 
-                                     "Июнь" "Июль" "Август" "Сентябрь"
-                                     "Октябрь" "Ноябрь" "Декабрь"])
-
-
-
-
-(defun finish-line ()
-  (interactive)
-  (end-of-line)
-  (when (not (looking-back ";"))
-    (insert ";")))
-
- 
-
-(defun emacs-reload-current-file ()
-  "Reload current buffer file from the disk"
-  (interactive)
-  (cond (buffer-file-name (progn (find-alternate-file buffer-file-name)
-                                 (message "File reloaded")))
-        (t (message "You're not editing a file!"))))
-
-;;Disable splash message, start *scratch* buffer by default
-(setq initial-buffer-choice 
-      t)
-(setq initial-scratch-message 
-      "")
-
-
-;;Enforce spaces for indentation, instead of tabs
-(setq-default indent-tabs-mode 
-              nil)
-
-;;Enable show-paren-mode
-(show-paren-mode 1)
-
-;;Enable winner-mode
-(winner-mode t)
-
-;;Enable windmove
-(windmove-default-keybindings 'meta)
-
-;;Show line number on keft side
-
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-
-(save-place-mode 1)
-
-
-(projectile-mode +1)                    
-;; (setq projectile-project-root-cache-predicate 'file-remote-p)
-(setq projectile-mode-line "x Projectile x")
-(setq projectile-indexing-method 'alien)
-(setq projectile-enable-caching t)
-;; (projectile-global-mode)
-
-
-;;(require 'server)
-;;(unless (server-running-p)
-;;  (server-start))
-
-
-
-
-
-(defun flush-empty-lines()
-  "Remove emty string from buffer"
-    (interactive)
-    (flush-lines "^[[:space:]]*$"))
-
-(defun eshell-clear ()
-  "Clear the eshell buffer."
-  (let ((inhibit-read-only t))
-    (erase-buffer)
-    (eshell-send-input)))
-
-
-(defun run-current-file ()
-  "Execute or compile the current file.
-For example, if the current buffer is the file x.pl,
-then it'll call “perl x.pl” in a shell.
-The file can be php, perl, python, ruby, javascript, bash, ocaml, vb, elisp.
-File suffix is used to determine what program to run.
-If the file is modified, ask if you want to save first. (This command always run the saved version.)
-If the file is emacs lisp, run the byte compiled version if exist."
-  (interactive)
-  (let (suffixMap fName fSuffix progName cmdStr)
-
-    ;; a keyed list of file suffix to comand-line program path/name
-    (setq suffixMap 
-          '(("php" . "php")
-            ;; ("coffee" . "coffee -p")
-            ("pl" . "perl")
-            ("py" . "python")
-            ("rb" . "ruby")
-            ("js" . "node")             ; node.js
-            ("sh" . "bash")
-            ("ml" . "ocaml")
-            ("vbs" . "cscript")))
-    (setq fName (buffer-file-name))
-    (setq fSuffix (file-name-extension fName))
-    (setq progName (cdr (assoc fSuffix suffixMap)))
-    (setq cmdStr (concat progName " \""   fName "\""))
-
-    (when (buffer-modified-p)
-      (progn 
-        (when (y-or-n-p "Buffer modified. Do you want to save first?")
-          (save-buffer) ) ) )
-
-    (if (string-equal fSuffix "el") ; special case for emacs lisp
-        (progn 
-          (load (file-name-sans-extension fName)))
-      (if progName
-          (progn
-            (message "Running…")
-            ;; (message progName)
-            (shell-command cmdStr "*run-current-file output*" ))
-        (message "No recognized program file suffix for this file.")))
-    ))
-
-
-
-(setq project-name (projectile-project-name))
-;; Set my-projectile-project-name to projectile-project-name,
-;; so that later I can also set projectile project name when in *Messages* buffer etc
-(defun my-projectile-switch-project-action ()
-  (when (not (equal (projectile-project-name) "-"))
-    (progn
-     (setq project-name (projectile-project-name))
-     (setq frame-title-format '("Emacs: " "%b" (:eval (format " in [%s]" project-name) ))))))
-
-
-(add-hook 'projectile-after-switch-project-hook 'my-projectile-switch-project-action)
-(add-hook 'find-file-hook 'my-projectile-switch-project-action)
-
-
-(defun ab-set-project-name-manual ()
-  "Set project name manualy and put it to frame title"
-  (interactive)
-  (setq project-name (read-string "Enter project name: "))
-  (setq frame-title-format '("Emacs: " "%b" (:eval (format " in [%s] (m)" project-name) )))
+  ;; projectile
+  (use-package projectile
+  :ensure t
+  :config
+  (projectile-global-mode)
+  ;; (setq projectile-completion-system 'ivy)
+  (setq projectile-mode-line "x Projectile x")
+  (setq projectile-indexing-method 'alien)
+  (setq projectile-enable-caching t)
+  (setq projectile-git-submodule-command nil)
   )
 
-
-
-(defun file-metadata ()
-  (interactive)
-  (let* ((fname (buffer-file-name))
-         (data (file-attributes fname))
-         (access (current-time-string (nth 4 data)))
-         (mod (current-time-string (nth 5 data)))
-         (change (current-time-string (nth 6 data)))
-         (size (nth 7 data))
-         (mode (nth 8 data)))
-    (message
-     "%s:
-  Accessed: %s
-  Modified: %s
-  Changed: %s
-  Size: %s bytes
-  Mode: %s"
-     fname access mod change size mode)))
-
-
-
-(defun ab-goto-recent-directory ()
-  "Open recent directory with dired"
-  (interactive)
-  (unless recentf-mode (recentf-mode 1))
-  (let ((collection
-         (delete-dups
-          (append (mapcar 'file-name-directory recentf-list)
-                  ;; fasd history
-                  (if (executable-find "fasd")
-                      (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
-    (ivy-read "Recent directories:" collection :action 'dired)))
-
-
-(defun ab-goto-recent-file ()
-  "Open recent directory with dired"
-  (interactive)
-  (unless recentf-mode (recentf-mode 1))
-  (ivy-read "Recent files:" recentf-list :action 'find-file))
-
-
-
-;; Format win-windows title by project name
-;; (setq frame-title-format
-    ;; '("Emacs: "
-      ;; "%b"
-      ;; (:eval
-       ;; (let ((project-name (projectile-project-name)))
-           ;; (if (not (string= "-" project-name))
-             ;; (format " in [%s]" project-name)
-             ;; (format " in [%s]" (frame-parameter nil 'my-projectile-project-name)))))))
-
- 
-
-
-
-;; Change (..) to [..], '..' to ".." and back
-(defun ab-change-bracket-pair ()
-    (interactive )
-    (xah-goto-matching-bracket)
-
-    ;; (backward-char)
-    (cua-set-mark)
-    ;; (forward-char)
-    (xah-goto-matching-bracket)
-
-    ;; cycle pair
-    (case (char-before)
-      ((?') (xah-insert-bracket-pair "\"" "\""))
-      ((?\") (xah-insert-bracket-pair "'" "'"))
-      ((?\)) (xah-insert-bracket-pair "[" "]"))
-      ((?\]) (xah-insert-bracket-pair "(" ")"))
-      )
-
-    
-    (backward-char)
-    (xah-delete-backward-bracket-pair)
-    (forward-char)
-
-    )
-
-
-
-(setq auto-save-default nil)
-
-
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-
-
-;; grep search templete
-(setq grep-find-template "find . <X> -type f <F> -exec grep <C> -nH -e -i \"<R>\" \\{\\} +")
-
-
-
-(setq ido-use-filename-at-point 'guess)
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-(ido-mode 1)
-
-(setq ivy-use-virtual-buffers t)
-(ivy-mode 1)
-
-(global-subword-mode 1)
-
-;; Crypt org files 
-(require 'org-crypt)
-(org-crypt-use-before-save-magic)
-(setq org-tags-exclude-from-inheritance (quote ("crypt")))
-  ;; GPG key to use for encryption
-  ;; Either the Key ID or set to nil to use symmetric encryption.
-;; (setq org-crypt-key nil)
-
-(setq org-crypt-key "3FEE3795")   
-(setq epa-file-select-keys nil)
-
-
-
-(setq org-support-shift-select t)
-
-
-
-(setq org-todo-keywords
-'((sequence "TODO" "PROCESS" "DELEGATED" "|" "DONE")))
-
-
-
-(setq xah-fly-use-meta-key nil) ; must come before loading xah-fly-keys
-(require 'xah-fly-keys)
-
-(xah-fly-keys-set-layout "qwerty") ; required if you use qwerty
-
-(xah-fly-keys 1)
-
-
-
-(electric-pair-mode 1)
-
-(skewer-setup)
-
-(setq visible-bell 1)
- (setq ring-bell-function 
-      (lambda ()
-	(unless (memq this-command
-		      '(isearch-abort abort-recursive-edit exit-minibuffer keyboard-quit))
-	  (ding))))
-
-
-(global-set-key [remap query-replace] 'anzu-query-replace)
-(global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
-
-
-(setq background-color (face-attribute 'default :background)) ;; #2d2d2d
-
-(setq fringe-color "#323232")
-
-
-(defun highlight-selected-window ()
-  "Highlight selected window with a different background color."
-  (walk-windows (lambda (w)
-                  (unless (eq w (selected-window))
-                    (with-current-buffer (window-buffer w)
-                      (buffer-face-set '(:background "#1f2229"))))))
-  (buffer-face-set 'default))
-(add-hook 'buffer-list-update-hook 'highlight-selected-window)
-
-
-
-
-(defadvice delete-frame (after delete-frame-set-background)
-  (set-background-color "#1f2229"))
-(ad-activate 'delete-frame)
-
-
-
-(defun ab-xfk-command-color ()
-  ;; (set-background-color background-color)
-  ;; (set-face-background 'fringe fringe-color)
-  (global-hl-line-mode 0)
-
-  ;; (set-face-background 'mode-line fringe-color) 
-  ;; (set-face-background 'mode-line-inactive fringe-color)
-  ;; (shell-command "
-;; setxkbmap -layout 'us' &
-;; setxkbmap -layout 'us,ru' &
-;; setxkbmap -option 'ctrl:nocaps,grp:alt_shift_toggle,grp_led:caps' &
-  ;; 
-;; xmodmap -e 'keycode 66 = Menu' &
-;; ")
-)    
-(defun ab-xfk-insert-color ()
-  ;; (set-background-color "#282828")
-  ;; (set-face-background 'fringe "dim gray")
-  (global-hl-line-mode 1)
-  ;; (set-face-background 'mode-line "#767676") 
-  ;; (set-face-background 'mode-line-inactive "#767676")   
-
-  )  
-
-
-(global-hl-line-mode 0)
-;; (set-face-background hl-line-face "DarkOliveGreen")
-
-(setq dumb-jump-max-find-time 10)
-
-
-(add-hook 'xah-fly-command-mode-activate-hook 'ab-xfk-command-color)
-(add-hook 'xah-fly-insert-mode-activate-hook  'ab-xfk-insert-color)
-
-(blink-cursor-mode 0)
-
-(setq skewer-refresh-onsave nil) 
-
-(defun ab-skewer-start-browser-refresh () (interactive) (setq skewer-refresh-onsave t) (run-skewer) )
-(defun ab-skewer-stop-browser-refresh () (interactive) (setq skewer-refresh-onsave nil) )
-;; In skawer mode refresh linked browser page by save file
-(defun my-after-save-actions () "Used refresh" (when skewer-refresh-onsave (skewer-eval "location.reload()" ) ))
-
-(defun skawer-mode-hook-onsave () (add-hook 'after-save-hook 'my-after-save-actions) )
-
-(add-hook 'skewer-mode-hook 'skawer-mode-hook-onsave)
- 
- 
-
-(defun alarm() (call-process "paplay" "~/.emacs.d/alarm3.wav"))
-
-
-(defun ab-run-lastcommand-in-next-eshell-window () 
- (xah-next-window-or-frame)
- (end-of-buffer)
- (eshell-previous-matching-input-from-input 1)
- ;; (newline)
- (eshell-send-input)
- (xah-next-window-or-frame)
-)
- 
-(defun ab-eshell-start-lastcommand-by-save () 
-  (interactive)
-  (add-hook 'after-save-hook 'ab-run-lastcommand-in-next-eshell-window)
-)
-     
-(defun ab-eshell-stop-lastcommand-by-save () 
-  (interactive)
-  (remove-hook 'after-save-hook 'ab-run-lastcommand-in-next-eshell-window)
-)
-
-
-
-
-;; ("j" "Journal" entry (file+datetree "~/org/journal.org")"* %?\nEntered on %U\n  %i\n  %a")
-;; ("a" "Addresat-Todo" entry (file+headline "~/Документы/org/adresat-ToDo.org" "") "* TODO %?\n  %i\n  %a") 
-
-
-
-
-;; Export to ics for google
-
-
-
-
-;;; define categories that should be excluded
-
-
-
-
-
-
-
-
+  (use-package counsel-projectile
+  :ensure t)
 
 #+END_SRC
+ - Set projec name in var for perfomance. 
+#+BEGIN_SRC emacs-lisp
+  (setq project-name (projectile-project-name))
+  ;; Set my-projectile-project-name to projectile-project-name,
+  ;; so that later I can also set projectile project name when in *Messages* buffer etc
+  (defun my-projectile-switch-project-action ()
+    (when (not (equal (projectile-project-name) "-"))
+      (progn
+       (setq project-name (projectile-project-name))
+       (setq frame-title-format '("Emacs: " "%b" (:eval (format " in [%s]" project-name) ))))))
+
+
+  (add-hook 'projectile-after-switch-project-hook 'my-projectile-switch-project-action)
+  (add-hook 'find-file-hook 'my-projectile-switch-project-action)
+
+
+  (defun ab-set-project-name-manual ()
+    "Set project name manualy and put it to frame title"
+    (interactive)
+    (setq project-name (read-string "Enter project name: "))
+    (setq frame-title-format '("Emacs: " "%b" (:eval (format " in [%s] (m)" project-name) )))
+    )
+
+#+END_SRC
+
+ - Keys
+#+BEGIN_SRC emacs-lisp
+(define-key projectile-mode-map (kbd "C-p") 'projectile-command-map)
+(define-key projectile-command-map (kbd "m") 'magit-status)
+(define-key projectile-command-map (kbd "P") 'ab-stage-commit-push)
+(define-key projectile-command-map (kbd "F") (lambda ()(interactive) (magit-pull-from-pushremote nil)))
+(define-key projectile-command-map (kbd "n") 'ab-set-project-name-manual)
+#+END_SRC
+
+
+* Smex
+  Smart M-x command
+  #+BEGIN_SRC emacs-lisp
+  (use-package smex
+  :ensure t
+  :config
+  (smex-initialize)
+  )
+  #+END_SRC
+
 
 
 * Keybindings
@@ -923,7 +965,7 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 
 
-    ;; ("M-x" . helm-M-x)
+    ;; 
 
 (defvar major-keyboard-bindings
   '(
@@ -973,11 +1015,6 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 ;; set Menu/App key to do emacs's C-x http://ergoemacs.org/emacs/emacs_dvorak_C-x.html
 ;; (global-set-key (kbd "<menu>") ctl-x-map)
-(define-key projectile-mode-map (kbd "C-p") 'projectile-command-map)
-(define-key projectile-command-map (kbd "m") 'magit-status)
-(define-key projectile-command-map (kbd "P") 'ab-stage-commit-push)
-(define-key projectile-command-map (kbd "F") (lambda ()(interactive) (magit-pull-from-pushremote nil)))
-(define-key projectile-command-map (kbd "n") 'ab-set-project-name-manual)
 
 
 (global-set-key (kbd "C-1") (lambda ()(interactive) (bookmark-jump "1")))
@@ -1180,6 +1217,7 @@ If the file is emacs lisp, run the byte compiled version if exist."
 (define-key xah-fly-comma-keymap (kbd "r") 'counsel-git-grep)
 (define-key xah-fly-comma-keymap (kbd "g") 'counsel-git)
 (define-key xah-fly-comma-keymap (kbd "f") 'find-grep)
+(define-key xah-fly-comma-keymap (kbd "x") 'counsel-M-x)
 
 (define-key xah-fly-comma-keymap (kbd "w") 'ivy-resume)
 
@@ -1194,7 +1232,6 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 (define-key xah-fly-leader-key-map (kbd "y") 'ivy-resume)
 
-(define-key xah-fly-leader-key-map (kbd "z") 'anzu-replace-at-cursor-thing)
 (define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
 (define-key xah-fly-leader-key-map (kbd "p") 'projectile-command-map)
 
@@ -1247,19 +1284,18 @@ If the file is emacs lisp, run the byte compiled version if exist."
 
 * Welcome messge 
 #+BEGIN_SRC emacs-lisp
-  
-(princ (shell-command-to-string
-        (cl-concatenate 'string
-                        "(fortune ; echo '\n\nЗапуск в "
-                        (number-to-string (cadr (time-subtract (current-time) ab-start-time)))
-                        " сек.\n"
-                        "Сегодня: "
-                        (format-time-string "%d %B %Y")
-                        "'; ) | cowsay -n -f turtle; 
-                        echo '\n\n'; 
-                        wget -q -O - ru.wttr.in/Ростов-на-Дону?T0
-                        "))
-       (get-buffer-create (current-buffer)))
+;; wget -q -O - ru.wttr.in/Ростов-на-Дону?T0
+  (princ (shell-command-to-string
+          (cl-concatenate 'string
+                          "(fortune ; echo '\n\nЗапуск в "
+                          (number-to-string (cadr (time-subtract (current-time) ab-start-time)))
+                          " сек.\n"
+                          "Сегодня: "
+                          (format-time-string "%d %B %Y")
+                          "'; ) | cowsay -n -f turtle; 
+                          echo '\n\n'; 
+                          "))
+         (get-buffer-create  "*scratch*"))
 
 #+END_SRC
 
