@@ -1,7 +1,7 @@
 ;; Org mode setting 
 
 * Repositories
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 
 (setq package--init-file-ensured t)
 
@@ -24,12 +24,12 @@
   (package-refresh-contents))
 
 
-#+END_SRC
+  #+END_SRC
 
 
 * System
 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 
 (setq epg-gpg-program "gpg") 
 
@@ -49,7 +49,7 @@
 (add-to-list 'backup-directory-alist (cons "." backup-dir))
 (add-to-list 'backup-directory-alist (cons tramp-file-name-regexp backup-dir))
 
-
+(global-display-line-numbers-mode t)
 
 (setq large-file-warning-threshold 100000000)
 
@@ -61,10 +61,29 @@
 (unless (server-running-p) (server-start))
 
 
+(setq custom-safe-themes t)
+
+(setq neo-vc-integration nil) 
+  
+
+(setq browse-url-browser-function 'browse-url-chromium)
+(setq european-calendar-style 't)
+
+(setq calendar-week-start-day 1
+            calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
+            calendar-month-name-array ["Январь" "Февраль" "Март" "Апрель" "Май" 
+                                       "Июнь" "Июль" "Август" "Сентябрь"
+                                       "Октябрь" "Ноябрь" "Декабрь"])
+
+
+
 
 ;; (setq epa-pinentry-mode 'loopback)
 
 
+  ;;Enforce spaces for indentation, instead of tabs
+  (setq-default indent-tabs-mode 
+                nil)
 
 
 
@@ -83,31 +102,34 @@
  '(default ((t (:height 120)))))
 
 (delete-selection-mode 1)
+
+
+  ;;Disable splash message, start *scratch* buffer by default
+  (setq initial-buffer-choice 
+        t)
+  (setq initial-scratch-message 
+        "")
+
+
+
   #+END_SRC
 
   
 * Packages 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 
 
 ;; Declare a list of required packages
 (defvar emacs-required-packages
   '(
     use-package
-    try
-    
     imenu-list
-    company
-    company-php
     which-key
     overcast-theme
     color-theme-sanityinc-tomorrow
     
-    php-mode
     angular-mode
     skewer-mode
-    phpcbf
-    ac-php
     nginx-mode
     apache-mode
     magit
@@ -115,8 +137,6 @@
     ripgrep
     dumb-jump
     flycheck
-    flymake-php
-    rainbow-delimiters
     xah-fly-keys
     org-bullets
     org-caldav
@@ -194,35 +214,11 @@
 
 
 ;; (setq flycheck-phpmd-rulesets '("cleancode"))
-(setq flycheck-phpmd-rulesets '("cleancode" "codesize" "controversial" "design" "naming" "unusedcode"))
-(setq phpcbf-standard "PSR2")
-
-(add-hook 'php-mode-hook
-          (lambda ()
-            (setq flycheck-phpcs-standard "PSR2")))
-            
-
-(add-hook 'php-mode-hook 'phpcbf-enable-on-save)
-
-(setq php-mode-coding-style (quote psr2))
-
-(add-hook 'php-mode-hook
-          '(lambda ()
-             (require 'company-php)
-             (company-mode t)
-             ;; (ac-php-core-eldoc-setup) ;; enable eldoc
-             (make-local-variable 'company-backends)
-               (define-key php-mode-map  (kbd "M-g") 'ac-php-find-symbol-at-point)   ;goto define
-               (define-key php-mode-map  (kbd "M-b") 'ac-php-location-stack-back)    ;go back
-               (add-to-list 'company-backends 'company-ac-php-backend)))
-
 
 (setq bookmark-save-flag 1)
 
 
 ;; Rainbow Delimiters
-(require 'rainbow-delimiters)
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 
 
 
@@ -236,11 +232,11 @@
 ;; (edit-server-start)
 
 
-#+END_SRC
+  #+END_SRC
 
 
 * Themes
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 
 (use-package doom-themes
 :ensure t
@@ -255,11 +251,11 @@
 (doom-modeline-init)
 ))
 
-#+END_SRC
+  #+END_SRC
 
 
 * Dired
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 
   (use-package dired
   :ensure nil
@@ -296,18 +292,21 @@
   ;; Dired+
   ;; need to load manualy
   ;; https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
-  (load-file "~/.emacs.d/dired+.el")
+
+  ;; (load-file "~/.emacs.d/dired+.el")
+
+
   (require 'dired+)
   ;; Style of omit files in dired
   (custom-set-faces
   '(diredp-omit-file-name ((t (:inherit diredp-ignored-file-name :foreground "gray29")))))
 
-#+END_SRC
+  #+END_SRC
 
 
 
 * Tramp 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 (setq explicit-shell-file-name "/bin/bash")
 (add-hook 'shell-mode-hook  'with-editor-export-editor)
 (add-hook 'term-exec-hook   'with-editor-export-editor)
@@ -315,40 +314,28 @@
 
 (setq tramp-ssh-controlmaster-options "")
 
-#+END_SRC
+  #+END_SRC
 
 
 * Grep 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 ;; find-grep template command
 (customize-set-variable 'grep-find-command
 (quote
 ("find . -type f -exec grep --color -nH --null -ie \"\" \\{\\} +" . 51)))
 
 
-#+END_SRC
-
-
+  #+END_SRC
 
 
 * Org
 
-#+BEGIN_SRC emacs-lisp
-
+  - Org mode
+  #+BEGIN_SRC emacs-lisp
 (use-package org
 :ensure t)
 
 
-
-(font-lock-add-keywords 'org-mode
-                        '(("^ *\\([-]\\) "
-                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-
-;; (setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
-(add-hook 'org-mode-hook (lambda () 
-(org-bullets-mode 1)
-(yas-minor-mode)
-))
 
 (setq org-agenda-files '("~/Документы/org"))
 
@@ -369,27 +356,32 @@
      (js . t)
      ))
 
-#+END_SRC
+;; (setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
+(add-hook 'org-mode-hook (lambda () 
+(org-bullets-mode 1)
+(yas-minor-mode)
+))
 
+  #+END_SRC
 
-* Yasnippet
+  - Fonts
+  #+BEGIN_SRC emacs-lisp
+(custom-set-faces
+'(org-document-info-keyword ((t (:inherit shadow :foreground "gray26"))))
+'(org-document-title ((t (:weight bold :height 1.4))))
+'(org-meta-line ((t (:foreground "gray26"))))
+)
 
-#+BEGIN_SRC emacs-lisp
-(use-package yasnippet
-:ensure t
-:config
-(yas-reload-all))
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-(use-package yasnippet-snippets
-:ensure t)
-
-(add-hook 'prog-mode-hook #'yas-minor-mode)
-#+END_SRC
+  #+END_SRC
 
 
 * Reveal
 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 (use-package org-re-reveal
 :ensure org-re-reveal
 :config
@@ -400,12 +392,28 @@
 :ensure t)
   
 
-#+END_SRC
+  #+END_SRC
+
+
+* Yasnippet
+
+  #+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+:ensure t
+:config
+(yas-reload-all))
+
+(use-package yasnippet-snippets
+:ensure t)
+
+(add-hook 'prog-mode-hook #'yas-minor-mode)
+  #+END_SRC
+
 
 
 * Magit 
 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
   (use-package magit
   :ensure t)
   (add-hook 'magit-mode-hook 'xah-fly-insert-mode-activate)
@@ -421,30 +429,14 @@
 
 
 
-#+END_SRC
+  #+END_SRC
 
 
-* Package settigs
-#+BEGIN_SRC emacs-lisp
+* Custom functions
+  #+BEGIN_SRC emacs-lisp
   ;; 
   ;; ab-PACKAGES SETS
   ;;
-
-
-  (setq custom-safe-themes t)
-
-  (setq neo-vc-integration nil) 
-
-
-  (setq browse-url-browser-function 'browse-url-chromium)
-  (setq european-calendar-style 't)
-
-  (setq calendar-week-start-day 1
-            calendar-day-name-array ["Вс" "Пн" "Вт" "Ср" "Чт" "Пт" "Сб"]
-            calendar-month-name-array ["Январь" "Февраль" "Март" "Апрель" "Май" 
-                                       "Июнь" "Июль" "Август" "Сентябрь"
-                                       "Октябрь" "Ноябрь" "Декабрь"])
-
 
 
 
@@ -463,16 +455,7 @@
                                    (message "File reloaded")))
           (t (message "You're not editing a file!"))))
 
-  ;;Disable splash message, start *scratch* buffer by default
-  (setq initial-buffer-choice 
-        t)
-  (setq initial-scratch-message 
-        "")
 
-
-  ;;Enforce spaces for indentation, instead of tabs
-  (setq-default indent-tabs-mode 
-                nil)
 
   ;;Enable show-paren-mode
   (show-paren-mode 1)
@@ -482,10 +465,6 @@
 
   ;;Enable windmove
   (windmove-default-keybindings 'meta)
-
-  ;;Show line number on keft side
-
-  ;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
   (save-place-mode 1)
 
@@ -644,8 +623,6 @@
   (setq ido-everywhere t)
   (ido-mode 1)
 
-  (setq ivy-use-virtual-buffers t)
-  (ivy-mode 1)
 
   (global-subword-mode 1)
 
@@ -811,12 +788,11 @@
 
 
 
-#+END_SRC
+  #+END_SRC
 
 
-
-* Swiper, counsel, anzu and Ivy
-#+BEGIN_SRC emacs-lisp
+* Swiper, counsel, anzu and ivy
+  #+BEGIN_SRC emacs-lisp
 
 (use-package counsel
 :ensure t
@@ -854,22 +830,61 @@
 (define-key xah-fly-leader-key-map (kbd "z") 'anzu-replace-at-cursor-thing)
 
 
-#+END_SRC
+  #+END_SRC
 
 
 * PCRE2EL
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
   (use-package pcre2el
   :ensure t
   :config
   (pcre-mode)
   )
-#+END_SRC
+  #+END_SRC
+
+
+* Smooth scrolling
+
+  #+BEGIN_SRC emacs-lisp
+(use-package smooth-scrolling :ensure t
+  :diminish smooth-scrolling-mod
+  :config
+  (smooth-scrolling-mode 1))
+  #+END_SRC
+
+
+* Company 
+  #+BEGIN_SRC emacs-lisp
+
+(use-package company :ensure t
+             :config
+             (add-hook 'after-init-hook 'global-company-mode)
+             (add-to-list 'company-backends 'company-web)
+             (add-to-list 'company-backends 'company-quickhelp)
+             (add-to-list 'company-backends 'company-php)
+             (add-to-list 'company-backends 'company-ac-php-backend)
+             (add-to-list 'company-backends 'php-extras-company)
+             (add-to-list 'company-backends 'company-Yasnippet)
+             (add-to-list 'company-backends 'company-dabbrev)
+             (add-to-list 'company-backends 'company-capf)
+             (add-to-list 'company-backends 'company-files)
+             (setq company-tooltip-limit 20)
+             (setq company-tooltip-align-annotations 't)
+             (setq company-idle-delay .3)
+             (setq company-minimum-prefix-length 1)
+             (setq company-begin-commands '(self-insert-command)))
+
+
+(use-package company-php :ensure t)
+(use-package company-web :ensure t)
+(use-package company-quickhelp :ensure t)
+
+  #+END_SRC
 
 
 * Web-mode
 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 (use-package web-mode
 :ensure t
 :config
@@ -883,12 +898,86 @@
 (setq web-mode-enable-auto-closing t)
 (setq web-mode-enable-auto-quoting t)) ; this fixes the quote problem I mentioned
 
-#+END_SRC
+
+
+  #+END_SRC
+
+
+* PHP
+
+  #+BEGIN_SRC emacs-lisp
+
+;; php mode
+(use-package php-mode 
+:ensure t)
+
+;; php code sniffer
+(use-package phpcbf
+:ensure t
+:config
+(setq phpcbf-standard "PSR2")
+(setq php-mode-coding-style (quote psr2))
+(add-hook 'php-mode-hook 'phpcbf-enable-on-save)
+)
+
+;; php flycheck
+(setq flycheck-phpmd-rulesets '("cleancode" "codesize" "controversial" "design" "naming" "unusedcode"))
+(add-hook 'php-mode-hook (lambda () (setq flycheck-phpcs-standard "PSR2")))
+
+;; auto-complete & company-mode for php
+(use-package ac-php :ensure t
+            :config
+            (ac-php-core-eldoc-setup))
+
+
+  #+END_SRC
+
+
+
+
+* Rainbow
+
+  - Colorize colors #ff0000
+  #+BEGIN_SRC emacs-lisp
+  (use-package rainbow-mode
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'rainbow-mode))
+  #+END_SRC
+
+  - Rainbow parentheses
+  #+BEGIN_SRC emacs-lisp
+  (use-package rainbow-mode
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+  #+END_SRC
+
+
+* Web Beautify
+
+  #+BEGIN_SRC emacs-lisp
+(use-package web-beautify :ensure t)
+(defun ab-beautify-code ()
+  "Beautify CSS, HTML or JS"
+  (interactive)
+  (cond
+    ((eq major-mode 'js-mode) (web-beautify-js))
+    ((eq major-mode 'js2-mode) (web-beautify-js))
+    ((eq major-mode 'json-mode) (web-beautify-js))
+    ((eq major-mode 'web-mode) (web-beautify-html))
+    ((eq major-mode 'xah-css-mode) (web-beautify-css))
+    ((eq major-mode 'css-mode) (web-beautify-css))
+    ((eq major-mode 'scss-mode) (web-beautify-css))
+    ((indent-region (point-min) (point-max)))))
+
+  #+END_SRC
+
 
 
 * Projectile 
   
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 
 
   ;; projectile
@@ -906,9 +995,9 @@
   (use-package counsel-projectile
   :ensure t)
 
-#+END_SRC
- - Set projec name in var for perfomance. 
-#+BEGIN_SRC emacs-lisp
+  #+END_SRC
+  - Set projec name in var for perfomance. 
+  #+BEGIN_SRC emacs-lisp
   (setq project-name (projectile-project-name))
   ;; Set my-projectile-project-name to projectile-project-name,
   ;; so that later I can also set projectile project name when in *Messages* buffer etc
@@ -930,16 +1019,16 @@
     (setq frame-title-format '("Emacs: " "%b" (:eval (format " in [%s] (m)" project-name) )))
     )
 
-#+END_SRC
+  #+END_SRC
 
- - Keys
-#+BEGIN_SRC emacs-lisp
+  - Keys
+  #+BEGIN_SRC emacs-lisp
 (define-key projectile-mode-map (kbd "C-p") 'projectile-command-map)
 (define-key projectile-command-map (kbd "m") 'magit-status)
 (define-key projectile-command-map (kbd "P") 'ab-stage-commit-push)
 (define-key projectile-command-map (kbd "F") (lambda ()(interactive) (magit-pull-from-pushremote nil)))
 (define-key projectile-command-map (kbd "n") 'ab-set-project-name-manual)
-#+END_SRC
+  #+END_SRC
 
 
 * Smex
@@ -956,7 +1045,7 @@
 
 * Keybindings
 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 ;; 
 ;; ab-KEYS
 ;;
@@ -1058,11 +1147,6 @@
 ;; (define-key xah-fly-key-map (kbd "`") 'xah-fly-leader-key-map) 
 (global-set-key (kbd "`") 'xah-fly-command-mode-activate)
 ;; (global-set-key (kbd "<tab>") 'xah-fly-command-mode-activate) 
-;;(define-key xah-fly-key-map (kbd "<f8>") 'xah-fly-leader-key-map)
-
-;; (define-key xah-fly-key-map (kbd "1") (lambda ()(interactive)  (bookmark-jump "1")))  
-;; (define-key xah-fly-key-map (kbd "2") (lambda ()(interactive)  (bookmark-jump "2"))) 
-;; (define-key xah-fly-e-keymap (kbd "u") 'calendar)
 
 (add-hook 'xah-fly-command-mode-activate-hook
           (function (lambda ()
@@ -1075,6 +1159,7 @@
                       
                       (define-key xah-fly-key-map (kbd "1") (lambda ()(interactive)  (bookmark-jump "1")))  
                       (define-key xah-fly-key-map (kbd "2") (lambda ()(interactive)  (bookmark-jump "2")))
+
                       (define-key xah-fly-key-map (kbd "C-1") (lambda ()(interactive)  (bookmark-jump "1")))
                       (define-key xah-fly-key-map (kbd "C-2") (lambda ()(interactive)  (bookmark-jump "2")))
 
@@ -1202,6 +1287,7 @@
 (define-key xah-fly-n-keymap (kbd "e") 'revert-buffer-with-coding-system)
 (define-key xah-fly-n-keymap (kbd "i") 'file-metadata)
 
+(define-key xah-fly-t-keymap (kbd "b") 'ab-beautify-code)
 
 (define-key xah-fly-comma-keymap (kbd "l") 'dumb-jump-go)
 (define-key xah-fly-comma-keymap (kbd "k") 'dumb-jump-back)
@@ -1276,14 +1362,14 @@
 (reverse-input-method 'russian-computer)
 
 
-#+END_SRC
+  #+END_SRC
 
 
 
 
 
 * Welcome messge 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 ;; wget -q -O - ru.wttr.in/Ростов-на-Дону?T0
   (princ (shell-command-to-string
           (cl-concatenate 'string
@@ -1297,5 +1383,5 @@
                           "))
          (get-buffer-create  "*scratch*"))
 
-#+END_SRC
+  #+END_SRC
 

@@ -5,17 +5,25 @@
 ;; Save cutomization to file
 (setq custom-file "~/.emacs.d/custom.el")
 
-
+;; Additional Repos
+;; # # # # # # # # # # #
 (require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-'("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
 (package-initialize)
 
-;; Bootstrap `use-package'
+
+
 (unless (package-installed-p 'use-package)
-(package-refresh-contents)
-(package-install 'use-package))
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-when-compile
+  (require 'use-package))
+
+
+;; (add-to-list 'package-archives
+;; '("melpa" . "https://melpa.org/packages/"))
+;; (package-initialize)
 
 ;;Load configuration files
 ;; (load-file "~/.emacs.d/ab/00-system.el")
