@@ -794,40 +794,62 @@
 * Swiper, counsel, anzu and ivy
   #+BEGIN_SRC emacs-lisp
 
-(use-package counsel
-:ensure t
-)
+    (use-package counsel
+    :ensure t
+    )
 
-(use-package swiper
-:ensure try
-:config
-(progn
-(ivy-mode 1)
-(setq ivy-use-virtual-buffers t)
-(setq ivy-initial-inputs-alist nil)
-;; swiper for symbol at point
-(global-set-key (kbd "C-x l") 'counsel-locate)
-(define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-))
-
-(defun ab-swiper ()
-  (interactive)
-  (setq sym (symbol-at-point))
-  (if (not sym) (counsel-grep-or-swiper) (counsel-grep-or-swiper (symbol-name sym)) )
-)
-(setq counsel-grep-swiper-limit 300000)
+    (use-package swiper
+    :ensure try
+    :config
+    (progn
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-initial-inputs-alist nil)
+    ;; swiper for symbol at point
+    (global-set-key (kbd "C-x l") 'counsel-locate)
+    (define-key read-expression-map (kbd "C-r") 'counsel-minibuffer-history)
+    (define-key ivy-minibuffer-map (kbd "C-c o") 'ivy-occur)
+    ))
 
 
+    (defun ab-swiper ()
+      (interactive)
+      (setq sym (symbol-at-point))
+      (if (not sym) (ab-counsel-grep-or-swiper) (ab-counsel-grep-or-swiper (symbol-name sym)) )
+    )
 
-(use-package anzu
-:ensure t
-:config
-(global-anzu-mode +1)
-)
-(global-set-key [remap query-replace] 'anzu-query-replace)
-(global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+    (defun ab-counsel-grep-or-swiper (&optional initial-input)
+    "Call `swiper' for small buffers and `counsel-grep' for large ones.
+    When non-nil, INITIAL-INPUT is the initial search pattern."
+    (interactive)
+    (if (or (not buffer-file-name)
+    (buffer-narrowed-p)
+    (jka-compr-get-compression-info buffer-file-name)
+    (funcall counsel-grep-use-swiper-p))
+    (swiper initial-input)
+    (when (file-writable-p buffer-file-name)
+    (save-buffer))
+    (counsel-grep initial-input)))
 
-(define-key xah-fly-leader-key-map (kbd "z") 'anzu-replace-at-cursor-thing)
+    (setq counsel-grep-swiper-limit 1000000)
+
+
+    ;; ;; (use package anzu
+    ;; ;; :ensure t
+    ;; ;; :config
+    ;; ;; (
+    ;; global anzu mode +1)
+    ;; ;; 
+    ;; )
+    ;; ;; 
+    ;; (global set key [remap query replace] 'anzu query replace)
+    ;; ;; 
+    ;; (global set key [remap query replace regexp] 'anzu query replace regexp)
+
+    ;; ;;
+    ;; (define key xah fly leader key map (kbd "z") 'anzu-replace-at-cursor-thing)
+
+
 
 
   #+END_SRC
@@ -846,10 +868,10 @@
 * Smooth scrolling
 
   #+BEGIN_SRC emacs-lisp
-(use-package smooth-scrolling :ensure t
-  :diminish smooth-scrolling-mod
-  :config
-  (smooth-scrolling-mode 1))
+    ;; (use-package smooth-scrolling :ensure t
+      ;; :config
+      ;; (
+       ;; smooth-scrolling-mode 1))
   #+END_SRC
 
 
@@ -1220,6 +1242,10 @@
                          ("l" . projectile-command-map)
                          ("з" . projectile-command-map)     
                          ))
+
+
+                         (setq mode-line-front-space "-- INSERT --")
+                         (force-mode-line-update)
                       ;; (define-key xah-fly-key-map (kbd "p") 'projectile-command-map)                             
 )))   
 

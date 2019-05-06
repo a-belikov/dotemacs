@@ -37,6 +37,6 @@
 
 ;; Config with secret key
 (load-file "~/.emacs.d/ab/11-private.el")
-
+;;(load-file "~/.emacs.d/vimode-emacs.init.el")
 
 (load-file "~/.emacs.d/custom.el")
