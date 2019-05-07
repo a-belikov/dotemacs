@@ -154,6 +154,7 @@
 
 ;; * Try
 (use-package try
+:ensure t
   :init
   :config
   )
@@ -184,6 +185,13 @@
 ;;(sublimity-mode)
 
 ;;Load default auto-complete configs
+
+(use-package auto-complete 
+:ensure t
+:config
+)
+
+
 (ac-config-default)
 
 (setq imenu-list-focus-after-activation t)
@@ -250,56 +258,6 @@
 (progn
 (doom-modeline-init)
 ))
-
-  #+END_SRC
-
-
-* Dired
-  #+BEGIN_SRC emacs-lisp
-
-  (use-package dired
-  :ensure nil
-  :config
-  (progn
-  (setq dired-dwim-target t)
-  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file) ; was dired-advertised-find-file
-  (define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file "..")))  ; was dired-up-directory
-  ;; to trump
-  (setq ange-ftp-ftp-program-name "pftp")
-  (setq ange-ftp-try-passive-mode nil) 
-  (setq dired-listing-switches "-aBhlF --group-directories-first")
-
-  ;; Show file details by default
-  (defun ab-dired-mode-setup () (dired-hide-details-mode 0))
-  (add-hook 'dired-mode-hook 'ab-dired-mode-setup)
-
-  ))
-
-  ;; Dired-x. Extra features
-  (use-package dired-x
-  :ensure nil
-  :config
-  (add-hook 'dired-load-hook (function (lambda () (load "dired-x")))))
-
-  ;; Dired-launch. launch files in external app
-  ;; (use-package dired-launch
-  ;; :ensure nil
-  ;; :
-  ;; config
-  ;; ; ;Set hooks for dired-launch-mode
-  ;; (add-hook 'dired-mode-hook 'dired-launch-mode) )
-
-  ;; Dired+
-  ;; need to load manualy
-  ;; https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
-
-  ;; (load-file "~/.emacs.d/dired+.el")
-
-
-  (require 'dired+)
-  ;; Style of omit files in dired
-  (custom-set-faces
-  '(diredp-omit-file-name ((t (:inherit diredp-ignored-file-name :foreground "gray29")))))
 
   #+END_SRC
 
@@ -812,11 +770,25 @@
     ))
 
 
+    ;; (defun ab-swiper (start end)
+    ;;   (interactive "r")
+    ;;   (if (use-region-p)
+    ;;   (setq regionp (buffer-substring start end))
+    ;;   (setq regionp nil))
+
+    ;;   (if (not regionp) 
+    ;;   (ab-counsel-grep-or-swiper) 
+    ;;   (ab-counsel-grep-or-swiper regionp)))     
+
+
     (defun ab-swiper ()
       (interactive)
       (setq sym (symbol-at-point))
       (if (not sym) (ab-counsel-grep-or-swiper) (ab-counsel-grep-or-swiper (symbol-name sym)) )
     )
+
+
+
 
     (defun ab-counsel-grep-or-swiper (&optional initial-input)
     "Call `swiper' for small buffers and `counsel-grep' for large ones.
@@ -853,6 +825,14 @@
 
 
   #+END_SRC
+
+
+* Avy 
+#+BEGIN_SRC emacs-lisp
+(use-package avy
+:ensure t
+:bind ("M-s" . avy-goto-char))
+#+END_SRC
 
 
 * PCRE2EL
@@ -957,25 +937,6 @@
 
 
 
-* Rainbow
-
-  - Colorize colors #ff0000
-  #+BEGIN_SRC emacs-lisp
-  (use-package rainbow-mode
-  :ensure t
-  :config
-  (add-hook 'prog-mode-hook 'rainbow-mode))
-  #+END_SRC
-
-  - Rainbow parentheses
-  #+BEGIN_SRC emacs-lisp
-  (use-package rainbow-mode
-  :ensure t
-  :config
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
-  #+END_SRC
-
-
 * Web Beautify
 
   #+BEGIN_SRC emacs-lisp
@@ -993,6 +954,26 @@
     ((eq major-mode 'scss-mode) (web-beautify-css))
     ((indent-region (point-min) (point-max)))))
 
+  #+END_SRC
+
+
+
+* Rainbow
+
+  - Colorize colors #ff0000
+  #+BEGIN_SRC emacs-lisp
+  (use-package rainbow-mode
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'rainbow-mode))
+  #+END_SRC
+
+  - Rainbow parentheses
+  #+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
   #+END_SRC
 
 
@@ -1062,6 +1043,67 @@
   (smex-initialize)
   )
   #+END_SRC
+
+
+
+* Dired
+  #+BEGIN_SRC emacs-lisp
+
+  (use-package dired
+  :ensure nil
+  :config
+  (progn
+  (setq dired-dwim-target t)
+  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file) ; was dired-advertised-find-file
+  (define-key dired-mode-map (kbd "^") (lambda () (interactive) (find-alternate-file "..")))  ; was dired-up-directory
+  ;; to trump
+  (setq ange-ftp-ftp-program-name "pftp")
+  (setq ange-ftp-try-passive-mode nil) 
+  (setq dired-listing-switches "-aBhlF --group-directories-first")
+
+  ;; Show file details by default
+  (defun ab-dired-mode-setup () (dired-hide-details-mode 0))
+  (add-hook 'dired-mode-hook 'ab-dired-mode-setup)
+
+  ))
+
+  ;; Dired-x. Extra features
+  (use-package dired-x
+  :ensure nil
+  :config
+  (add-hook 'dired-load-hook (function (lambda () (load "dired-x")))))
+
+  ;; Dired-launch. launch files in external app
+  ;; (use-package dired-launch
+  ;; :ensure nil
+  ;; :
+  ;; config
+  ;; ; ;Set hooks for dired-launch-mode
+  ;; (add-hook 'dired-mode-hook 'dired-launch-mode) )
+
+  ;; Dired+
+  ;; need to load manualy
+  ;; https://github.com/emacsmirror/emacswiki.org/blob/master/dired%2b.el
+
+  (when (require 'dired+ nil 'noerror)
+         (message "Hello"))
+
+
+
+  ;; Style of omit files in dired
+  (custom-set-faces
+  '(diredp-omit-file-name ((t (:inherit diredp-ignored-file-name :foreground "gray29")))))
+
+  ;; install dired+ from file
+  (when (not (require 'dired+ nil 'noerror)) 
+    (package-install-file "dired+.el"))
+    (require 'dired+)
+
+
+
+  #+END_SRC
+
+
 
 
 
@@ -1198,7 +1240,7 @@
                          ("у" . xah-backward-kill-word)
                          ("я" . xah-comment-dwim)
                          ("х" . hippie-expand)
-                         ("ф" . execute-extended-command)
+                         ("ф" . avy-goto-char)
                          ("т" . isearch-forward)
                          ("ш" . previous-line)
                          ("р" . xah-beginning-of-line-or-block)
@@ -1230,6 +1272,11 @@
                       (xah-fly--define-keys 
                        xah-fly-key-map
                        '(
+
+                         ("a" . avy-goto-char)
+                         ("ф" . avy-goto-char)
+                         
+
                          ("b" . ab-swiper)
                          ("т" . ab-swiper)
                          
@@ -1347,8 +1394,7 @@
 (define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
 (define-key xah-fly-leader-key-map (kbd "p") 'projectile-command-map)
 
-
-
+(define-key xah-fly-leader-key-map (kbd "7") 'ispell-region)  
 ;; * Org mode
 (define-key key-translation-map (kbd "<menu>") (kbd "C-c"))
 
@@ -1391,9 +1437,6 @@
   #+END_SRC
 
 
-
-
-
 * Welcome messge 
   #+BEGIN_SRC emacs-lisp
 ;; wget -q -O - ru.wttr.in/Ростов-на-Дону?T0
@@ -1409,5 +1452,8 @@
                           "))
          (get-buffer-create  "*scratch*"))
 
+
+         
+  #+END_SRC
   #+END_SRC
 
