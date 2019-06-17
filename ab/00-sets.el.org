@@ -26,6 +26,9 @@
 
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * System
 
@@ -114,133 +117,148 @@
 
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
   
 * Packages 
   #+BEGIN_SRC emacs-lisp
 
 
-;; Declare a list of required packages
-(defvar emacs-required-packages
-  '(
-    use-package
-    imenu-list
-    which-key
-    overcast-theme
-    color-theme-sanityinc-tomorrow
-    
-    angular-mode
-    skewer-mode
-    nginx-mode
-    apache-mode
-    magit
-    ag
-    ripgrep
-    dumb-jump
-    flycheck
-    xah-fly-keys
-    org-bullets
-    org-caldav
-    org-gcal
-    oauth2
-   )
-)
+    ;; Declare a list of required packages
+    (defvar emacs-required-packages
+      '(
+        use-package
+        imenu-list
+        which-key
+        overcast-theme
+        color-theme-sanityinc-tomorrow
 
-;;Install required packages
-(mapc (lambda (p)
-        (package-install p))
-      emacs-required-packages)
+        angular-mode
+        skewer-mode
+        nginx-mode
+        apache-mode
+        magit
+        ag
+        ripgrep
+        dumb-jump
+        flycheck
+        xah-fly-keys
+        org-bullets
+        org-caldav
+        org-gcal
+        oauth2
+       )
+    )
 
 
 
-;; * Try
-(use-package try
-:ensure t
-  :init
-  :config
-  )
+    ;;Install required packages
+    (mapc (lambda (p)
+            (package-install p))
+            emacs-required-packages)
+
+            (setq imenu-list-auto-resize nil)
+            (setq imenu-list-position 'right)
+
+    ;; * Try
+    (use-package try
+    :ensure t
+      :init
+      :config
+      )
 
 
-;; * Ibuffer
+    ;; * Ibuffer
 
-;; (ibuffer-auto-mode 1)
+    ;; (ibuffer-auto-mode 1)
 
-;; Don't ask for confirmation to delete marked buffers
-(setq ibuffer-expert t)
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;Configure and enable sublimity-mode
-;;(require 'sublimity-scroll)
-;;(sublimity-mode)
-
-;;Load default auto-complete configs
-
-(use-package auto-complete 
-:ensure t
-:config
-)
-
-
-(ac-config-default)
-
-(setq imenu-list-focus-after-activation t)
-
-(add-hook 'after-init-hook 'global-company-mode)
-
-;;Start which-key-mode
-(which-key-mode)
-
-;;Set up ace-jump-mode
-(autoload 'ace-jump-mode 
-  "ace-jump-mode" 
-  "Emacs quick move minor mode"
-  t)
-(autoload 'ace-jump-mode-pop-mark 
-  "ace-jump-mode" 
-  "Ace jump back:-"
-  t)
-;; 
+    ;; Don't ask for confirmation to delete marked buffers
+    (setq ibuffer-expert t)
 
 
 
 
-(global-flycheck-mode t)
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (add-hook 'prog-mode-hook 'flycheck-mode)
-;; (add-hook 'text-mode-hook 'flycheck-mode)
+    ;;Configure and enable sublimity-mode
+    ;;(require 'sublimity-scroll)
+    ;;(sublimity-mode)
+
+    ;;Load default auto-complete configs
+
+    ;; (use-package auto-complete 
+    ;; :ensure t
+    ;; :config
+    ;; )
+
+    ;; (ac-config-default)
+
+    (setq imenu-list-focus-after-activation t)
+
+    (add-hook 'after-init-hook 'global-company-mode)
+
+    ;;Start which-key-mode
+    (which-key-mode)
+
+    ;;Set up ace-jump-mode
+    (autoload 'ace-jump-mode 
+      "ace-jump-mode" 
+      "Emacs quick move minor mode"
+      t)
+    (autoload 'ace-jump-mode-pop-mark 
+      "ace-jump-mode" 
+      "Ace jump back:-"
+      t)
+    ;; 
 
 
-;; (setq flycheck-phpmd-rulesets '("cleancode"))
-
-(setq bookmark-save-flag 1)
 
 
-;; Rainbow Delimiters
+    (global-flycheck-mode t)
+
+    ;; (add-hook 'prog-mode-hook 'flycheck-mode)
+    ;; (add-hook 'text-mode-hook 'flycheck-mode)
+
+
+    ;; (setq flycheck-phpmd-rulesets '("cleancode"))
+
+    (setq bookmark-save-flag 1)
+
+
+    ;; Rainbow Delimiters
 
 
 
 
-(require 'recentf)
-;; (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
-(recentf-mode 1)
-(setq recentf-max-menu-items 250)
-(setq recentf-max-saved-items 250)
+    (require 'recentf)
+    ;; (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
+    (recentf-mode 1)
+    (setq recentf-max-menu-items 250)
+    (setq recentf-max-saved-items 250)
 
-;; (edit-server-start)
+    ;; (edit-server-start)
 
 
   #+END_SRC
+
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
+
+* All-The-Icons
+#+BEGIN_SRC emacs-lisp
+(use-package all-the-icons)
+
+#+END_SRC
 
 
 * Themes
@@ -253,15 +271,14 @@
 )
 
 (use-package doom-modeline
-:ensure t
-:config
-(progn
-(doom-modeline-init)
-))
-
+      :ensure t
+      :hook (after-init . doom-modeline-mode))
   #+END_SRC
 
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Tramp 
   #+BEGIN_SRC emacs-lisp
@@ -274,6 +291,9 @@
 
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Grep 
   #+BEGIN_SRC emacs-lisp
@@ -285,6 +305,9 @@
 
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Org
 
@@ -336,6 +359,9 @@
 
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Reveal
 
@@ -352,6 +378,9 @@
 
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Yasnippet
 
@@ -368,6 +397,9 @@
   #+END_SRC
 
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Magit 
 
@@ -389,6 +421,9 @@
 
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Custom functions
   #+BEGIN_SRC emacs-lisp
@@ -396,7 +431,10 @@
   ;; ab-PACKAGES SETS
   ;;
 
-
+  (defun cp1251 ()
+    (interactive)
+    (revert-buffer-with-coding-system 'cp1251)
+    )
 
   (defun finish-line ()
     (interactive)
@@ -604,6 +642,29 @@
   (setq org-todo-keywords
   '((sequence "TODO" "PROCESS" "DELEGATED" "|" "DONE")))
 
+(setq org-todo-keyword-faces
+  '(("TODO" . (:foreground "#ff39a3" :weight bold))
+("PROCESS" . "green")
+("CANCELED" . (:foreground "white" :background "#4d4d4d" :weight bold))
+;;("DELEGATED" . "")
+("POSTPONED" . "#008080")))
+
+
+(setq org-todo-sort-order '("PROCESS" "DELEGATED" "TODO" "" "DONE"))
+
+(defun my:user-todo-sort (a b)
+  "Sort todo based on which I want to see first"
+  (when-let ((state-a (get-text-property 14 'todo-state a))
+             (state-b (get-text-property 14 'todo-state b))
+             (cmp (--map (cl-position-if (lambda (x)
+                                           (equal x it))
+                                         org-todo-sort-order)
+                         (list state-a state-b))))
+    (cond ((apply '> cmp) 1)
+          ((apply '< cmp) -1)
+          (t nil))))
+(setq org-agenda-cmp-user-defined 'my:user-todo-sort)
+
 
 
   (setq xah-fly-use-meta-key nil) ; must come before loading xah-fly-keys
@@ -748,8 +809,11 @@
 
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
-* Swiper, counsel, anzu and ivy
+* Swiper, counsel, anzu and phi-search
   #+BEGIN_SRC emacs-lisp
 
     (use-package counsel
@@ -806,26 +870,19 @@
     (setq counsel-grep-swiper-limit 1000000)
 
 
-    ;; ;; (use package anzu
-    ;; ;; :ensure t
-    ;; ;; :config
-    ;; ;; (
-    ;; global anzu mode +1)
-    ;; ;; 
-    ;; )
-    ;; ;; 
-    ;; (global set key [remap query replace] 'anzu query replace)
-    ;; ;; 
-    ;; (global set key [remap query replace regexp] 'anzu query replace regexp)
+    (use-package phi-search
+     :ensure t
+     :config
+     (global-set-key (kbd "C-f") 'phi-search))
 
-    ;; ;;
-    ;; (define key xah fly leader key map (kbd "z") 'anzu-replace-at-cursor-thing)
+     
 
 
+#+END_SRC
 
-
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
   #+END_SRC
-
 
 * Avy 
 #+BEGIN_SRC emacs-lisp
@@ -834,6 +891,9 @@
 :bind ("M-s" . avy-goto-char))
 #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * PCRE2EL
   #+BEGIN_SRC emacs-lisp
@@ -844,6 +904,9 @@
   )
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Smooth scrolling
 
@@ -854,6 +917,9 @@
        ;; smooth-scrolling-mode 1))
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Company 
   #+BEGIN_SRC emacs-lisp
@@ -874,7 +940,26 @@
              (setq company-tooltip-align-annotations 't)
              (setq company-idle-delay .3)
              (setq company-minimum-prefix-length 1)
-             (setq company-begin-commands '(self-insert-command)))
+             (setq company-begin-commands '(self-insert-command))
+
+
+(custom-set-faces
+ '(company-preview
+   ((t (:foreground "darkgray" :underline t))))
+ '(company-preview-common
+   ((t (:inherit company-preview))))
+ '(company-tooltip
+   ((t (:background "lightgray" :foreground "black"))))
+ '(company-tooltip-selection
+   ((t (:background "black" :foreground "white"))))
+ '(company-tooltip-common
+   ((((type x)) (:inherit company-tooltip :weight bold))
+    (t (:inherit company-tooltip))))
+ '(company-tooltip-common-selection
+   ((((type x)) (:inherit company-tooltip-selection :weight bold))
+    (t (:inherit company-tooltip-selection)))))
+
+)
 
 
 (use-package company-php :ensure t)
@@ -883,6 +968,9 @@
 
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Web-mode
 
@@ -904,39 +992,50 @@
 
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * PHP
 
   #+BEGIN_SRC emacs-lisp
 
-;; php mode
-(use-package php-mode 
-:ensure t)
+    ;; php mode
+    (use-package php-mode 
+    :ensure t)
 
-;; php code sniffer
-(use-package phpcbf
-:ensure t
-:config
-(setq phpcbf-standard "PSR2")
-(setq php-mode-coding-style (quote psr2))
-(add-hook 'php-mode-hook 'phpcbf-enable-on-save)
-)
+    ;; php code sniffer
+    (use-package phpcbf
+    :ensure t
+    :config
+    (setq phpcbf-standard "PSR2")
+    (setq php-mode-coding-style (quote psr2))
+    (add-hook 'php-mode-hook 'phpcbf-enable-on-save)
+    )
 
-;; php flycheck
-(setq flycheck-phpmd-rulesets '("cleancode" "codesize" "controversial" "design" "naming" "unusedcode"))
-(add-hook 'php-mode-hook (lambda () (setq flycheck-phpcs-standard "PSR2")))
+    ;; php flycheck
+    (setq flycheck-phpmd-rulesets '("cleancode" "codesize" "controversial" "design" "naming" "unusedcode"))
+    (add-hook 'php-mode-hook (lambda () (setq flycheck-phpcs-standard "PSR2")))
 
-;; auto-complete & company-mode for php
-(use-package ac-php :ensure t
-            :config
-            (ac-php-core-eldoc-setup))
+    ;; auto-complete & company-mode for php
+    ;; (use-package ac-php :ensure t
+                ;; :config
+                ;; (ac-php-core-eldoc-setup))
+
+    (setq geben-dbgp-default-port 9001)
 
 
   #+END_SRC
 
 
 
-
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
+* Perl
+  #+BEGIN_SRC emacs-lisp
+    ;; (add-hook perl-mode-hook (lambda () (local-unset-key (kbd "tab"))))
+  #+END_SRC
 * Web Beautify
 
   #+BEGIN_SRC emacs-lisp
@@ -957,6 +1056,9 @@
   #+END_SRC
 
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Rainbow
 
@@ -977,6 +1079,9 @@
   #+END_SRC
 
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Projectile 
   
@@ -1033,6 +1138,9 @@
 (define-key projectile-command-map (kbd "n") 'ab-set-project-name-manual)
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Smex
   Smart M-x command
@@ -1045,6 +1153,9 @@
   #+END_SRC
 
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Dired
   #+BEGIN_SRC emacs-lisp
@@ -1106,6 +1217,29 @@
 
 
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
+
+* Neotree
+#+BEGIN_SRC emacs-lisp
+  (use-package neotree
+  :ensure t 
+  :config
+  (setq neo-smart-open t))
+#+END_SRC
+* Multiple cursors
+
+  #+BEGIN_SRC emacs-lisp
+  (use-package multiple-cursors
+  :ensure t
+  :config
+  )
+  #+END_SRC
+
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
 
 * Keybindings
 
@@ -1134,7 +1268,7 @@
     ("<M-tab>" . other-window)
     ;; ("C-s" . save-buffer )
     ;; ("C-S-s" . write-file )
-    ("C-f" . isearch-forward)
+    ("C-f" . phi-search)
     ("M-S-<down>" . buf-move-down)
     ("M-S-<left>" . buf-move-left)
     ("M-S-<right>" . buf-move-right)
@@ -1240,7 +1374,7 @@
                          ("у" . xah-backward-kill-word)
                          ("я" . xah-comment-dwim)
                          ("х" . hippie-expand)
-                         ("ф" . avy-goto-char)
+                         ("ф" . smex)
                          ("т" . isearch-forward)
                          ("ш" . previous-line)
                          ("р" . xah-beginning-of-line-or-block)
@@ -1273,12 +1407,19 @@
                        xah-fly-key-map
                        '(
 
-                         ("a" . avy-goto-char)
-                         ("ф" . avy-goto-char)
+                         ("a" . smex)
+                         ("ф" . smex)
+                         
+                         ("m" . avy-goto-word-1)
+                         ("ь" . avy-goto-word-1)
+
+                         ("-" . universal-argument)
+                         ("э" . universal-argument)
                          
 
                          ("b" . ab-swiper)
                          ("т" . ab-swiper)
+                         
                          
                          ("i" . keyboard-quit)
                          ("п" . keyboard-quit)
@@ -1351,6 +1492,12 @@
                       ;; (define-key projectile-mode-map (kbd "p") nil)
 )))
 
+
+;;(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(define-key xah-fly-r-keymap (kbd "c") 'mc/edit-lines)
+(define-key xah-fly-r-keymap (kbd "m") 'mc/mark-more-like-this-extended)
+(define-key xah-fly-r-keymap (kbd "M") 'mc/mark-all-like-this)
+
 (define-key xah-fly-c-keymap (kbd "j") 'ab-goto-recent-file)
 (define-key xah-fly-c-keymap (kbd "d") 'ab-goto-recent-directory)
 
@@ -1394,6 +1541,9 @@
 (define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
 (define-key xah-fly-leader-key-map (kbd "p") 'projectile-command-map)
 
+(define-key xah-fly-leader-key-map (kbd "u") 'neotree-toggle)
+
+
 (define-key xah-fly-leader-key-map (kbd "7") 'ispell-region)  
 ;; * Org mode
 (define-key key-translation-map (kbd "<menu>") (kbd "C-c"))
@@ -1436,6 +1586,35 @@
 
   #+END_SRC
 
+  #+BEGIN_SRC emacs-lisp
+(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
+  #+END_SRC
+
+* Anzy
+
+#+BEGIN_SRC emacs-lisp
+
+
+    (use-package anzu
+     :ensure t
+     :config
+     (global-anzu-mode +1))
+     (global-set-key [remap query-replace] 'anzu-query-replace)
+     (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+     (define-key xah-fly-leader-key-map (kbd "z") 'anzu-replace-at-cursor-thing)
+
+
+#+END_SRC
+
+* Plstore
+  #+BEGIN_SRC emacs-lisp
+(use-package plstore
+:ensure t
+:config
+(setq plstore-cache-passphrase-for-symmetric-encryption t)
+)
+
+  #+END_SRC
 
 * Welcome messge 
   #+BEGIN_SRC emacs-lisp
