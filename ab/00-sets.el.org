@@ -37,6 +37,7 @@
 (setq epg-gpg-program "gpg") 
 
 
+
 (customize-set-variable 'tramp-use-ssh-controlmaster-options t)
 (setq tramp-inline-compress-start-size 50000)
 
@@ -103,6 +104,8 @@
 
 (custom-set-faces
  '(default ((t (:height 120)))))
+(set-default-font "Hack")
+
 
 (delete-selection-mode 1)
 
@@ -242,8 +245,8 @@
     (require 'recentf)
     ;; (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
     (recentf-mode 1)
-    (setq recentf-max-menu-items 250)
-    (setq recentf-max-saved-items 250)
+    (setq recentf-max-menu-items 300)
+    (setq recentf-max-saved-items 300)
 
     ;; (edit-server-start)
 
@@ -255,10 +258,10 @@
   #+END_SRC
 
 * All-The-Icons
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 (use-package all-the-icons)
 
-#+END_SRC
+  #+END_SRC
 
 
 * Themes
@@ -273,6 +276,11 @@
 (use-package doom-modeline
       :ensure t
       :hook (after-init . doom-modeline-mode))
+
+;; Highlight current row
+(global-hl-line-mode 1)
+;;(set-face-background hl-line-face "DarkSlateBlue")
+(set-face-background hl-line-face "gray13")
   #+END_SRC
 
 
@@ -343,6 +351,18 @@
 (yas-minor-mode)
 ))
 
+
+
+(setq org-agenda-span 'month)
+(setq org-agenda-start-day "-7d")
+
+(add-hook 'org-agenda-mode-hook
+(lambda () (local-set-key (kbd "r") 'org-agenda-earlier) 
+            ;; (local-set-key (kbd "") 'org-agenda-later) 
+            ))
+
+
+
   #+END_SRC
 
   - Fonts
@@ -358,6 +378,18 @@
                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
   #+END_SRC
+
+  #+BEGIN_SRC emacs-lisp
+(setq org-agenda-custom-commands
+      '(("cx" "TODOs sorted by state, priority, effort"
+         todo "*"
+         ((org-agenda-overriding-header "\nTODOs sorted by state, priority, effort")
+          (org-agenda-sorting-strategy '(todo-state-down priority-down effort-up))))))
+
+  #+END_SRC
+
+
+
 
   #+BEGIN_SRC emacs-lisp
 (message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
@@ -427,377 +459,344 @@
 
 * Custom functions
   #+BEGIN_SRC emacs-lisp
-  ;; 
-  ;; ab-PACKAGES SETS
-  ;;
+          ;; 
+          ;; ab-PACKAGES SETS
+          ;;
 
-  (defun cp1251 ()
-    (interactive)
-    (revert-buffer-with-coding-system 'cp1251)
-    )
+          (defun cp1251 ()
+            (interactive)
+            (revert-buffer-with-coding-system 'cp1251)
+            )
 
-  (defun finish-line ()
-    (interactive)
-    (end-of-line)
-    (when (not (looking-back ";"))
-      (insert ";")))
+          (defun finish-line ()
+            (interactive)
+            (end-of-line)
+            (when (not (looking-back ";"))
+              (insert ";")))
 
  
 
-  (defun emacs-reload-current-file ()
-    "Reload current buffer file from the disk"
-    (interactive)
-    (cond (buffer-file-name (progn (find-alternate-file buffer-file-name)
-                                   (message "File reloaded")))
-          (t (message "You're not editing a file!"))))
+          (defun emacs-reload-current-file ()
+            "Reload current buffer file from the disk"
+            (interactive)
+            (cond (buffer-file-name (progn (find-alternate-file buffer-file-name)
+                                           (message "File reloaded")))
+                  (t (message "You're not editing a file!"))))
 
 
 
-  ;;Enable show-paren-mode
-  (show-paren-mode 1)
+          ;;Enable show-paren-mode
+          (show-paren-mode 1)
 
-  ;;Enable winner-mode
-  (winner-mode t)
+          ;;Enable winner-mode
+          (winner-mode t)
 
-  ;;Enable windmove
-  (windmove-default-keybindings 'meta)
+          ;;Enable windmove
+          (windmove-default-keybindings 'meta)
 
-  (save-place-mode 1)
-
-
-
-
-  ;;(require 'server)
-  ;;(unless (server-running-p)
-  ;;  (server-start))
+          (save-place-mode 1)
 
 
 
 
-
-  (defun flush-empty-lines()
-    "Remove emty string from buffer"
-      (interactive)
-      (flush-lines "^[[:space:]]*$"))
-
-  (defun eshell-clear ()
-    "Clear the eshell buffer."
-    (let ((inhibit-read-only t))
-      (erase-buffer)
-      (eshell-send-input)))
-
-
-  (defun run-current-file ()
-    "Execute or compile the current file.
-  For example, if the current buffer is the file x.pl,
-  then it'll call “perl x.pl” in a shell.
-  The file can be php, perl, python, ruby, javascript, bash, ocaml, vb, elisp.
-  File suffix is used to determine what program to run.
-  If the file is modified, ask if you want to save first. (This command always run the saved version.)
-  If the file is emacs lisp, run the byte compiled version if exist."
-    (interactive)
-    (let (suffixMap fName fSuffix progName cmdStr)
-
-      ;; a keyed list of file suffix to comand-line program path/name
-      (setq suffixMap 
-            '(("php" . "php")
-              ;; ("coffee" . "coffee -p")
-              ("pl" . "perl")
-              ("py" . "python")
-              ("rb" . "ruby")
-              ("js" . "node")             ; node.js
-              ("sh" . "bash")
-              ("ml" . "ocaml")
-              ("vbs" . "cscript")))
-      (setq fName (buffer-file-name))
-      (setq fSuffix (file-name-extension fName))
-      (setq progName (cdr (assoc fSuffix suffixMap)))
-      (setq cmdStr (concat progName " \""   fName "\""))
-
-      (when (buffer-modified-p)
-        (progn 
-          (when (y-or-n-p "Buffer modified. Do you want to save first?")
-            (save-buffer) ) ) )
-
-      (if (string-equal fSuffix "el") ; special case for emacs lisp
-          (progn 
-            (load (file-name-sans-extension fName)))
-        (if progName
-            (progn
-              (message "Running…")
-              ;; (message progName)
-              (shell-command cmdStr "*run-current-file output*" ))
-          (message "No recognized program file suffix for this file.")))
-      ))
-
-
-
-
-  (defun file-metadata ()
-    (interactive)
-    (let* ((fname (buffer-file-name))
-           (data (file-attributes fname))
-           (access (current-time-string (nth 4 data)))
-           (mod (current-time-string (nth 5 data)))
-           (change (current-time-string (nth 6 data)))
-           (size (nth 7 data))
-           (mode (nth 8 data)))
-      (message
-       "%s:
-    Accessed: %s
-    Modified: %s
-    Changed: %s
-    Size: %s bytes
-    Mode: %s"
-       fname access mod change size mode)))
-
-
-
-  (defun ab-goto-recent-directory ()
-    "Open recent directory with dired"
-    (interactive)
-    (unless recentf-mode (recentf-mode 1))
-    (let ((collection
-           (delete-dups
-            (append (mapcar 'file-name-directory recentf-list)
-                    ;; fasd history
-                    (if (executable-find "fasd")
-                        (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
-      (ivy-read "Recent directories:" collection :action 'dired)))
-
-
-  (defun ab-goto-recent-file ()
-    "Open recent directory with dired"
-    (interactive)
-    (unless recentf-mode (recentf-mode 1))
-    (ivy-read "Recent files:" recentf-list :action 'find-file))
+          ;;(require 'server)
+          ;;(unless (server-running-p)
+          ;;  (server-start))
 
 
 
 
 
-  ;; Change (..) to [..], '..' to ".." and back
-  (defun ab-change-bracket-pair ()
-      (interactive )
-      (xah-goto-matching-bracket)
+          (defun flush-empty-lines()
+            "Remove emty string from buffer"
+              (interactive)
+              (flush-lines "^[[:space:]]*$"))
 
-      ;; (backward-char)
-      (cua-set-mark)
-      ;; (forward-char)
-      (xah-goto-matching-bracket)
+          (defun eshell-clear ()
+            "Clear the eshell buffer."
+            (let ((inhibit-read-only t))
+              (erase-buffer)
+              (eshell-send-input)))
 
-      ;; cycle pair
-      (case (char-before)
-        ((?') (xah-insert-bracket-pair "\"" "\""))
-        ((?\") (xah-insert-bracket-pair "'" "'"))
-        ((?\)) (xah-insert-bracket-pair "[" "]"))
-        ((?\]) (xah-insert-bracket-pair "(" ")"))
-        )
+
+          (defun run-current-file ()
+            "Execute or compile the current file.
+          For example, if the current buffer is the file x.pl,
+          then it'll call “perl x.pl” in a shell.
+          The file can be php, perl, python, ruby, javascript, bash, ocaml, vb, elisp.
+          File suffix is used to determine what program to run.
+          If the file is modified, ask if you want to save first. (This command always run the saved version.)
+          If the file is emacs lisp, run the byte compiled version if exist."
+            (interactive)
+            (let (suffixMap fName fSuffix progName cmdStr)
+
+              ;; a keyed list of file suffix to comand-line program path/name
+              (setq suffixMap 
+                    '(("php" . "php")
+                      ;; ("coffee" . "coffee -p")
+                      ("pl" . "perl")
+                      ("py" . "python")
+                      ("rb" . "ruby")
+                      ("js" . "node")             ; node.js
+                      ("sh" . "bash")
+                      ("ml" . "ocaml")
+                      ("vbs" . "cscript")))
+              (setq fName (buffer-file-name))
+              (setq fSuffix (file-name-extension fName))
+              (setq progName (cdr (assoc fSuffix suffixMap)))
+              (setq cmdStr (concat progName " \""   fName "\""))
+
+              (when (buffer-modified-p)
+                (progn 
+                  (when (y-or-n-p "Buffer modified. Do you want to save first?")
+                    (save-buffer) ) ) )
+
+              (if (string-equal fSuffix "el") ; special case for emacs lisp
+                  (progn 
+                    (load (file-name-sans-extension fName)))
+                (if progName
+                    (progn
+                      (message "Running…")
+                      ;; (message progName)
+                      (shell-command cmdStr "*run-current-file output*" ))
+                  (message "No recognized program file suffix for this file.")))
+              ))
+
+
+
+
+          (defun file-metadata ()
+            (interactive)
+            (let* ((fname (buffer-file-name))
+                   (data (file-attributes fname))
+                   (access (current-time-string (nth 4 data)))
+                   (mod (current-time-string (nth 5 data)))
+                   (change (current-time-string (nth 6 data)))
+                   (size (nth 7 data))
+                   (mode (nth 8 data)))
+              (message
+               "%s:
+            Accessed: %s
+            Modified: %s
+            Changed: %s
+            Size: %s bytes
+            Mode: %s"
+               fname access mod change size mode)))
+
+
+
+          (defun ab-goto-recent-directory ()
+            "Open recent directory with dired"
+            (interactive)
+            (unless recentf-mode (recentf-mode 1))
+            (let ((collection
+                   (delete-dups
+                    (append (mapcar 'file-name-directory recentf-list)
+                            ;; fasd history
+                            (if (executable-find "fasd")
+                                (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
+              (ivy-read "Recent directories:" collection :action 'dired)))
+
+
+          (defun ab-goto-recent-file ()
+            "Open recent directory with dired"
+            (interactive)
+            (unless recentf-mode (recentf-mode 1))
+            (ivy-read "Recent files:" recentf-list :action 'find-file))
+
+
+
+
+
+          ;; Change (..) to [..], '..' to ".." and back
+          (defun ab-change-bracket-pair ()
+              (interactive )
+              (xah-goto-matching-bracket)
+
+              ;; (backward-char)
+              (cua-set-mark)
+              ;; (forward-char)
+              (xah-goto-matching-bracket)
+
+              ;; cycle pair
+              (case (char-before)
+                ((?') (xah-insert-bracket-pair "\"" "\""))
+                ((?\") (xah-insert-bracket-pair "'" "'"))
+                ((?\)) (xah-insert-bracket-pair "[" "]"))
+                ((?\]) (xah-insert-bracket-pair "(" ")"))
+                )
 
     
-      (backward-char)
-      (xah-delete-backward-bracket-pair)
-      (forward-char)
+              (backward-char)
+              (xah-delete-backward-bracket-pair)
+              (forward-char)
 
-      )
-
-
-
-  (setq auto-save-default nil)
-
-
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-
-
-  ;; grep search templete
-  (setq grep-find-template "find . <X> -type f <F> -exec grep <C> -nH -e -i \"<R>\" \\{\\} +")
+              )
 
 
 
-  (setq ido-use-filename-at-point 'guess)
-  (setq ido-enable-flex-matching t)
-  (setq ido-everywhere t)
-  (ido-mode 1)
+          (setq auto-save-default nil)
 
 
-  (global-subword-mode 1)
+          (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
-  ;; Crypt org files 
-  (require 'org-crypt)
-  (org-crypt-use-before-save-magic)
-  (setq org-tags-exclude-from-inheritance (quote ("crypt")))
-    ;; GPG key to use for encryption
-    ;; Either the Key ID or set to nil to use symmetric encryption.
-  ;; (setq org-crypt-key nil)
 
-  (setq org-crypt-key "3FEE3795")   
-  (setq epa-file-select-keys nil)
+          ;; grep search templete
+          (setq grep-find-template "find . <X> -type f <F> -exec grep <C> -nH -e -i \"<R>\" \\{\\} +")
 
 
 
-  (setq org-support-shift-select t)
+          (setq ido-use-filename-at-point 'guess)
+          (setq ido-enable-flex-matching t)
+          (setq ido-everywhere t)
+          (ido-mode 1)
+
+
+          (global-subword-mode 1)
+
+          ;; Crypt org files 
+          (require 'org-crypt)
+          (org-crypt-use-before-save-magic)
+          (setq org-tags-exclude-from-inheritance (quote ("crypt")))
+            ;; GPG key to use for encryption
+            ;; Either the Key ID or set to nil to use symmetric encryption.
+          ;; (setq org-crypt-key nil)
+
+          (setq org-crypt-key "3FEE3795")   
+          (setq epa-file-select-keys nil)
 
 
 
-  (setq org-todo-keywords
-  '((sequence "TODO" "PROCESS" "DELEGATED" "|" "DONE")))
-
-(setq org-todo-keyword-faces
-  '(("TODO" . (:foreground "#ff39a3" :weight bold))
-("PROCESS" . "green")
-("CANCELED" . (:foreground "white" :background "#4d4d4d" :weight bold))
-;;("DELEGATED" . "")
-("POSTPONED" . "#008080")))
-
-
-(setq org-todo-sort-order '("PROCESS" "DELEGATED" "TODO" "" "DONE"))
-
-(defun my:user-todo-sort (a b)
-  "Sort todo based on which I want to see first"
-  (when-let ((state-a (get-text-property 14 'todo-state a))
-             (state-b (get-text-property 14 'todo-state b))
-             (cmp (--map (cl-position-if (lambda (x)
-                                           (equal x it))
-                                         org-todo-sort-order)
-                         (list state-a state-b))))
-    (cond ((apply '> cmp) 1)
-          ((apply '< cmp) -1)
-          (t nil))))
-(setq org-agenda-cmp-user-defined 'my:user-todo-sort)
+          (setq org-support-shift-select t)
 
 
 
-  (setq xah-fly-use-meta-key nil) ; must come before loading xah-fly-keys
-  (require 'xah-fly-keys)
+          (setq org-todo-keywords
+          '((sequence "TODO" "PROCESS" "DELEGATED" "|" "DONE")))
 
-  (xah-fly-keys-set-layout "qwerty") ; required if you use qwerty
-
-  (xah-fly-keys 1)
-
-
-
-  (electric-pair-mode 1)
-
-  (skewer-setup)
-
-  (setq visible-bell 1)
-   (setq ring-bell-function 
-        (lambda ()
-          (unless (memq this-command
-                        '(isearch-abort abort-recursive-edit exit-minibuffer keyboard-quit))
-            (ding))))
+        (setq org-todo-keyword-faces
+          '(("TODO" . (:foreground "#ff39a3" :weight bold))
+        ("PROCESS" . "green")
+        ("CANCELED" . (:foreground "white" :background "#4d4d4d" :weight bold))
+        ;;("DELEGATED" . "")
+        ("POSTPONED" . "#008080")))
 
 
+        (setq org-todo-sort-order '("PROCESS" "DELEGATED" "TODO" "" "DONE"))
 
-  (setq background-color (face-attribute 'default :background)) ;; #2d2d2d
-
-  (setq fringe-color "#323232")
-
-
-  (defun highlight-selected-window ()
-    "Highlight selected window with a different background color."
-    (walk-windows (lambda (w)
-                    (unless (eq w (selected-window))
-                      (with-current-buffer (window-buffer w)
-                        (buffer-face-set '(:background "#1f2229"))))))
-    (buffer-face-set 'default))
-  (add-hook 'buffer-list-update-hook 'highlight-selected-window)
+        (defun my:user-todo-sort (a b)
+          "Sort todo based on which I want to see first"
+          (when-let ((state-a (get-text-property 14 'todo-state a))
+                     (state-b (get-text-property 14 'todo-state b))
+                     (cmp (--map (cl-position-if (lambda (x)
+                                                   (equal x it))
+                                                 org-todo-sort-order)
+                                 (list state-a state-b))))
+            (cond ((apply '> cmp) 1)
+                  ((apply '< cmp) -1)
+                  (t nil))))
+        (setq org-agenda-cmp-user-defined 'my:user-todo-sort)
 
 
 
+          (setq xah-fly-use-meta-key nil) ; must come before loading xah-fly-keys
+          (require 'xah-fly-keys)
 
-  (defadvice delete-frame (after delete-frame-set-background)
-    (set-background-color "#1f2229"))
-  (ad-activate 'delete-frame)
+          (xah-fly-keys-set-layout "qwerty") ; required if you use qwerty
 
-
-
-  (defun ab-xfk-command-color ()
-    ;; (set-background-color background-color)
-    ;; (set-face-background 'fringe fringe-color)
-    (global-hl-line-mode 0)
-
-    ;; (set-face-background 'mode-line fringe-color) 
-    ;; (set-face-background 'mode-line-inactive fringe-color)
-    ;; (shell-command "
-  ;; setxkbmap -layout 'us' &
-  ;; setxkbmap -layout 'us,ru' &
-  ;; setxkbmap -option 'ctrl:nocaps,grp:alt_shift_toggle,grp_led:caps' &
-    ;; 
-  ;; xmodmap -e 'keycode 66 = Menu' &
-  ;; ")
-  )    
-  (defun ab-xfk-insert-color ()
-    ;; (set-background-color "#282828")
-    ;; (set-face-background 'fringe "dim gray")
-    (global-hl-line-mode 1)
-    ;; (set-face-background 'mode-line "#767676") 
-    ;; (set-face-background 'mode-line-inactive "#767676")   
-
-    )  
+          (xah-fly-keys 1)
 
 
-  (global-hl-line-mode 0)
-  ;; (set-face-background hl-line-face "DarkOliveGreen")
 
-  (setq dumb-jump-max-find-time 10)
+          (electric-pair-mode 1)
+
+          (skewer-setup)
+
+          (setq visible-bell 1)
+           (setq ring-bell-function 
+                (lambda ()
+                  (unless (memq this-command
+                                '(isearch-abort abort-recursive-edit exit-minibuffer keyboard-quit))
+                    (ding))))
 
 
-  (add-hook 'xah-fly-command-mode-activate-hook 'ab-xfk-command-color)
-  (add-hook 'xah-fly-insert-mode-activate-hook  'ab-xfk-insert-color)
+        ;; Default theme background color
+          (setq background-color (face-attribute 'default :background)) ;; #2d2d2d
 
-  (blink-cursor-mode 0)
 
-  (setq skewer-refresh-onsave nil) 
+          (defun highlight-selected-window ()
+            "highlight-selected-window."
+            (walk-windows (lambda (w)
+                            (unless (eq w (selected-window)) ;; 
+                              (with-current-buffer (window-buffer w)
+                                ;;(buffer-face-set '(:background "#4e4e4e"))
+                                ))))
+                                (buffer-face-set 'default))
+          (add-hook 'buffer-list-update-hook 'highlight-selected-window)
 
-  (defun ab-skewer-start-browser-refresh () (interactive) (setq skewer-refresh-onsave t) (run-skewer) )
-  (defun ab-skewer-stop-browser-refresh () (interactive) (setq skewer-refresh-onsave nil) )
-  ;; In skawer mode refresh linked browser page by save file
-  (defun my-after-save-actions () "Used refresh" (when skewer-refresh-onsave (skewer-eval "location.reload()" ) ))
 
-  (defun skawer-mode-hook-onsave () (add-hook 'after-save-hook 'my-after-save-actions) )
 
-  (add-hook 'skewer-mode-hook 'skawer-mode-hook-onsave)
+
+          (defadvice delete-frame (after delete-frame-set-background)
+            (set-background-color background-color))
+            (ad-activate 'delete-frame)
+
+
+          
+
+
+          (setq dumb-jump-max-find-time 10)
+
+          (blink-cursor-mode 0)
+
+        ;;  (setq skewer-refresh-onsave nil) 
+        ;;  (defun ab-skewer-start-browser-refresh () (interactive) (setq skewer-refresh-onsave t) (run-skewer) )
+        ;;  (defun ab-skewer-stop-browser-refresh () (interactive) (setq skewer-refresh-onsave nil) )
+          ;; In skawer mode refresh linked browser page by save file
+        ;;  (defun my-after-save-actions () "Used refresh" (when skewer-refresh-onsave (skewer-eval "location.reload()" ) ))
+
+        ;;  (defun skawer-mode-hook-onsave () (add-hook 'after-save-hook 'my-after-save-actions) )
+        ;;  (add-hook 'skewer-mode-hook 'skawer-mode-hook-onsave)
  
  
 
-  (defun alarm() (call-process "paplay" "~/.emacs.d/alarm3.wav"))
+          (defun alarm() (call-process "paplay" "~/.emacs.d/alarm3.wav"))
 
 
-  (defun ab-run-lastcommand-in-next-eshell-window () 
-   (xah-next-window-or-frame)
-   (end-of-buffer)
-   (eshell-previous-matching-input-from-input 1)
-   ;; (newline)
-   (eshell-send-input)
-   (xah-next-window-or-frame)
-  )
+          (defun ab-run-lastcommand-in-next-eshell-window () 
+           (xah-next-window-or-frame)
+           (end-of-buffer)
+           (eshell-previous-matching-input-from-input 1)
+           ;; (newline)
+           (eshell-send-input)
+           (xah-next-window-or-frame)
+          )
  
-  (defun ab-eshell-start-lastcommand-by-save () 
-    (interactive)
-    (add-hook 'after-save-hook 'ab-run-lastcommand-in-next-eshell-window)
-  )
+          (defun ab-eshell-start-lastcommand-by-save () 
+            (interactive)
+            (add-hook 'after-save-hook 'ab-run-lastcommand-in-next-eshell-window)
+          )
      
-  (defun ab-eshell-stop-lastcommand-by-save () 
-    (interactive)
-    (remove-hook 'after-save-hook 'ab-run-lastcommand-in-next-eshell-window)
-  )
+          (defun ab-eshell-stop-lastcommand-by-save () 
+            (interactive)
+            (remove-hook 'after-save-hook 'ab-run-lastcommand-in-next-eshell-window)
+          )
 
 
 
 
-  ;; ("j" "Journal" entry (file+datetree "~/org/journal.org")"* %?\nEntered on %U\n  %i\n  %a")
-  ;; ("a" "Addresat-Todo" entry (file+headline "~/Документы/org/adresat-ToDo.org" "") "* TODO %?\n  %i\n  %a") 
+          ;; ("j" "Journal" entry (file+datetree "~/org/journal.org")"* %?\nEntered on %U\n  %i\n  %a")
+          ;; ("a" "Addresat-Todo" entry (file+headline "~/Документы/org/adresat-ToDo.org" "") "* TODO %?\n  %i\n  %a") 
 
 
 
 
-  ;; Export to ics for google
+          ;; Export to ics for google
 
 
 
 
-  ;;; define categories that should be excluded
+          ;;; define categories that should be excluded
 
 
 
@@ -826,7 +825,11 @@
     (progn
     (ivy-mode 1)
     (setq ivy-use-virtual-buffers t)
+    (setq ivy-virtual-abbreviate 'full)
     (setq ivy-initial-inputs-alist nil)
+    (setq ivy-count-format "%d/%d ")
+    (setq ivy-on-del-error-function #'ignore)
+
     ;; swiper for symbol at point
     (global-set-key (kbd "C-x l") 'counsel-locate)
     (define-key read-expression-map (kbd "C-r") 'counsel-minibuffer-history)
@@ -834,7 +837,22 @@
     ))
 
 
-    ;; (defun ab-swiper (start end)
+
+ ;;   (global-set-key (kbd "C-<tab>")
+ ;;   (lambda () (interactive "")
+ ;;   (switch-to-buffer (other-buffer (current-buffer) t))))
+
+
+ ;;   ivy-switch-buffer
+ ;; (setq ivy-switch-buffer-show-info '("%s" "file-name" "buffer-name"))
+
+ ;;  (use-package ivy-rich
+ ;;    :ensure t
+ ;;    :config
+ ;;    (ivy-rich-mode 1)
+ ;;    )
+
+  ;; (defun ab-swiper (start end)
     ;;   (interactive "r")
     ;;   (if (use-region-p)
     ;;   (setq regionp (buffer-substring start end))
@@ -878,18 +896,18 @@
      
 
 
-#+END_SRC
+  #+END_SRC
 
   #+BEGIN_SRC emacs-lisp
 (message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
   #+END_SRC
 
 * Avy 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 (use-package avy
 :ensure t
 :bind ("M-s" . avy-goto-char))
-#+END_SRC
+  #+END_SRC
 
   #+BEGIN_SRC emacs-lisp
 (message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
@@ -924,47 +942,47 @@
 * Company 
   #+BEGIN_SRC emacs-lisp
 
-(use-package company :ensure t
-             :config
-             (add-hook 'after-init-hook 'global-company-mode)
-             (add-to-list 'company-backends 'company-web)
-             (add-to-list 'company-backends 'company-quickhelp)
-             (add-to-list 'company-backends 'company-php)
-             (add-to-list 'company-backends 'company-ac-php-backend)
-             (add-to-list 'company-backends 'php-extras-company)
-             (add-to-list 'company-backends 'company-Yasnippet)
-             (add-to-list 'company-backends 'company-dabbrev)
-             (add-to-list 'company-backends 'company-capf)
-             (add-to-list 'company-backends 'company-files)
-             (setq company-tooltip-limit 20)
-             (setq company-tooltip-align-annotations 't)
-             (setq company-idle-delay .3)
-             (setq company-minimum-prefix-length 1)
-             (setq company-begin-commands '(self-insert-command))
+    (use-package company :ensure t
+                 :config
+                 (add-hook 'after-init-hook 'global-company-mode)
+                 (add-to-list 'company-backends 'company-web)
+                 (add-to-list 'company-backends 'company-quickhelp)
+                 (add-to-list 'company-backends 'company-php)
+                 ;; (add-to-list 'company-backends 'company-ac-php-backend)
+                 (add-to-list 'company-backends 'php-extras-company)
+                 (add-to-list 'company-backends 'company-Yasnippet)
+                 (add-to-list 'company-backends 'company-dabbrev)
+                 (add-to-list 'company-backends 'company-capf)
+                 (add-to-list 'company-backends 'company-files)
+                 (setq company-tooltip-limit 20)
+                 (setq company-tooltip-align-annotations 't)
+                 (setq company-idle-delay .3)
+                 (setq company-minimum-prefix-length 1)
+                 (setq company-begin-commands '(self-insert-command))
 
 
-(custom-set-faces
- '(company-preview
-   ((t (:foreground "darkgray" :underline t))))
- '(company-preview-common
-   ((t (:inherit company-preview))))
- '(company-tooltip
-   ((t (:background "lightgray" :foreground "black"))))
- '(company-tooltip-selection
-   ((t (:background "black" :foreground "white"))))
- '(company-tooltip-common
-   ((((type x)) (:inherit company-tooltip :weight bold))
-    (t (:inherit company-tooltip))))
- '(company-tooltip-common-selection
-   ((((type x)) (:inherit company-tooltip-selection :weight bold))
-    (t (:inherit company-tooltip-selection)))))
+    (custom-set-faces
+     '(company-preview
+       ((t (:foreground "darkgray" :underline t))))
+     '(company-preview-common
+       ((t (:inherit company-preview))))
+     '(company-tooltip
+       ((t (:background "lightgray" :foreground "black"))))
+     '(company-tooltip-selection
+       ((t (:background "black" :foreground "white"))))
+     '(company-tooltip-common
+       ((((type x)) (:inherit company-tooltip :weight bold))
+        (t (:inherit company-tooltip))))
+     '(company-tooltip-common-selection
+       ((((type x)) (:inherit company-tooltip-selection :weight bold))
+        (t (:inherit company-tooltip-selection)))))
 
-)
+    )
 
 
-(use-package company-php :ensure t)
-(use-package company-web :ensure t)
-(use-package company-quickhelp :ensure t)
+    (use-package company-php :ensure t)
+    (use-package company-web :ensure t)
+    (use-package company-quickhelp :ensure t)
 
   #+END_SRC
 
@@ -1198,8 +1216,8 @@
 
   (when (require 'dired+ nil 'noerror)
          (message "Hello"))
-
-
+  ;; Reuse Dir in dired         
+  (diredp-toggle-find-file-reuse-dir 1)
 
   ;; Style of omit files in dired
   (custom-set-faces
@@ -1222,12 +1240,12 @@
   #+END_SRC
 
 * Neotree
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
   (use-package neotree
   :ensure t 
   :config
   (setq neo-smart-open t))
-#+END_SRC
+  #+END_SRC
 * Multiple cursors
 
   #+BEGIN_SRC emacs-lisp
@@ -1541,6 +1559,9 @@
 (define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
 (define-key xah-fly-leader-key-map (kbd "p") 'projectile-command-map)
 
+(define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
+
+
 (define-key xah-fly-leader-key-map (kbd "u") 'neotree-toggle)
 
 
@@ -1589,10 +1610,51 @@
   #+BEGIN_SRC emacs-lisp
 (message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
   #+END_SRC
+* Indium
+
+
+  #+BEGIN_SRC emacs-lisp
+  #+END_SRC
+
+
+
+  #+BEGIN_SRC emacs-lisp
+    (use-package indium
+     :ensure t
+     :config
+     (define-key js-mode-map (kbd "C-c C-c") 'ab-indium-eval) 
+     (define-key js2-mode-map (kbd "C-c C-c") 'ab-indium-eval) 
+     (defun indium-scratch-insert-welcome-message ()
+     "Insert a welcome message to help use the scratch buffer."
+     (insert "// This buffer is for JavaScript evaluation.\n
+location.reload();
+$scope = angular.element(document.getElementById('checkPinController')).scope();
+$scope.askPin();
+\n"))
+
+     ;; (define-key js-mode-map (kbd "SPC , m") ab-indium-eval) 
+  )
+
+  
+
+  ;; В indium выполнить region если есть, иначе просто последний node
+  (defun ab-indium-eval ()
+    "print whether region is active."
+    (interactive)
+    (if (use-region-p)
+        (indium-eval-region (region-beginning) (region-end))
+      (indium-eval-last-node nil)))
+
+
+     ;; (define-key js2-mode-map (kbd "C-c C-c") ab-indium-eval)
+  #+END_SRC
+
+
+
 
 * Anzy
 
-#+BEGIN_SRC emacs-lisp
+  #+BEGIN_SRC emacs-lisp
 
 
     (use-package anzu
@@ -1604,7 +1666,7 @@
      (define-key xah-fly-leader-key-map (kbd "z") 'anzu-replace-at-cursor-thing)
 
 
-#+END_SRC
+  #+END_SRC
 
 * Plstore
   #+BEGIN_SRC emacs-lisp
