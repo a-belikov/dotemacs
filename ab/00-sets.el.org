@@ -681,8 +681,11 @@
         ;;("DELEGATED" . "")
         ("POSTPONED" . "#008080")))
 
+;;        (setq org-todo-sort-order '("PROCESS" "DELEGATED" "TODO" "" "DONE"))
 
-        (setq org-todo-sort-order '("PROCESS" "DELEGATED" "TODO" "" "DONE"))
+(setq org-priority-faces '((?A . (:foreground "red" :weight 'bold))
+                           (?B . (:foreground "yellow"))
+                           (?C . (:foreground "green"))))
 
         (defun my:user-todo-sort (a b)
           "Sort todo based on which I want to see first"
