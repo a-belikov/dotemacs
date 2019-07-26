@@ -79,6 +79,7 @@
                                        "Июнь" "Июль" "Август" "Сентябрь"
                                        "Октябрь" "Ноябрь" "Декабрь"])
 
+(global-so-long-mode 1)
 
 
 
@@ -90,6 +91,7 @@
                 nil)
 
 
+(custom-set-faces '(default ((t (:height 120)))))
 
 
 
@@ -102,9 +104,7 @@
 ;;Disable scroll-bar
 (scroll-bar-mode 1)
 
-(custom-set-faces
- '(default ((t (:height 120)))))
-(set-default-font "Hack")
+
 
 
 (delete-selection-mode 1)

@@ -35,8 +35,17 @@
 ;; 
 (org-babel-load-file (expand-file-name "~/.emacs.d/ab/00-sets.el.org"))
 
+
+
+
+(load-file "~/.emacs.d/ab/10-pragmatapro.el")
+
+
 ;; Config with secret key
 (load-file "~/.emacs.d/ab/11-private.el")
-;;(load-file "~/.emacs.d/vimode-emacs.init.el")
 
-(load-file "~/.emacs.d/custom.el")
+
+(custom-set-faces '(default ((t (:height 140)))))
+;; (load-file "./custom.el")
+
+(set-default-font "Hack")
