@@ -45,7 +45,6 @@
 (load-file "~/.emacs.d/ab/11-private.el")
 
 
-(custom-set-faces '(default ((t (:height 140)))))
 ;; (load-file "./custom.el")
 
 (set-default-font "Hack")

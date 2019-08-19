@@ -91,9 +91,6 @@
                 nil)
 
 
-(custom-set-faces '(default ((t (:height 120)))))
-
-
 
 ;;Disable menu-bar
 (menu-bar-mode -1)
@@ -126,7 +123,6 @@
   
 * Packages 
   #+BEGIN_SRC emacs-lisp
-
 
     ;; Declare a list of required packages
     (defvar emacs-required-packages
@@ -161,8 +157,9 @@
             (package-install p))
             emacs-required-packages)
 
-            (setq imenu-list-auto-resize nil)
-            (setq imenu-list-position 'right)
+    (setq imenu-list-auto-resize nil)
+    (setq imenu-list-position 'left)
+    (setq imenu-list-size 0.12)
 
     ;; * Try
     (use-package try
@@ -466,6 +463,11 @@
           (defun cp1251 ()
             (interactive)
             (revert-buffer-with-coding-system 'cp1251)
+            )
+
+          (defun utf8 ()
+            (interactive)
+            (revert-buffer-with-coding-system 'utf-8)
             )
 
           (defun finish-line ()
@@ -951,7 +953,7 @@
                  (add-to-list 'company-backends 'company-web)
                  (add-to-list 'company-backends 'company-quickhelp)
                  (add-to-list 'company-backends 'company-php)
-                 ;; (add-to-list 'company-backends 'company-ac-php-backend)
+                  (add-to-list 'company-backends 'company-ac-php-backend)
                  (add-to-list 'company-backends 'php-extras-company)
                  (add-to-list 'company-backends 'company-Yasnippet)
                  (add-to-list 'company-backends 'company-dabbrev)
@@ -1036,12 +1038,17 @@
 
     ;; php flycheck
     (setq flycheck-phpmd-rulesets '("cleancode" "codesize" "controversial" "design" "naming" "unusedcode"))
-    (add-hook 'php-mode-hook (lambda () (setq flycheck-phpcs-standard "PSR2")))
+    (add-hook 'php-mode-hook (lambda () 
+    (setq flycheck-phpcs-standard "PSR2")
+    (define-key xah-fly-comma-keymap (kbd "l") 'ac-php-find-symbol-at-point)
+    (define-key xah-fly-comma-keymap (kbd "k") 'ac-php-location-stack-back)
+    (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
+))
 
     ;; auto-complete & company-mode for php
-    ;; (use-package ac-php :ensure t
-                ;; :config
-                ;; (ac-php-core-eldoc-setup))
+    (use-package ac-php :ensure t
+                 :config
+                 (ac-php-core-eldoc-setup))
 
     (setq geben-dbgp-default-port 9001)
 
@@ -1280,13 +1287,13 @@
     ;; ("C-x C-f" . ido-find-file )
     ;; ("C-x C-r" . helm-recentf)
     ;; ("C-x k" . kill-this-buffer)
+    
     ("C-c a" . org-agenda)
     ("C-c g" . org-caldav-sync)
-    
     ;; ("C-c a c" . org-caldav-sync);; sync with google calendar
     ("C-c t" . org-capture)
     ("C-w" . kill-this-buffer)
-    ("<M-tab>" . other-window)
+    ("<C-tab>" . other-window)
     ;; ("C-s" . save-buffer )
     ;; ("C-S-s" . write-file )
     ("C-f" . phi-search)
@@ -1325,6 +1332,15 @@
 ;; (global-set-key (kbd "<menu>") ctl-x-map)
 
 
+(global-set-key (kbd "C-,") (lambda ()(interactive) (shrink-window-horizontally 5)))
+(local-set-key (kbd "C-,") (lambda ()(interactive) (shrink-window-horizontally 5)))
+
+(global-set-key (kbd "C-.") (lambda ()(interactive) (enlarge-window-horizontally 5)))
+;; (shrink-window-horizontally 5)
+;; (enlarge-window-horizontally 5)
+
+
+
 (global-set-key (kbd "C-1") (lambda ()(interactive) (bookmark-jump "1")))
 (global-set-key (kbd "C-2") (lambda ()(interactive) (bookmark-jump "2")))
 (global-set-key (kbd "C-3") (lambda ()(interactive) (bookmark-jump "3")))
@@ -1345,6 +1361,8 @@
                       (local-unset-key (kbd "C-d"))
                       (local-unset-key (kbd "C-b"))
                       (local-unset-key (kbd "C-h"))
+                      (local-unset-key (kbd "C-."))
+                      (local-unset-key (kbd "C-,"))
                       (local-unset-key (kbd "C-;"))
 )))
 
