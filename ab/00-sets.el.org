@@ -1134,27 +1134,36 @@
   #+END_SRC
   - Set projec name in var for perfomance. 
   #+BEGIN_SRC emacs-lisp
-  (setq project-name (projectile-project-name))
-  ;; Set my-projectile-project-name to projectile-project-name,
-  ;; so that later I can also set projectile project name when in *Messages* buffer etc
-  (defun my-projectile-switch-project-action ()
-    (when (not (equal (projectile-project-name) "-"))
-      (progn
-       (setq project-name (projectile-project-name))
-       (setq frame-title-format '("Emacs: " "%b" (:eval (format " in [%s]" project-name) ))))))
+      (setq project-name (projectile-project-name))
+      ;; Set my-projectile-project-name to projectile-project-name,
+      ;; so that later I can also set projectile project name when in *Messages* buffer etc
+      (defun my-projectile-switch-project-action ()
+        (when (not (equal (projectile-project-name) "-"))
+          (progn
+           (setq project-name (projectile-project-name))
+           (setq frame-title-format '("Emacs: " "%b" (:eval (format " in [%s]" project-name) ))))))
 
 
-  (add-hook 'projectile-after-switch-project-hook 'my-projectile-switch-project-action)
-  (add-hook 'find-file-hook 'my-projectile-switch-project-action)
+      (add-hook 'projectile-after-switch-project-hook 'my-projectile-switch-project-action)
+      (add-hook 'find-file-hook 'my-projectile-switch-project-action)
 
+      (setq projectile-switch-project-action 'counsel-projectile-find-file)
 
-  (defun ab-set-project-name-manual ()
-    "Set project name manualy and put it to frame title"
-    (interactive)
-    (setq project-name (read-string "Enter project name: "))
-    (setq frame-title-format '("Emacs: " "%b" (:eval (format " in [%s] (m)" project-name) )))
-    )
+     ;; )
+            ;; (add-hook 'projectile-switch-project-action 'counsel-projectile-find-file)
+    ;;         (remove-hook 'projectile-switch-project-action 'counsel-projectile-find-file)
+    ;; ;; 
+    ;; projectile-switch-project-action
 
+      (defun ab-set-project-name-manual ()
+        "Set project name manualy and put it to frame title"
+        (interactive)
+        (setq project-name (read-string "Enter project name: "))
+        (setq frame-title-format '("Emacs: " "%b" (:eval (format " in [%s] (m)" project-name) )))
+        )
+
+        ;; Allow remote project
+        (setq projectile-require-project-root nil)
   #+END_SRC
 
   - Keys
