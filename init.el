@@ -45,6 +45,6 @@
 (load-file "~/.emacs.d/ab/11-private.el")
 
 
-;; (load-file "./custom.el")
+(load-file "~/.emacs.d/custom.el")
 
 (set-default-font "Hack")
