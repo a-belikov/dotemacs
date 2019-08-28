@@ -1281,358 +1281,362 @@
 * Keybindings
 
   #+BEGIN_SRC emacs-lisp
-;; 
-;; ab-KEYS
-;;
-
-
-
-
-
     ;; 
+    ;; ab-KEYS
+    ;;
 
-(defvar major-keyboard-bindings
-  '(
-    ;; ("C-x C-f" . ido-find-file )
-    ;; ("C-x C-r" . helm-recentf)
-    ;; ("C-x k" . kill-this-buffer)
+
+
+
+
+        ;; 
+
+    (defvar major-keyboard-bindings
+      '(
+        ;; ("C-x C-f" . ido-find-file )
+        ;; ("C-x C-r" . helm-recentf)
+        ;; ("C-x k" . kill-this-buffer)
     
-    ("C-c a" . org-agenda)
-    ("C-c g" . org-caldav-sync)
-    ;; ("C-c a c" . org-caldav-sync);; sync with google calendar
-    ("C-c t" . org-capture)
-    ("C-w" . kill-this-buffer)
-    ("<C-tab>" . other-window)
-    ;; ("C-s" . save-buffer )
-    ;; ("C-S-s" . write-file )
-    ("C-f" . phi-search)
-    ("M-S-<down>" . buf-move-down)
-    ("M-S-<left>" . buf-move-left)
-    ("M-S-<right>" . buf-move-right)
-    ("C-r" . emacs-reload-current-file)
-    ;; ("<escape>" . keyboard-escape-quit)
-    ("C-;" . finish-line)
-    ;; ("C-d" . duplicate-thing)
-    ;; ("C-c w" . copy-word)
-    ;; ("C-x g" . magit-status)
-    ("M-d" . xah-delete-backward-char-or-bracket-text)
-    ("M-e" . xah-backward-kill-word)
-    ("M-r" . xah-kill-word)
-    ("M-o" . forward-word)
-    ("M-u" . backward-word)
-    ("M-h" . xah-beginning-of-line-or-block)
-    ("M-;" . xah-end-of-line-or-block)
-    ("M-." . dumb-jump-go)
-    ("M-," . dumb-jump-back)
-    ("<f5>" . call-last-kbd-macro)
-    ("<f8>" . other-frame)
-    )
-  )
-(defun apply-major-keyboard-bindings (pair)
-  "Apply keyboard-bindings for supplied list of key-pair values"
-  (global-set-key (kbd (car pair))
-                  (cdr pair)))
+        ("C-c a" . org-agenda)
+        ("C-c g" . org-caldav-sync)
+        ;; ("C-c a c" . org-caldav-sync);; sync with google calendar
+        ("C-c t" . org-capture)
+        ("C-w" . kill-this-buffer)
+        ("<C-tab>" . other-window)
+        ;; ("C-s" . save-buffer )
+        ;; ("C-S-s" . write-file )
+        ("C-f" . phi-search)
+        ("M-S-<down>" . buf-move-down)
+        ("M-S-<left>" . buf-move-left)
+        ("M-S-<right>" . buf-move-right)
+        ("C-r" . emacs-reload-current-file)
+        ;; ("<escape>" . keyboard-escape-quit)
+        ("C-;" . finish-line)
+        ;; ("C-d" . duplicate-thing)
+        ;; ("C-c w" . copy-word)
+        ;; ("C-x g" . magit-status)
+        ("M-d" . xah-delete-backward-char-or-bracket-text)
+        ("M-e" . xah-backward-kill-word)
+        ("M-r" . xah-kill-word)
+        ("M-o" . forward-word)
+        ("M-u" . backward-word)
+        ("M-h" . xah-beginning-of-line-or-block)
+        ("M-;" . xah-end-of-line-or-block)
+        ("M-." . dumb-jump-go)
+        ("M-," . dumb-jump-back)
+        ("<f5>" . call-last-kbd-macro)
+        ("<f8>" . other-frame)
+        )
+      )
+    (defun apply-major-keyboard-bindings (pair)
+      "Apply keyboard-bindings for supplied list of key-pair values"
+      (global-set-key (kbd (car pair))
+                      (cdr pair)))
 
-(mapc 'apply-major-keyboard-bindings
-      major-keyboard-bindings)
-
-
-;; set Menu/App key to do emacs's C-x http://ergoemacs.org/emacs/emacs_dvorak_C-x.html
-;; (global-set-key (kbd "<menu>") ctl-x-map)
+    (mapc 'apply-major-keyboard-bindings
+          major-keyboard-bindings)
 
 
-(global-set-key (kbd "C-,") (lambda ()(interactive) (shrink-window-horizontally 5)))
-(local-set-key (kbd "C-,") (lambda ()(interactive) (shrink-window-horizontally 5)))
-
-(global-set-key (kbd "C-.") (lambda ()(interactive) (enlarge-window-horizontally 5)))
-;; (shrink-window-horizontally 5)
-;; (enlarge-window-horizontally 5)
+    ;; set Menu/App key to do emacs's C-x http://ergoemacs.org/emacs/emacs_dvorak_C-x.html
+    ;; (global-set-key (kbd "<menu>") ctl-x-map)
 
 
+    (global-set-key (kbd "C-,") (lambda ()(interactive) (shrink-window-horizontally 5)))
+    (local-set-key (kbd "C-,") (lambda ()(interactive) (shrink-window-horizontally 5)))
 
-(global-set-key (kbd "C-1") (lambda ()(interactive) (bookmark-jump "1")))
-(global-set-key (kbd "C-2") (lambda ()(interactive) (bookmark-jump "2")))
-(global-set-key (kbd "C-3") (lambda ()(interactive) (bookmark-jump "3")))
-(global-set-key (kbd "C-4") (lambda ()(interactive)  (bookmark-jump "4")))
-
-
-(define-key isearch-mode-map (kbd "C-o") 'isearch-occur)
-(define-key isearch-mode-map (kbd "C-f") 'isearch-repeat-forward)
-(define-key isearch-mode-map (kbd "C-v") 'isearch-yank-kill)
-(define-key isearch-mode-map (kbd "C-d") 'isearch-word)
+    (global-set-key (kbd "C-.") (lambda ()(interactive) (enlarge-window-horizontally 5)))
+    ;; (shrink-window-horizontally 5)
+    ;; (enlarge-window-horizontally 5)
 
 
 
-;; Xah fly keys                            
-(add-hook 'php-mode-hook
-          (function (lambda ()
-                      (local-unset-key (kbd "<M-tab>"))
-                      (local-unset-key (kbd "C-d"))
-                      (local-unset-key (kbd "C-b"))
-                      (local-unset-key (kbd "C-h"))
-                      (local-unset-key (kbd "C-."))
-                      (local-unset-key (kbd "C-,"))
-                      (local-unset-key (kbd "C-;"))
-)))
+    (global-set-key (kbd "C-1") (lambda ()(interactive) (bookmark-jump "1")))
+    (global-set-key (kbd "C-2") (lambda ()(interactive) (bookmark-jump "2")))
+    (global-set-key (kbd "C-3") (lambda ()(interactive) (bookmark-jump "3")))
+    (global-set-key (kbd "C-4") (lambda ()(interactive)  (bookmark-jump "4")))
 
 
-(add-hook 'xah-fly-key-hook
-          (function (lambda ()
-                      (local-unset-key (kbd "<f7>"))
-                      (local-unset-key (kbd "C-1"))
-                      (local-unset-key (kbd "C-2"))
-                      )))
+    (define-key isearch-mode-map (kbd "C-o") 'isearch-occur)
+    (define-key isearch-mode-map (kbd "C-f") 'isearch-repeat-forward)
+    (define-key isearch-mode-map (kbd "C-v") 'isearch-yank-kill)
+    (define-key isearch-mode-map (kbd "C-d") 'isearch-word)
 
 
-;; (defun controlG() (interactive) (kbd "C-g"))
 
-(define-key key-translation-map (kbd "ESC") (kbd "C-g"))
+    ;; Xah fly keys                            
+    (add-hook 'php-mode-hook
+              (function (lambda ()
+                          (local-unset-key (kbd "<M-tab>"))
+                          (local-unset-key (kbd "C-d"))
+                          (local-unset-key (kbd "C-b"))
+                          (local-unset-key (kbd "C-h"))
+                          (local-unset-key (kbd "C-."))
+                          (local-unset-key (kbd "C-,"))
+                          (local-unset-key (kbd "C-;"))
+    )))
 
-(define-key xah-fly-key-map (kbd "<f7>") 'run-current-file)
 
-;; (define-key xah-fly-key-map (kbd "`") 'xah-fly-leader-key-map) 
-(global-set-key (kbd "`") 'xah-fly-command-mode-activate)
-;; (global-set-key (kbd "<tab>") 'xah-fly-command-mode-activate) 
+    (add-hook 'xah-fly-key-hook
+              (function (lambda ()
+                          (local-unset-key (kbd "<f7>"))
+                          (local-unset-key (kbd "C-1"))
+                          (local-unset-key (kbd "C-2"))
+                          )))
 
-(add-hook 'xah-fly-command-mode-activate-hook
-          (function (lambda ()
 
-                      (local-unset-key (kbd "C-1"))
-                      (local-unset-key (kbd "C-2"))
-                      (local-unset-key (kbd "<f8>"))
-                      (local-unset-key (kbd "<f9>"))
-                      (local-unset-key (kbd "p"))
+    ;; (defun controlG() (interactive) (kbd "C-g"))
+
+    (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
+
+    (define-key xah-fly-key-map (kbd "<f7>") 'run-current-file)
+
+    ;; (define-key xah-fly-key-map (kbd "`") 'xah-fly-leader-key-map) 
+    (global-set-key (kbd "`") 'xah-fly-command-mode-activate)
+    ;; (global-set-key (kbd "<tab>") 'xah-fly-command-mode-activate) 
+
+    (add-hook 'xah-fly-command-mode-activate-hook
+              (function (lambda ()
+
+                          (local-unset-key (kbd "C-1"))
+                          (local-unset-key (kbd "C-2"))
+                          (local-unset-key (kbd "<f8>"))
+                          (local-unset-key (kbd "<f9>"))
+                          (local-unset-key (kbd "p"))
                       
-                      (define-key xah-fly-key-map (kbd "1") (lambda ()(interactive)  (bookmark-jump "1")))  
-                      (define-key xah-fly-key-map (kbd "2") (lambda ()(interactive)  (bookmark-jump "2")))
+                          (define-key xah-fly-key-map (kbd "1") (lambda ()(interactive)  (bookmark-jump "1")))  
+                          (define-key xah-fly-key-map (kbd "2") (lambda ()(interactive)  (bookmark-jump "2")))
 
-                      (define-key xah-fly-key-map (kbd "C-1") (lambda ()(interactive)  (bookmark-jump "1")))
-                      (define-key xah-fly-key-map (kbd "C-2") (lambda ()(interactive)  (bookmark-jump "2")))
+                          (define-key xah-fly-key-map (kbd "C-1") (lambda ()(interactive)  (bookmark-jump "1")))
+                          (define-key xah-fly-key-map (kbd "C-2") (lambda ()(interactive)  (bookmark-jump "2")))
 
-                      ;; (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-insert-mode-activate)
-                      (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-insert-mode-activate)
+                          ;; (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-insert-mode-activate)
+                          (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-insert-mode-activate)
 
-                      ;; Set xah fly for russian keyboard
-                      (xah-fly--define-keys
-                       xah-fly-key-map
-                       '(
-                         ("й" . xah-reformat-lines)
-                         ("ц" . xah-shrink-whitespaces)
-                         ("э" . xah-cycle-hyphen-underscore-space)
-                         ("у" . xah-backward-kill-word)
-                         ("я" . xah-comment-dwim)
-                         ("х" . hippie-expand)
-                         ("ф" . smex)
-                         ("т" . isearch-forward)
-                         ("ш" . previous-line)
-                         ("р" . xah-beginning-of-line-or-block)
-                         ("в" . xah-delete-backward-char-or-bracket-text)
-                         ("н" . undo)
-                         ("г" . backward-word)
-                         ("о" . backward-char)
-                         ("п" . xah-delete-current-text-block)
-                         ("с" . xah-copy-line-or-region)
-                         ("м" . xah-paste-or-paste-previous)
-                         ("з" . xah-insert-space-before)
-                         ("ь" . xah-backward-left-bracket)
-                         ("д" . forward-char)
-                         ("ы" . open-line)
-                         ("к" . xah-kill-word)
-                         ("ч" . xah-cut-line-or-region)
-                         ("щ" . forward-word)
-                         ("ж" . xah-end-of-line-or-block)
-                         ("л" . next-line)
-                         ("а" . xah-fly-insert-mode-activate)
-                         ("б" . xah-next-window-or-frame)
-                         ("и" . xah-toggle-letter-case)
-                         ("е" . set-mark-command)
-                         ))
-
-
+                          ;; Set xah fly for russian keyboard
+                          (xah-fly--define-keys
+                           xah-fly-key-map
+                           '(
+                             ("й" . xah-reformat-lines)
+                             ("ц" . xah-shrink-whitespaces)
+                             ("э" . xah-cycle-hyphen-underscore-space)
+                             ("у" . xah-backward-kill-word)
+                             ("я" . xah-comment-dwim)
+                             ("х" . hippie-expand)
+                             ("ф" . smex)
+                             ("т" . isearch-forward)
+                             ("ш" . previous-line)
+                             ("р" . xah-beginning-of-line-or-block)
+                             ("в" . xah-delete-backward-char-or-bracket-text)
+                             ("н" . undo)
+                             ("г" . backward-word)
+                             ("о" . backward-char)
+                             ("п" . xah-delete-current-text-block)
+                             ("с" . xah-copy-line-or-region)
+                             ("м" . xah-paste-or-paste-previous)
+                             ("з" . xah-insert-space-before)
+                             ("ь" . xah-backward-left-bracket)
+                             ("д" . forward-char)
+                             ("ы" . open-line)
+                             ("к" . xah-kill-word)
+                             ("ч" . xah-cut-line-or-region)
+                             ("щ" . forward-word)
+                             ("ж" . xah-end-of-line-or-block)
+                             ("л" . next-line)
+                             ("а" . xah-fly-insert-mode-activate)
+                             ("б" . xah-next-window-or-frame)
+                             ("и" . xah-toggle-letter-case)
+                             ("е" . set-mark-command)
+                             ))
 
 
-                      (xah-fly--define-keys 
-                       xah-fly-key-map
-                       '(
 
-                         ("a" . smex)
-                         ("ф" . smex)
+
+                          (xah-fly--define-keys 
+                           xah-fly-key-map
+                           '(
+
+                             ("a" . smex)
+                             ("ф" . smex)
                          
-                         ("m" . avy-goto-word-1)
-                         ("ь" . avy-goto-word-1)
+                             ("m" . avy-goto-word-1)
+                             ("ь" . avy-goto-word-1)
 
-                         ("-" . universal-argument)
-                         ("э" . universal-argument)
+                             ("-" . universal-argument)
+                             ("э" . universal-argument)
                          
 
-                         ("b" . ab-swiper)
-                         ("т" . ab-swiper)
+                             ("b" . ab-swiper)
+                             ("т" . ab-swiper)
                          
                          
-                         ("i" . keyboard-quit)
-                         ("п" . keyboard-quit)
+                             ("i" . keyboard-quit)
+                             ("п" . keyboard-quit)
                          
-                         ("u" . ibuffer)     
-                         ("а" . ibuffer)
+                             ("u" . ibuffer)     
+                             ("а" . ibuffer)
                          
-                         ("l" . projectile-command-map)
-                         ("з" . projectile-command-map)     
-                         ))
+                             ("l" . projectile-command-map)
+                             ("з" . projectile-command-map)     
+                             ))
 
 
-                         (setq mode-line-front-space "-- INSERT --")
-                         (force-mode-line-update)
-                      ;; (define-key xah-fly-key-map (kbd "p") 'projectile-command-map)                             
-)))   
+                             (setq mode-line-front-space "-- INSERT --")
+                             (force-mode-line-update)
+                          ;; (define-key xah-fly-key-map (kbd "p") 'projectile-command-map)                             
+    )))   
 
-(add-hook 'xah-fly-insert-mode-activate-hook
-          (function (lambda ()
+    (add-hook 'xah-fly-insert-mode-activate-hook
+              (function (lambda ()
                       
-                      (local-unset-key (kbd "1"))
-                      (local-unset-key (kbd "2"))
-                      (local-unset-key (kbd "<f8>"))
-                      (local-unset-key (kbd "<f7>"))
+                          (local-unset-key (kbd "1"))
+                          (local-unset-key (kbd "2"))
+                          (local-unset-key (kbd "<f8>"))
+                          (local-unset-key (kbd "<f7>"))
 
-                      ;; (local-unset-key (kbd "p"))                      
-                      ;; (local-unset-key (kbd "g"))
+                          ;; (local-unset-key (kbd "p"))                      
+                          ;; (local-unset-key (kbd "g"))
                       
-                      ;; (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-command-mode-activate)
-                      (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-command-mode-activate)
-                      ;; (define-key xah-fly-key-map (kbd "1") )
+                          ;; (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-command-mode-activate)
+                          (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-command-mode-activate)
+                          ;; (define-key xah-fly-key-map (kbd "1") )
 
-                      ;; Set xah fly for russian keyboard
-                      (xah-fly--define-keys
-                       xah-fly-key-map
-                       '(
-                         ("й" . nil)
-                         ("ц" . nil)
-                         ("э" . nil)
-                         ("у" . nil)
-                         ("я" . nil)
-                         ("х" . nil)
-                         ("ф" . nil)
-                         ("т" . nil)
-                         ("ш" . nil)
-                         ("р" . nil)
-                         ("в" . nil)
-                         ("а" . nil)
-                         ("н" . nil)
-                         ("г" . nil)
-                         ("о" . nil)
-                         ("п" . nil)
-                         ("с" . nil)
-                         ("м" . nil)
-                         ("з" . nil)
-                         ("ь" . nil)
-                         ("д" . nil)
-                         ("ы" . nil)
-                         ("к" . nil)
-                         ("ч" . nil)
-                         ("щ" . nil)
-                         ("ж" . nil)
-                         ("л" . nil)
-                         ("а" . nil)
-                         ("б" . nil)
-                         ("и" . nil)
-                         ("е" . nil)
-                         ))
+                          ;; Set xah fly for russian keyboard
+                          (xah-fly--define-keys
+                           xah-fly-key-map
+                           '(
+                             ("й" . nil)
+                             ("ц" . nil)
+                             ("э" . nil)
+                             ("у" . nil)
+                             ("я" . nil)
+                             ("х" . nil)
+                             ("ф" . nil)
+                             ("т" . nil)
+                             ("ш" . nil)
+                             ("р" . nil)
+                             ("в" . nil)
+                             ("а" . nil)
+                             ("н" . nil)
+                             ("г" . nil)
+                             ("о" . nil)
+                             ("п" . nil)
+                             ("с" . nil)
+                             ("м" . nil)
+                             ("з" . nil)
+                             ("ь" . nil)
+                             ("д" . nil)
+                             ("ы" . nil)
+                             ("к" . nil)
+                             ("ч" . nil)
+                             ("щ" . nil)
+                             ("ж" . nil)
+                             ("л" . nil)
+                             ("а" . nil)
+                             ("б" . nil)
+                             ("и" . nil)
+                             ("е" . nil)
+                             ))
 
-                      ;; (define-key projectile-mode-map (kbd "p") nil)
-)))
-
-
-;;(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-(define-key xah-fly-r-keymap (kbd "c") 'mc/edit-lines)
-(define-key xah-fly-r-keymap (kbd "m") 'mc/mark-more-like-this-extended)
-(define-key xah-fly-r-keymap (kbd "M") 'mc/mark-all-like-this)
-
-(define-key xah-fly-c-keymap (kbd "j") 'ab-goto-recent-file)
-(define-key xah-fly-c-keymap (kbd "d") 'ab-goto-recent-directory)
-
-(define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
-(define-key xah-fly-e-keymap (kbd "d") 'ab-change-bracket-pair)
-
-(define-key xah-fly-n-keymap (kbd "e") 'revert-buffer-with-coding-system)
-(define-key xah-fly-n-keymap (kbd "i") 'file-metadata)
-
-(define-key xah-fly-t-keymap (kbd "b") 'ab-beautify-code)
-
-(define-key xah-fly-comma-keymap (kbd "l") 'dumb-jump-go)
-(define-key xah-fly-comma-keymap (kbd "k") 'dumb-jump-back)
-(define-key xah-fly-comma-keymap (kbd ".") 'dumb-jump-go)
-(define-key xah-fly-comma-keymap (kbd ",") 'dumb-jump-back)
-(define-key xah-fly-comma-keymap (kbd "o") 'dumb-jump-go-other-windocomma)
-(define-key xah-fly-comma-keymap (kbd "p") 'dumb-jump-go-prompt) 
-
-;; leader w
-(define-key xah-fly-comma-keymap (kbd "j") 'find-tag)
-(define-key xah-fly-comma-keymap (kbd "s") 'ag)
-(define-key xah-fly-comma-keymap (kbd "a") 'counsel-ag)
-(define-key xah-fly-comma-keymap (kbd "r") 'counsel-git-grep)
-(define-key xah-fly-comma-keymap (kbd "g") 'counsel-git)
-(define-key xah-fly-comma-keymap (kbd "f") 'find-grep)
-(define-key xah-fly-comma-keymap (kbd "x") 'counsel-M-x)
-
-(define-key xah-fly-comma-keymap (kbd "w") 'ivy-resume)
+                          ;; (define-key projectile-mode-map (kbd "p") nil)
+    )))
 
 
-(define-key xah-fly-comma-keymap (kbd "h") 'highlight-symbol-at-point)
-(define-key xah-fly-comma-keymap (kbd "x") 'highlight-regexp)
+    ;;(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+    (define-key xah-fly-r-keymap (kbd "c") 'mc/edit-lines)
+    (define-key xah-fly-r-keymap (kbd "m") 'mc/mark-more-like-this-extended)
+    (define-key xah-fly-r-keymap (kbd "M") 'mc/mark-all-like-this)
 
-;; (define-key xah-fly-c-keymap (kbd "q") 'helm-recentf)
+    ;; (define-key xah-fly-c-keymap (kbd "j") 'ab-goto-recent-file)
+    (define-key xah-fly-c-keymap (kbd "d") 'ab-goto-recent-directory)
+    (define-key xah-fly-c-keymap (kbd "w") 'xah-close-current-buffer)
+    (define-key xah-fly-c-keymap (kbd "m") 'file-metadata)
 
-(define-key xah-fly-leader-key-map (kbd "f") 'find-file)  
-(define-key xah-fly-leader-key-map (kbd "j") 'ab-goto-recent-file)
+    (define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
+    (define-key xah-fly-e-keymap (kbd "d") 'ab-change-bracket-pair)
 
-(define-key xah-fly-leader-key-map (kbd "y") 'ivy-resume)
+    (define-key xah-fly-n-keymap (kbd "e") 'revert-buffer-with-coding-system)
+    ;;(define-key xah-fly-n-keymap (kbd "i") 'file-metadata)
 
-(define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
-(define-key xah-fly-leader-key-map (kbd "p") 'projectile-command-map)
+    (define-key xah-fly-t-keymap (kbd "b") 'ab-beautify-code)
+    (define-key xah-fly-t-keymap (kbd "k") 'xah-close-current-buffer)
+    (define-key xah-fly-t-keymap (kbd "j") 'repeat)
 
-(define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
+    (define-key xah-fly-comma-keymap (kbd "l") 'dumb-jump-go)
+    (define-key xah-fly-comma-keymap (kbd "k") 'dumb-jump-back)
+    (define-key xah-fly-comma-keymap (kbd ".") 'dumb-jump-go)
+    (define-key xah-fly-comma-keymap (kbd ",") 'dumb-jump-back)
+    (define-key xah-fly-comma-keymap (kbd "o") 'dumb-jump-go-other-windocomma)
+    (define-key xah-fly-comma-keymap (kbd "p") 'dumb-jump-go-prompt) 
+
+    ;; leader w
+    (define-key xah-fly-comma-keymap (kbd "j") 'find-tag)
+    (define-key xah-fly-comma-keymap (kbd "s") 'ag)
+    (define-key xah-fly-comma-keymap (kbd "a") 'counsel-ag)
+    (define-key xah-fly-comma-keymap (kbd "r") 'counsel-git-grep)
+    (define-key xah-fly-comma-keymap (kbd "g") 'counsel-git)
+    (define-key xah-fly-comma-keymap (kbd "f") 'find-grep)
+    (define-key xah-fly-comma-keymap (kbd "x") 'counsel-M-x)
+
+    (define-key xah-fly-comma-keymap (kbd "w") 'ivy-resume)
 
 
-(define-key xah-fly-leader-key-map (kbd "u") 'neotree-toggle)
+    (define-key xah-fly-comma-keymap (kbd "h") 'highlight-symbol-at-point)
+    (define-key xah-fly-comma-keymap (kbd "x") 'highlight-regexp)
+
+    ;; (define-key xah-fly-c-keymap (kbd "q") 'helm-recentf)
+
+    (define-key xah-fly-leader-key-map (kbd "f") 'find-file)  
+    (define-key xah-fly-leader-key-map (kbd "j") 'ab-goto-recent-file)
+
+    (define-key xah-fly-leader-key-map (kbd "y") 'ivy-resume)
+
+    (define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
+    (define-key xah-fly-leader-key-map (kbd "p") 'projectile-command-map)
+
+    (define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
 
 
-(define-key xah-fly-leader-key-map (kbd "7") 'ispell-region)  
-;; * Org mode
-(define-key key-translation-map (kbd "<menu>") (kbd "C-c"))
-
-(define-key org-mode-map (kbd "C-c q") 'org-set-tags)
-(define-key org-mode-map (kbd "C-c e") 'org-export-dispatch)
-(define-key org-mode-map (kbd "C-c d") 'org-deadline)
-(define-key org-mode-map (kbd "C-c t") 'org-todo)
+    (define-key xah-fly-leader-key-map (kbd "u") 'neotree-toggle)
 
 
+    (define-key xah-fly-leader-key-map (kbd "7") 'ispell-region)  
+    ;; * Org mode
+    (define-key key-translation-map (kbd "<menu>") (kbd "C-c"))
+
+    (define-key org-mode-map (kbd "C-c q") 'org-set-tags)
+    (define-key org-mode-map (kbd "C-c e") 'org-export-dispatch)
+    (define-key org-mode-map (kbd "C-c d") 'org-deadline)
+    (define-key org-mode-map (kbd "C-c t") 'org-todo)
 
 
-;; M-k.(kill-sentence &optional ARG)
-;;https://www.alexkorablev.ru/2017/06/10/emacs-got-keys/
-(defun reverse-input-method (input-method)
-  "Build the reverse mapping of single letters from INPUT-METHOD."
-  (interactive
-   (list (read-input-method-name "Use input method (default current): ")))
-  (if (and input-method (symbolp input-method))
-      (setq input-method (symbol-name input-method)))
-  (let ((current current-input-method)
-        (modifiers '(nil (control) (meta) (control meta))))
-    (when input-method
-      (activate-input-method input-method))
-    (when (and current-input-method quail-keyboard-layout)
-      (dolist (map (cdr (quail-map)))
-        (let* ((to (car map))
-               (from (quail-get-translation
-                      (cadr map) (char-to-string to) 1)))
-          (when (and (characterp from) (characterp to))
-            (dolist (mod modifiers)
-              (define-key local-function-key-map
-                (vector (append mod (list from)))
-                (vector (append mod (list to)))))))))
-    (when input-method
-      (activate-input-method current))))
 
-(reverse-input-method 'russian-computer)
+
+    ;; M-k.(kill-sentence &optional ARG)
+    ;;https://www.alexkorablev.ru/2017/06/10/emacs-got-keys/
+    (defun reverse-input-method (input-method)
+      "Build the reverse mapping of single letters from INPUT-METHOD."
+      (interactive
+       (list (read-input-method-name "Use input method (default current): ")))
+      (if (and input-method (symbolp input-method))
+          (setq input-method (symbol-name input-method)))
+      (let ((current current-input-method)
+            (modifiers '(nil (control) (meta) (control meta))))
+        (when input-method
+          (activate-input-method input-method))
+        (when (and current-input-method quail-keyboard-layout)
+          (dolist (map (cdr (quail-map)))
+            (let* ((to (car map))
+                   (from (quail-get-translation
+                          (cadr map) (char-to-string to) 1)))
+              (when (and (characterp from) (characterp to))
+                (dolist (mod modifiers)
+                  (define-key local-function-key-map
+                    (vector (append mod (list from)))
+                    (vector (append mod (list to)))))))))
+        (when input-method
+          (activate-input-method current))))
+
+    (reverse-input-method 'russian-computer)
 
 
   #+END_SRC
