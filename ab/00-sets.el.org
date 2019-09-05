@@ -1705,7 +1705,7 @@ $scope.askPin();
 * Mu4e
 #+BEGIN_SRC emacs-lisp
 
-      ;;https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/
+      ;; https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/
       (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
 
       (require 'mu4e)
@@ -1719,18 +1719,18 @@ $scope.askPin();
         mu4e-update-interval 180
         mu4e-headers-auto-update t
         mu4e-compose-signature-auto-include t
-        mu4e-compose-format-flowed t)
+        mu4e-compose-format-flowed t
+        mu4e-view-show-images t
+        mu4e-view-show-addresses t
+        mu4e-use-fancy-chars t
+        )
 
 
       ;; to view selected message in the browser, no signin, just html mail
-      (add-to-list 'mu4e-view-actions
-        '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+      (add-to-list 'mu4e-view-actions '("browser view" . mu4e-action-view-in-browser) t)
 
-      ;; enable inline images
-      (setq mu4e-view-show-images t)
       ;; use imagemagick, if available
-      (when (fboundp 'imagemagick-register-types)
-        (imagemagick-register-types))
+      (when (fboundp 'imagemagick-register-types) (imagemagick-register-types))
 
       ;; every new email composition gets its own frame!
       (setq mu4e-compose-in-new-frame nil)
@@ -1748,24 +1748,26 @@ $scope.askPin();
       (local-set-key (kbd "<tab>") 'shr-next-link)
       (local-set-key (kbd "<backtab>") 'shr-previous-link)))
 
+
+      (setq mu4e-use-fancy-chars t)
       ;; from https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/elgoumx
-      (add-hook 'mu4e-headers-mode-hook
+        (add-hook 'mu4e-headers-mode-hook
             (defun my/mu4e-change-headers ()
               (interactive)
               (setq mu4e-headers-fields
-                    `(
-                      ;;(:date . 25) ;; alternatively, use :date
-                      (:human-date . 20) ;; alternatively, use :date
-                      (:flags . 6)
-                      (:from . 24) 
-                      (:thread-subject . ,(- (window-body-width) 70)) ;; alternatively, use :subject
-                      (:size . 7)
-))))
+                    `((:human-date . 18)
+                      (:flags . 4)
+                      (:from-or-to . 28)
+                      (:thread-subject . ,(- (window-body-width) 65))
+                      (:size . 8)
+
+                      ;;(:subject . ,(- (window-body-width) 47))
+                      ))))
 
                       ;;(:thread-subject . nil)
                       ;; (:thread-subject . ,(- (window-body-width) 70)) ;; alternatively, use :subject
 
-        (setq mu4e-headers-date-format "%d.%m.%Y %H:%M")
+      (setq mu4e-headers-date-format "%d.%m.%Y %H:%M")
 
       ;; if you use date instead of human-date in the above, use this setting
       ;; give me ISO(ish) format date-time stamps in the header list
@@ -1776,8 +1778,8 @@ $scope.askPin();
           (defun my-do-compose-stuff ()
              "My settings for message composition."
              (visual-line-mode)
-             (org-mu4e-compose-org-mode)
-                 (use-hard-newlines -1)
+             ;; (org-mu4e-compose-org-mode)
+             (use-hard-newlines -1)
              (flyspell-mode)))
 
       (require 'smtpmail)
@@ -1798,7 +1800,7 @@ $scope.askPin();
       (setq message-kill-buffer-on-exit t)
       (setq mu4e-compose-dont-reply-to-self t)
 
-      (require 'org-mu4e) 
+       (require 'org-mu4e) 
 
       ;; replay format
       (setq  message-citation-line-format "\n>%f в %d.%m.%Y %H:%I ")
@@ -1807,13 +1809,10 @@ $scope.askPin();
       ;; convert org mode to HTML automatically
       (setq org-mu4e-convert-to-html t)
 
-      ;;from vxlabs config
-      ;; show full addresses in view message (instead of just names)
-      ;; toggle per name with M-RET
-      (setq mu4e-view-show-addresses t)
-
+      
       ;; don't ask when quitting
       (setq mu4e-confirm-quit nil)
+
 
       ;; mu4e-context
       (setq mu4e-context-policy 'ask-if-none)
@@ -1833,6 +1832,7 @@ $scope.askPin();
                   (mu4e-sent-folder . "/gmail/Sent")
                   (mu4e-drafts-folder . "/gmail/Drafts")
                   (mu4e-trash-folder . "/gmail/Trash")
+                  (mu4e-refile-folder . "/gmail/Archive")
                   (mu4e-compose-signature .  "--- Alexey")
                   (mu4e-compose-format-flowed . t)
                   (smtpmail-queue-dir . "/gmail/cur")
@@ -1850,7 +1850,9 @@ $scope.askPin();
                                               ("/gmail/Trash"       . ?t)
                                               ;; ("/gmail/All Mail"  . ?a)
                                               ("/gmail/Drafts"    . ?d)
-                                              ))))
+                              
+))))
+ 
           (make-mu4e-context
            :name "it@adresat" ;;for acc2-gmail
            :enter-func (lambda () (mu4e-message "Entering context personal"))
@@ -1864,6 +1866,7 @@ $scope.askPin();
                   (mu4e-sent-folder . "/adresat/Sent")
                   (mu4e-drafts-folder . "/adresat/Drafts")
                   (mu4e-trash-folder . "/adresat/Trash")
+                  (mu4e-refile-folder . "/adresat/Archive")
                   (mu4e-compose-signature . "Алексей\n+7(903)431-7243")
                   (mu4e-compose-format-flowed . t)
                   (smtpmail-queue-dir . "/adresat/cur")
@@ -1896,6 +1899,7 @@ $scope.askPin();
                   (mu4e-sent-folder . "/alexey/Sent")
                   (mu4e-drafts-folder . "/alexey/Drafts")
                   (mu4e-trash-folder . "/alexey/Trash")
+                  (mu4e-refile-folder . "/alexey/Archive")
                   (mu4e-compose-signature . "Алексей Беликов\n+7(903)431-7243")
                   (mu4e-compose-format-flowed . t)
                   (smtpmail-queue-dir . "/alexey/cur")
@@ -1916,6 +1920,13 @@ $scope.askPin();
 
       ))
 
+      (use-package mu4e-alert
+      :ensure t)
+
+
+      (mu4e-alert-set-default-style 'libnotify)
+      (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+      (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
 
 #+END_SRC
 
