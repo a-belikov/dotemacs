@@ -54,6 +54,8 @@
 (add-to-list 'backup-directory-alist (cons tramp-file-name-regexp backup-dir))
 
 (global-display-line-numbers-mode t)
+(setq display-line-numbers-width 3) 
+
 
 (setq large-file-warning-threshold 100000000)
 
@@ -456,9 +458,11 @@
 
 * Custom functions
   #+BEGIN_SRC emacs-lisp
-          ;; 
-          ;; ab-PACKAGES SETS
-          ;;
+
+          (defun load-if-exists (f)
+          "load the elisp file only if it exists and is readable"
+          (if (file-readable-p f)
+          (load-file f)))
 
           (defun cp1251 ()
             (interactive)
@@ -1458,8 +1462,8 @@
                              ("a" . smex)
                              ("ф" . smex)
                          
-                             ("m" . avy-goto-word-1)
-                             ("ь" . avy-goto-word-1)
+                             ("m" . imenu-list-smart-toggle)
+                             ("ь" . imenu-list-smart-toggle)
 
                              ("-" . universal-argument)
                              ("э" . universal-argument)
@@ -1472,10 +1476,13 @@
                              ("i" . keyboard-quit)
                              ("п" . keyboard-quit)
                          
-                             ("u" . ibuffer)     
-                             ("а" . ibuffer)
+                             ("u" . ivy-switch-buffer)     
+                             ("а" . ivy-switch-buffer)
                          
                              ("l" . projectile-command-map)
+                             ("з" . projectile-command-map)
+     
+                             ("[" . projectile-command-map)
                              ("з" . projectile-command-map)     
                              ))
 
@@ -1590,7 +1597,7 @@
 
     (define-key xah-fly-leader-key-map (kbd "y") 'ivy-resume)
 
-    (define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
+    ;; (define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
     (define-key xah-fly-leader-key-map (kbd "p") 'projectile-command-map)
 
     (define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
@@ -1662,8 +1669,11 @@
      "Insert a welcome message to help use the scratch buffer."
      (insert "// This buffer is for JavaScript evaluation.\n
 location.reload();
-$scope = angular.element(document.getElementById('checkPinController')).scope();
-$scope.askPin();
+var $scope = angular.element(document.getElementById('checkPinController')).scope();
+var dataService = angular.element(document.body).injector().get('dataService');
+var $filter = angular.element(document.body).injector().get('$filter');
+// angular.element($0).scope()
+
 \n"))
 
      ;; (define-key js-mode-map (kbd "SPC , m") ab-indium-eval) 
@@ -1767,8 +1777,8 @@ $scope.askPin();
               (interactive)
               (setq mu4e-headers-fields
                     `((:human-date . 18)
-                      (:flags . 4)
-                      (:from-or-to . 28)
+                      (:flags . 6)
+                      (:from-or-to . 24)
                       (:thread-subject . ,(- (window-body-width) 65))
                       (:size . 8)
 
@@ -1779,6 +1789,10 @@ $scope.askPin();
                       ;; (:thread-subject . ,(- (window-body-width) 70)) ;; alternatively, use :subject
 
       (setq mu4e-headers-date-format "%d.%m.%Y %H:%M")
+      (setq mu4e-headers-attach-mark    '("a" . "↧"))
+      (setq mu4e-headers-unread-mark    '("*" . "*"))
+      (setq mu4e-headers-seen-mark    '("S" . "✔"))
+      (setq mu4e-headers-new-mark       '("N" . ""))
 
       ;; if you use date instead of human-date in the above, use this setting
       ;; give me ISO(ish) format date-time stamps in the header list
@@ -1942,6 +1956,18 @@ $scope.askPin();
 #+END_SRC
 
 #+RESULTS:
+
+* Git-gutter
+
+#+BEGIN_SRC emacs-lisp
+    (use-package git-gutter
+     :ensure t
+     :config
+     (global-git-gutter-mode t)
+     (global-set-key (kbd "C-c i") 'git-gutter:previous-hunk)
+     (global-set-key (kbd "C-c k") 'git-gutter:next-hunk)
+)
+#+END_SRC
 
 * Plstore
   #+BEGIN_SRC emacs-lisp
