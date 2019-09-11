@@ -458,6 +458,19 @@
 
 * Custom functions
   #+BEGIN_SRC emacs-lisp
+            (defun increment-number-at-point (&optional arg)
+            "Increment a number at point."
+            (interactive "*P")
+            (let* ((bounds (bounds-of-thing-at-point 'word))
+            (beg (car bounds))
+            (end (cdr bounds))
+            (num (string-to-number (buffer-substring beg end)))
+            (incr (cond ((null arg) 1)
+            ((listp arg) -1)
+            (t arg)))
+            (value (+ num incr)))
+            (delete-region beg end)
+            (insert (format "%d" value))))
 
           (defun load-if-exists (f)
           "load the elisp file only if it exists and is readable"
@@ -1766,6 +1779,7 @@ var $filter = angular.element(document.body).injector().get('$filter');
         )
 
 
+
       ;; to view selected message in the browser, no signin, just html mail
       (add-to-list 'mu4e-view-actions '("browser view" . mu4e-action-view-in-browser) t)
 
@@ -1777,7 +1791,7 @@ var $filter = angular.element(document.body).injector().get('$filter');
 
       ;; don't save message to Sent Messages, IMAP takes care of this
       (setq mu4e-sent-messages-behavior 'sent)
-
+ 
       (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
 
       ;; <tab> to navigate to links, <RET> to open them in browser
@@ -1812,6 +1826,8 @@ var $filter = angular.element(document.body).injector().get('$filter');
       (setq mu4e-headers-unread-mark    '("*" . "*"))
       (setq mu4e-headers-seen-mark    '("S" . "✔"))
       (setq mu4e-headers-new-mark       '("N" . ""))
+
+      (setq mu4e-headers-results-limit  2000)
 
       ;; if you use date instead of human-date in the above, use this setting
       ;; give me ISO(ish) format date-time stamps in the header list
@@ -1857,6 +1873,9 @@ var $filter = angular.element(document.body).injector().get('$filter');
       ;; don't ask when quitting
       (setq mu4e-confirm-quit nil)
 
+      ;; don't ask when execute marks
+      (define-key mu4e-headers-mode-map (kbd "x") (lambda() (interactive) (mu4e-mark-execute-all t)))
+      (define-key mu4e-view-mode-map (kbd "x") (lambda() (interactive) (mu4e-mark-execute-all t)))
 
       ;; mu4e-context
       (setq mu4e-context-policy 'ask-if-none)
