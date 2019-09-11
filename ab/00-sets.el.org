@@ -922,6 +922,25 @@
 (message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
   #+END_SRC
 
+* Writable grep
+#+BEGIN_SRC emacs-lisp
+
+
+    (use-package wgrep
+    :ensure t
+    (setq wgrep-change-readonly-file t)
+    (setq wgrep-auto-save-buffer t)
+  ;; (setq wgrep-enable-key "r")
+    )
+    (use-package wgrep-ag
+    :ensure t
+    )
+    (require 'wgrep-ag)
+
+
+#+END_SRC
+
+
 * PCRE2EL
   #+BEGIN_SRC emacs-lisp
   (use-package pcre2el
@@ -1957,7 +1976,7 @@ var $filter = angular.element(document.body).injector().get('$filter');
 
 #+RESULTS:
 
-* Git-gutter
+* Git-gutter & Git-timemashine
 
 #+BEGIN_SRC emacs-lisp
     (use-package git-gutter
@@ -1966,7 +1985,17 @@ var $filter = angular.element(document.body).injector().get('$filter');
      (global-git-gutter-mode t)
      (global-set-key (kbd "C-c i") 'git-gutter:previous-hunk)
      (global-set-key (kbd "C-c k") 'git-gutter:next-hunk)
-)
+     (global-set-key (kbd "C-c p") 'git-gutter:popup-hunk)
+     )
+
+     (custom-set-variables
+     '(git-gutter:modified-sign "*") 
+     '(git-gutter:added-sign "+")    
+     '(git-gutter:deleted-sign "-"))
+
+     (use-package git-timemachine
+     :ensure t
+     )
 #+END_SRC
 
 * Plstore
