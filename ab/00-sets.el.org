@@ -1030,7 +1030,6 @@
     )
 
 
-    (use-package company-php :ensure t)
     (use-package company-web :ensure t)
     (use-package company-quickhelp :ensure t)
 
@@ -1068,35 +1067,45 @@
 
   #+BEGIN_SRC emacs-lisp
 
-    ;; php mode
-    (use-package php-mode 
-    :ensure t)
+    
+  ;; Download from https://github.com/emacs-php/php-mode/releases and run "make"
+  (load "~/.emacs.d/php-mode/php-mode-autoloads.el")
+  (add-hook 'php-mode-hook 'php-enable-psr2-coding-style)
 
-    ;; php code sniffer
-    (use-package phpcbf
-    :ensure t
-    :config
-    (setq phpcbf-standard "PSR2")
-    (setq php-mode-coding-style (quote psr2))
-    (add-hook 'php-mode-hook 'phpcbf-enable-on-save)
-    )
+  ;; php code sniffer
+  (use-package phpcbf
+  :ensure t
+  :config
+  (setq phpcbf-standard "PSR2")
+  (add-hook 'php-mode-hook 'phpcbf-enable-on-save))
 
-    ;; php flycheck
-    (setq flycheck-phpmd-rulesets '("cleancode" "codesize" "controversial" "design" "naming" "unusedcode"))
-    (add-hook 'php-mode-hook (lambda () 
-    (setq flycheck-phpcs-standard "PSR2")
-    (define-key xah-fly-comma-keymap (kbd "l") 'ac-php-find-symbol-at-point)
-    (define-key xah-fly-comma-keymap (kbd "k") 'ac-php-location-stack-back)
-    (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
-))
+  (use-package flymake-php
+  :ensure t
+  :config
+  (add-hook 'php-mode-hook 'flymake-php-load)
+  )
 
-    ;; auto-complete & company-mode for php
-    (use-package ac-php :ensure t
-                 :config
-                 (ac-php-core-eldoc-setup))
+  (use-package php-auto-yasnippets    
+  :ensure t
+  :config
+  (setq php-auto-yasnippet-php-program "~/.emacs.d/ab/Create-PHP-YASnippet.php")
+  )
 
-    (setq geben-dbgp-default-port 9001)
+  ;; auto-complete & company-mode for php
+  (use-package ac-php :ensure t
+  :config
+  (ac-php-core-eldoc-setup))    
 
+  (add-hook 'php-mode-hook (lambda () 
+  (php-eldoc-enable)
+  (define-key xah-fly-comma-keymap (kbd "l") 'ac-php-find-symbol-at-point)
+  (define-key xah-fly-comma-keymap (kbd "k") 'ac-php-location-stack-back)
+  (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
+  ))
+  
+  (use-package company-php :ensure t)
+
+  (setq geben-dbgp-default-port 9001)
 
   #+END_SRC
 
@@ -2067,7 +2076,7 @@ var $filter = angular.element(document.body).injector().get('$filter');
          (get-buffer-create  "*scratch*"))
 
 
-         
+         (ivy-switch-buffer)         
   #+END_SRC
-  #+END_SRC
+
 
