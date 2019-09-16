@@ -266,11 +266,10 @@
 * Themes
   #+BEGIN_SRC emacs-lisp
 
-(use-package doom-themes
-:ensure t
-:config
-(load-theme 'doom-one t)
-)
+(use-package kaolin-themes
+  :config
+  (load-theme 'kaolin-aurora t)
+  (kaolin-treemacs-theme))
 
 (use-package doom-modeline
       :ensure t
