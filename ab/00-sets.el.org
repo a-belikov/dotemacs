@@ -279,6 +279,17 @@
 (global-hl-line-mode 1)
 ;;(set-face-background hl-line-face "DarkSlateBlue")
 (set-face-background hl-line-face "gray13")
+
+
+(add-hook 'prog-mode-hook '(lambda () 
+                         (highlight-phrase "&&" 'font-lock-negation-char-face)
+                         (highlight-phrase "||" 'font-lock-negation-char-face)
+                         (highlight-phrase "!==" 'font-lock-negation-char-face)
+                         (highlight-phrase "!=" 'font-lock-negation-char-face)
+                         (highlight-phrase "==" 'font-lock-negation-char-face)
+                         (highlight-phrase "===" 'font-lock-negation-char-face)
+))
+
   #+END_SRC
 
 
@@ -323,7 +334,6 @@
 :ensure t)
 
 
-
 (setq org-agenda-files '("~/Документы/org"))
 
 (setq org-default-notes-file (concat org-directory "~/Документы/org/toDo.org"))
@@ -347,6 +357,8 @@
 (add-hook 'org-mode-hook (lambda () 
 (org-bullets-mode 1)
 (yas-minor-mode)
+(add-pragmatapro-prettify-symbols-alist)
+(prettify-symbols-mode)
 ))
 
 
@@ -1070,14 +1082,16 @@
     
   ;; Download from https://github.com/emacs-php/php-mode/releases and run "make"
   (load "~/.emacs.d/php-mode/php-mode-autoloads.el")
-  (add-hook 'php-mode-hook 'php-enable-psr2-coding-style)
+  (setq php-mode-coding-style 'psr2) 
+  (setq flycheck-phpcs-standard 'psr2)
 
   ;; php code sniffer
   (use-package phpcbf
   :ensure t
   :config
   (setq phpcbf-standard "PSR2")
-  (add-hook 'php-mode-hook 'phpcbf-enable-on-save))
+  )
+
 
   (use-package flymake-php
   :ensure t
@@ -1098,6 +1112,7 @@
 
   (add-hook 'php-mode-hook (lambda () 
   (php-eldoc-enable)
+  (phpcbf-enable-on-save)
   (define-key xah-fly-comma-keymap (kbd "l") 'ac-php-find-symbol-at-point)
   (define-key xah-fly-comma-keymap (kbd "k") 'ac-php-location-stack-back)
   (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
@@ -1115,9 +1130,11 @@
 (message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
   #+END_SRC
 * Perl
+
   #+BEGIN_SRC emacs-lisp
     ;; (add-hook perl-mode-hook (lambda () (local-unset-key (kbd "tab"))))
   #+END_SRC
+
 * Web Beautify
 
   #+BEGIN_SRC emacs-lisp
@@ -1315,12 +1332,14 @@
   #+END_SRC
 
 * Neotree
+  
   #+BEGIN_SRC emacs-lisp
   (use-package neotree
   :ensure t 
   :config
   (setq neo-smart-open t))
   #+END_SRC
+
 * Multiple cursors
 
   #+BEGIN_SRC emacs-lisp
@@ -2051,6 +2070,7 @@ var $filter = angular.element(document.body).injector().get('$filter');
 #+END_SRC
 
 * Plstore
+
   #+BEGIN_SRC emacs-lisp
 (use-package plstore
 :ensure t
@@ -2061,6 +2081,7 @@ var $filter = angular.element(document.body).injector().get('$filter');
   #+END_SRC
 
 * Welcome messge 
+
   #+BEGIN_SRC emacs-lisp
 ;; wget -q -O - ru.wttr.in/Ростов-на-Дону?T0
   (princ (shell-command-to-string
@@ -2076,7 +2097,6 @@ var $filter = angular.element(document.body).injector().get('$filter');
          (get-buffer-create  "*scratch*"))
 
 
-         (ivy-switch-buffer)         
   #+END_SRC
 
 

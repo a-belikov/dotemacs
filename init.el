@@ -37,7 +37,7 @@
 
 
 
-
+;; ligatures
 (load-file "~/.emacs.d/ab/10-pragmatapro.el")
 
 
