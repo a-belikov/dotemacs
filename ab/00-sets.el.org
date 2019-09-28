@@ -54,6 +54,8 @@
 (add-to-list 'backup-directory-alist (cons tramp-file-name-regexp backup-dir))
 
 (global-display-line-numbers-mode t)
+(setq display-line-numbers-width 3) 
+
 
 (setq large-file-warning-threshold 100000000)
 
@@ -264,11 +266,10 @@
 * Themes
   #+BEGIN_SRC emacs-lisp
 
-(use-package doom-themes
-:ensure t
-:config
-(load-theme 'doom-one t)
-)
+(use-package kaolin-themes
+  :config
+  (load-theme 'kaolin-aurora t)
+  (kaolin-treemacs-theme))
 
 (use-package doom-modeline
       :ensure t
@@ -446,6 +447,14 @@
     (magit-push-current-to-pushremote nil)
   )
 
+  (defun ab-stage-commit(message)
+  "Stage all commit and pusht."
+    (interactive "sCommit Message: ")
+    ;; (magit-stage-modified t)
+
+    (magit-run-git "commit" "-am" message)
+  )
+
 
 
   #+END_SRC
@@ -456,9 +465,24 @@
 
 * Custom functions
   #+BEGIN_SRC emacs-lisp
-          ;; 
-          ;; ab-PACKAGES SETS
-          ;;
+            (defun increment-number-at-point (&optional arg)
+            "Increment a number at point."
+            (interactive "*P")
+            (let* ((bounds (bounds-of-thing-at-point 'word))
+            (beg (car bounds))
+            (end (cdr bounds))
+            (num (string-to-number (buffer-substring beg end)))
+            (incr (cond ((null arg) 1)
+            ((listp arg) -1)
+            (t arg)))
+            (value (+ num incr)))
+            (delete-region beg end)
+            (insert (format "%d" value))))
+
+          (defun load-if-exists (f)
+          "load the elisp file only if it exists and is readable"
+          (if (file-readable-p f)
+          (load-file f)))
 
           (defun cp1251 ()
             (interactive)
@@ -918,6 +942,27 @@
 (message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
   #+END_SRC
 
+* Writable grep
+#+BEGIN_SRC emacs-lisp
+
+
+    (use-package wgrep
+    :ensure t
+    :config
+    (setq wgrep-change-readonly-file t)
+    (setq wgrep-auto-save-buffer t)
+  ;; (setq wgrep-enable-key "r")
+    )
+
+    (use-package wgrep-ag
+    :ensure t
+    )
+    ;; (require 'wgrep-ag)
+
+
+#+END_SRC
+
+
 * PCRE2EL
   #+BEGIN_SRC emacs-lisp
   (use-package pcre2el
@@ -985,7 +1030,6 @@
     )
 
 
-    (use-package company-php :ensure t)
     (use-package company-web :ensure t)
     (use-package company-quickhelp :ensure t)
 
@@ -1023,35 +1067,45 @@
 
   #+BEGIN_SRC emacs-lisp
 
-    ;; php mode
-    (use-package php-mode 
-    :ensure t)
+    
+  ;; Download from https://github.com/emacs-php/php-mode/releases and run "make"
+  (load "~/.emacs.d/php-mode/php-mode-autoloads.el")
+  (add-hook 'php-mode-hook 'php-enable-psr2-coding-style)
 
-    ;; php code sniffer
-    (use-package phpcbf
-    :ensure t
-    :config
-    (setq phpcbf-standard "PSR2")
-    (setq php-mode-coding-style (quote psr2))
-    (add-hook 'php-mode-hook 'phpcbf-enable-on-save)
-    )
+  ;; php code sniffer
+  (use-package phpcbf
+  :ensure t
+  :config
+  (setq phpcbf-standard "PSR2")
+  (add-hook 'php-mode-hook 'phpcbf-enable-on-save))
 
-    ;; php flycheck
-    (setq flycheck-phpmd-rulesets '("cleancode" "codesize" "controversial" "design" "naming" "unusedcode"))
-    (add-hook 'php-mode-hook (lambda () 
-    (setq flycheck-phpcs-standard "PSR2")
-    (define-key xah-fly-comma-keymap (kbd "l") 'ac-php-find-symbol-at-point)
-    (define-key xah-fly-comma-keymap (kbd "k") 'ac-php-location-stack-back)
-    (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
-))
+  (use-package flymake-php
+  :ensure t
+  :config
+  (add-hook 'php-mode-hook 'flymake-php-load)
+  )
 
-    ;; auto-complete & company-mode for php
-    (use-package ac-php :ensure t
-                 :config
-                 (ac-php-core-eldoc-setup))
+  (use-package php-auto-yasnippets    
+  :ensure t
+  :config
+  (setq php-auto-yasnippet-php-program "~/.emacs.d/ab/Create-PHP-YASnippet.php")
+  )
 
-    (setq geben-dbgp-default-port 9001)
+  ;; auto-complete & company-mode for php
+  (use-package ac-php :ensure t
+  :config
+  (ac-php-core-eldoc-setup))    
 
+  (add-hook 'php-mode-hook (lambda () 
+  (php-eldoc-enable)
+  (define-key xah-fly-comma-keymap (kbd "l") 'ac-php-find-symbol-at-point)
+  (define-key xah-fly-comma-keymap (kbd "k") 'ac-php-location-stack-back)
+  (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
+  ))
+  
+  (use-package company-php :ensure t)
+
+  (setq geben-dbgp-default-port 9001)
 
   #+END_SRC
 
@@ -1171,6 +1225,8 @@
 (define-key projectile-mode-map (kbd "C-p") 'projectile-command-map)
 (define-key projectile-command-map (kbd "m") 'magit-status)
 (define-key projectile-command-map (kbd "P") 'ab-stage-commit-push)
+(define-key projectile-command-map (kbd "C") 'ab-stage-commit)
+
 (define-key projectile-command-map (kbd "F") (lambda ()(interactive) (magit-pull-from-pushremote nil)))
 (define-key projectile-command-map (kbd "n") 'ab-set-project-name-manual)
   #+END_SRC
@@ -1281,358 +1337,365 @@
 * Keybindings
 
   #+BEGIN_SRC emacs-lisp
-;; 
-;; ab-KEYS
-;;
-
-
-
-
-
     ;; 
+    ;; ab-KEYS
+    ;;
 
-(defvar major-keyboard-bindings
-  '(
-    ;; ("C-x C-f" . ido-find-file )
-    ;; ("C-x C-r" . helm-recentf)
-    ;; ("C-x k" . kill-this-buffer)
+
+
+
+
+        ;; 
+
+    (defvar major-keyboard-bindings
+      '(
+        ;; ("C-x C-f" . ido-find-file )
+        ;; ("C-x C-r" . helm-recentf)
+        ;; ("C-x k" . kill-this-buffer)
     
-    ("C-c a" . org-agenda)
-    ("C-c g" . org-caldav-sync)
-    ;; ("C-c a c" . org-caldav-sync);; sync with google calendar
-    ("C-c t" . org-capture)
-    ("C-w" . kill-this-buffer)
-    ("<C-tab>" . other-window)
-    ;; ("C-s" . save-buffer )
-    ;; ("C-S-s" . write-file )
-    ("C-f" . phi-search)
-    ("M-S-<down>" . buf-move-down)
-    ("M-S-<left>" . buf-move-left)
-    ("M-S-<right>" . buf-move-right)
-    ("C-r" . emacs-reload-current-file)
-    ;; ("<escape>" . keyboard-escape-quit)
-    ("C-;" . finish-line)
-    ;; ("C-d" . duplicate-thing)
-    ;; ("C-c w" . copy-word)
-    ;; ("C-x g" . magit-status)
-    ("M-d" . xah-delete-backward-char-or-bracket-text)
-    ("M-e" . xah-backward-kill-word)
-    ("M-r" . xah-kill-word)
-    ("M-o" . forward-word)
-    ("M-u" . backward-word)
-    ("M-h" . xah-beginning-of-line-or-block)
-    ("M-;" . xah-end-of-line-or-block)
-    ("M-." . dumb-jump-go)
-    ("M-," . dumb-jump-back)
-    ("<f5>" . call-last-kbd-macro)
-    ("<f8>" . other-frame)
-    )
-  )
-(defun apply-major-keyboard-bindings (pair)
-  "Apply keyboard-bindings for supplied list of key-pair values"
-  (global-set-key (kbd (car pair))
-                  (cdr pair)))
+        ("C-c a" . org-agenda)
+        ("C-c g" . org-caldav-sync)
+        ;; ("C-c a c" . org-caldav-sync);; sync with google calendar
+        ("C-c t" . org-capture)
+        ("C-w" . kill-this-buffer)
+        ("<C-tab>" . other-window)
+        ;; ("C-s" . save-buffer )
+        ;; ("C-S-s" . write-file )
+        ("C-f" . phi-search)
+        ("M-S-<down>" . buf-move-down)
+        ("M-S-<left>" . buf-move-left)
+        ("M-S-<right>" . buf-move-right)
+        ("C-r" . emacs-reload-current-file)
+        ;; ("<escape>" . keyboard-escape-quit)
+        ("C-;" . finish-line)
+        ;; ("C-d" . duplicate-thing)
+        ;; ("C-c w" . copy-word)
+        ;; ("C-x g" . magit-status)
+        ("M-d" . xah-delete-backward-char-or-bracket-text)
+        ("M-e" . xah-backward-kill-word)
+        ("M-r" . xah-kill-word)
+        ("M-o" . forward-word)
+        ("M-u" . backward-word)
+        ("M-h" . xah-beginning-of-line-or-block)
+        ("M-;" . xah-end-of-line-or-block)
+        ("M-." . dumb-jump-go)
+        ("M-," . dumb-jump-back)
+        ("<f5>" . call-last-kbd-macro)
+        ("<f8>" . other-frame)
+        )
+      )
+    (defun apply-major-keyboard-bindings (pair)
+      "Apply keyboard-bindings for supplied list of key-pair values"
+      (global-set-key (kbd (car pair))
+                      (cdr pair)))
 
-(mapc 'apply-major-keyboard-bindings
-      major-keyboard-bindings)
-
-
-;; set Menu/App key to do emacs's C-x http://ergoemacs.org/emacs/emacs_dvorak_C-x.html
-;; (global-set-key (kbd "<menu>") ctl-x-map)
+    (mapc 'apply-major-keyboard-bindings
+          major-keyboard-bindings)
 
 
-(global-set-key (kbd "C-,") (lambda ()(interactive) (shrink-window-horizontally 5)))
-(local-set-key (kbd "C-,") (lambda ()(interactive) (shrink-window-horizontally 5)))
-
-(global-set-key (kbd "C-.") (lambda ()(interactive) (enlarge-window-horizontally 5)))
-;; (shrink-window-horizontally 5)
-;; (enlarge-window-horizontally 5)
+    ;; set Menu/App key to do emacs's C-x http://ergoemacs.org/emacs/emacs_dvorak_C-x.html
+    ;; (global-set-key (kbd "<menu>") ctl-x-map)
 
 
+    (global-set-key (kbd "C-,") (lambda ()(interactive) (shrink-window-horizontally 5)))
+    (local-set-key (kbd "C-,") (lambda ()(interactive) (shrink-window-horizontally 5)))
 
-(global-set-key (kbd "C-1") (lambda ()(interactive) (bookmark-jump "1")))
-(global-set-key (kbd "C-2") (lambda ()(interactive) (bookmark-jump "2")))
-(global-set-key (kbd "C-3") (lambda ()(interactive) (bookmark-jump "3")))
-(global-set-key (kbd "C-4") (lambda ()(interactive)  (bookmark-jump "4")))
-
-
-(define-key isearch-mode-map (kbd "C-o") 'isearch-occur)
-(define-key isearch-mode-map (kbd "C-f") 'isearch-repeat-forward)
-(define-key isearch-mode-map (kbd "C-v") 'isearch-yank-kill)
-(define-key isearch-mode-map (kbd "C-d") 'isearch-word)
+    (global-set-key (kbd "C-.") (lambda ()(interactive) (enlarge-window-horizontally 5)))
+    ;; (shrink-window-horizontally 5)
+    ;; (enlarge-window-horizontally 5)
 
 
 
-;; Xah fly keys                            
-(add-hook 'php-mode-hook
-          (function (lambda ()
-                      (local-unset-key (kbd "<M-tab>"))
-                      (local-unset-key (kbd "C-d"))
-                      (local-unset-key (kbd "C-b"))
-                      (local-unset-key (kbd "C-h"))
-                      (local-unset-key (kbd "C-."))
-                      (local-unset-key (kbd "C-,"))
-                      (local-unset-key (kbd "C-;"))
-)))
+    (global-set-key (kbd "C-1") (lambda ()(interactive) (bookmark-jump "1")))
+    (global-set-key (kbd "C-2") (lambda ()(interactive) (bookmark-jump "2")))
+    (global-set-key (kbd "C-3") (lambda ()(interactive) (bookmark-jump "3")))
+    (global-set-key (kbd "C-4") (lambda ()(interactive)  (bookmark-jump "4")))
 
 
-(add-hook 'xah-fly-key-hook
-          (function (lambda ()
-                      (local-unset-key (kbd "<f7>"))
-                      (local-unset-key (kbd "C-1"))
-                      (local-unset-key (kbd "C-2"))
-                      )))
+    (define-key isearch-mode-map (kbd "C-o") 'isearch-occur)
+    (define-key isearch-mode-map (kbd "C-f") 'isearch-repeat-forward)
+    (define-key isearch-mode-map (kbd "C-v") 'isearch-yank-kill)
+    (define-key isearch-mode-map (kbd "C-d") 'isearch-word)
 
 
-;; (defun controlG() (interactive) (kbd "C-g"))
 
-(define-key key-translation-map (kbd "ESC") (kbd "C-g"))
+    ;; Xah fly keys                            
+    (add-hook 'php-mode-hook
+              (function (lambda ()
+                          (local-unset-key (kbd "<M-tab>"))
+                          (local-unset-key (kbd "C-d"))
+                          (local-unset-key (kbd "C-b"))
+                          (local-unset-key (kbd "C-h"))
+                          (local-unset-key (kbd "C-."))
+                          (local-unset-key (kbd "C-,"))
+                          (local-unset-key (kbd "C-;"))
+    )))
 
-(define-key xah-fly-key-map (kbd "<f7>") 'run-current-file)
 
-;; (define-key xah-fly-key-map (kbd "`") 'xah-fly-leader-key-map) 
-(global-set-key (kbd "`") 'xah-fly-command-mode-activate)
-;; (global-set-key (kbd "<tab>") 'xah-fly-command-mode-activate) 
+    (add-hook 'xah-fly-key-hook
+              (function (lambda ()
+                          (local-unset-key (kbd "<f7>"))
+                          (local-unset-key (kbd "C-1"))
+                          (local-unset-key (kbd "C-2"))
+                          )))
 
-(add-hook 'xah-fly-command-mode-activate-hook
-          (function (lambda ()
 
-                      (local-unset-key (kbd "C-1"))
-                      (local-unset-key (kbd "C-2"))
-                      (local-unset-key (kbd "<f8>"))
-                      (local-unset-key (kbd "<f9>"))
-                      (local-unset-key (kbd "p"))
+    ;; (defun controlG() (interactive) (kbd "C-g"))
+
+    (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
+
+    (define-key xah-fly-key-map (kbd "<f7>") 'run-current-file)
+
+    ;; (define-key xah-fly-key-map (kbd "`") 'xah-fly-leader-key-map) 
+    (global-set-key (kbd "`") 'xah-fly-command-mode-activate)
+    ;; (global-set-key (kbd "<tab>") 'xah-fly-command-mode-activate) 
+
+    (add-hook 'xah-fly-command-mode-activate-hook
+              (function (lambda ()
+
+                          (local-unset-key (kbd "C-1"))
+                          (local-unset-key (kbd "C-2"))
+                          (local-unset-key (kbd "<f8>"))
+                          (local-unset-key (kbd "<f9>"))
+                          (local-unset-key (kbd "p"))
                       
-                      (define-key xah-fly-key-map (kbd "1") (lambda ()(interactive)  (bookmark-jump "1")))  
-                      (define-key xah-fly-key-map (kbd "2") (lambda ()(interactive)  (bookmark-jump "2")))
+                          (define-key xah-fly-key-map (kbd "1") (lambda ()(interactive)  (bookmark-jump "1")))  
+                          (define-key xah-fly-key-map (kbd "2") (lambda ()(interactive)  (bookmark-jump "2")))
 
-                      (define-key xah-fly-key-map (kbd "C-1") (lambda ()(interactive)  (bookmark-jump "1")))
-                      (define-key xah-fly-key-map (kbd "C-2") (lambda ()(interactive)  (bookmark-jump "2")))
+                          (define-key xah-fly-key-map (kbd "C-1") (lambda ()(interactive)  (bookmark-jump "1")))
+                          (define-key xah-fly-key-map (kbd "C-2") (lambda ()(interactive)  (bookmark-jump "2")))
 
-                      ;; (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-insert-mode-activate)
-                      (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-insert-mode-activate)
+                          ;; (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-insert-mode-activate)
+                          (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-insert-mode-activate)
 
-                      ;; Set xah fly for russian keyboard
-                      (xah-fly--define-keys
-                       xah-fly-key-map
-                       '(
-                         ("й" . xah-reformat-lines)
-                         ("ц" . xah-shrink-whitespaces)
-                         ("э" . xah-cycle-hyphen-underscore-space)
-                         ("у" . xah-backward-kill-word)
-                         ("я" . xah-comment-dwim)
-                         ("х" . hippie-expand)
-                         ("ф" . smex)
-                         ("т" . isearch-forward)
-                         ("ш" . previous-line)
-                         ("р" . xah-beginning-of-line-or-block)
-                         ("в" . xah-delete-backward-char-or-bracket-text)
-                         ("н" . undo)
-                         ("г" . backward-word)
-                         ("о" . backward-char)
-                         ("п" . xah-delete-current-text-block)
-                         ("с" . xah-copy-line-or-region)
-                         ("м" . xah-paste-or-paste-previous)
-                         ("з" . xah-insert-space-before)
-                         ("ь" . xah-backward-left-bracket)
-                         ("д" . forward-char)
-                         ("ы" . open-line)
-                         ("к" . xah-kill-word)
-                         ("ч" . xah-cut-line-or-region)
-                         ("щ" . forward-word)
-                         ("ж" . xah-end-of-line-or-block)
-                         ("л" . next-line)
-                         ("а" . xah-fly-insert-mode-activate)
-                         ("б" . xah-next-window-or-frame)
-                         ("и" . xah-toggle-letter-case)
-                         ("е" . set-mark-command)
-                         ))
-
-
+                          ;; Set xah fly for russian keyboard
+                          (xah-fly--define-keys
+                           xah-fly-key-map
+                           '(
+                             ("й" . xah-reformat-lines)
+                             ("ц" . xah-shrink-whitespaces)
+                             ("э" . xah-cycle-hyphen-underscore-space)
+                             ("у" . xah-backward-kill-word)
+                             ("я" . xah-comment-dwim)
+                             ("х" . hippie-expand)
+                             ("ф" . smex)
+                             ("т" . isearch-forward)
+                             ("ш" . previous-line)
+                             ("р" . xah-beginning-of-line-or-block)
+                             ("в" . xah-delete-backward-char-or-bracket-text)
+                             ("н" . undo)
+                             ("г" . backward-word)
+                             ("о" . backward-char)
+                             ("п" . xah-delete-current-text-block)
+                             ("с" . xah-copy-line-or-region)
+                             ("м" . xah-paste-or-paste-previous)
+                             ("з" . xah-insert-space-before)
+                             ("ь" . xah-backward-left-bracket)
+                             ("д" . forward-char)
+                             ("ы" . open-line)
+                             ("к" . xah-kill-word)
+                             ("ч" . xah-cut-line-or-region)
+                             ("щ" . forward-word)
+                             ("ж" . xah-end-of-line-or-block)
+                             ("л" . next-line)
+                             ("а" . xah-fly-insert-mode-activate)
+                             ("б" . xah-next-window-or-frame)
+                             ("и" . xah-toggle-letter-case)
+                             ("е" . set-mark-command)
+                             ))
 
 
-                      (xah-fly--define-keys 
-                       xah-fly-key-map
-                       '(
 
-                         ("a" . smex)
-                         ("ф" . smex)
+
+                          (xah-fly--define-keys 
+                           xah-fly-key-map
+                           '(
+
+                             ("a" . smex)
+                             ("ф" . smex)
                          
-                         ("m" . avy-goto-word-1)
-                         ("ь" . avy-goto-word-1)
+                             ("m" . imenu-list-smart-toggle)
+                             ("ь" . imenu-list-smart-toggle)
 
-                         ("-" . universal-argument)
-                         ("э" . universal-argument)
+                             ("-" . universal-argument)
+                             ("э" . universal-argument)
                          
 
-                         ("b" . ab-swiper)
-                         ("т" . ab-swiper)
+                             ("b" . ab-swiper)
+                             ("т" . ab-swiper)
                          
                          
-                         ("i" . keyboard-quit)
-                         ("п" . keyboard-quit)
+                             ("i" . keyboard-quit)
+                             ("п" . keyboard-quit)
                          
-                         ("u" . ibuffer)     
-                         ("а" . ibuffer)
+                             ("u" . ivy-switch-buffer)     
+                             ("а" . ivy-switch-buffer)
                          
-                         ("l" . projectile-command-map)
-                         ("з" . projectile-command-map)     
-                         ))
+                             ("l" . projectile-command-map)
+                             ("з" . projectile-command-map)
+     
+                             ("[" . projectile-command-map)
+                             ("з" . projectile-command-map)     
+                             ))
 
 
-                         (setq mode-line-front-space "-- INSERT --")
-                         (force-mode-line-update)
-                      ;; (define-key xah-fly-key-map (kbd "p") 'projectile-command-map)                             
-)))   
+                             (setq mode-line-front-space "-- INSERT --")
+                             (force-mode-line-update)
+                          ;; (define-key xah-fly-key-map (kbd "p") 'projectile-command-map)                             
+    )))   
 
-(add-hook 'xah-fly-insert-mode-activate-hook
-          (function (lambda ()
+    (add-hook 'xah-fly-insert-mode-activate-hook
+              (function (lambda ()
                       
-                      (local-unset-key (kbd "1"))
-                      (local-unset-key (kbd "2"))
-                      (local-unset-key (kbd "<f8>"))
-                      (local-unset-key (kbd "<f7>"))
+                          (local-unset-key (kbd "1"))
+                          (local-unset-key (kbd "2"))
+                          (local-unset-key (kbd "<f8>"))
+                          (local-unset-key (kbd "<f7>"))
 
-                      ;; (local-unset-key (kbd "p"))                      
-                      ;; (local-unset-key (kbd "g"))
+                          ;; (local-unset-key (kbd "p"))                      
+                          ;; (local-unset-key (kbd "g"))
                       
-                      ;; (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-command-mode-activate)
-                      (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-command-mode-activate)
-                      ;; (define-key xah-fly-key-map (kbd "1") )
+                          ;; (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-command-mode-activate)
+                          (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-command-mode-activate)
+                          ;; (define-key xah-fly-key-map (kbd "1") )
 
-                      ;; Set xah fly for russian keyboard
-                      (xah-fly--define-keys
-                       xah-fly-key-map
-                       '(
-                         ("й" . nil)
-                         ("ц" . nil)
-                         ("э" . nil)
-                         ("у" . nil)
-                         ("я" . nil)
-                         ("х" . nil)
-                         ("ф" . nil)
-                         ("т" . nil)
-                         ("ш" . nil)
-                         ("р" . nil)
-                         ("в" . nil)
-                         ("а" . nil)
-                         ("н" . nil)
-                         ("г" . nil)
-                         ("о" . nil)
-                         ("п" . nil)
-                         ("с" . nil)
-                         ("м" . nil)
-                         ("з" . nil)
-                         ("ь" . nil)
-                         ("д" . nil)
-                         ("ы" . nil)
-                         ("к" . nil)
-                         ("ч" . nil)
-                         ("щ" . nil)
-                         ("ж" . nil)
-                         ("л" . nil)
-                         ("а" . nil)
-                         ("б" . nil)
-                         ("и" . nil)
-                         ("е" . nil)
-                         ))
+                          ;; Set xah fly for russian keyboard
+                          (xah-fly--define-keys
+                           xah-fly-key-map
+                           '(
+                             ("й" . nil)
+                             ("ц" . nil)
+                             ("э" . nil)
+                             ("у" . nil)
+                             ("я" . nil)
+                             ("х" . nil)
+                             ("ф" . nil)
+                             ("т" . nil)
+                             ("ш" . nil)
+                             ("р" . nil)
+                             ("в" . nil)
+                             ("а" . nil)
+                             ("н" . nil)
+                             ("г" . nil)
+                             ("о" . nil)
+                             ("п" . nil)
+                             ("с" . nil)
+                             ("м" . nil)
+                             ("з" . nil)
+                             ("ь" . nil)
+                             ("д" . nil)
+                             ("ы" . nil)
+                             ("к" . nil)
+                             ("ч" . nil)
+                             ("щ" . nil)
+                             ("ж" . nil)
+                             ("л" . nil)
+                             ("а" . nil)
+                             ("б" . nil)
+                             ("и" . nil)
+                             ("е" . nil)
+                             ))
 
-                      ;; (define-key projectile-mode-map (kbd "p") nil)
-)))
-
-
-;;(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-(define-key xah-fly-r-keymap (kbd "c") 'mc/edit-lines)
-(define-key xah-fly-r-keymap (kbd "m") 'mc/mark-more-like-this-extended)
-(define-key xah-fly-r-keymap (kbd "M") 'mc/mark-all-like-this)
-
-(define-key xah-fly-c-keymap (kbd "j") 'ab-goto-recent-file)
-(define-key xah-fly-c-keymap (kbd "d") 'ab-goto-recent-directory)
-
-(define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
-(define-key xah-fly-e-keymap (kbd "d") 'ab-change-bracket-pair)
-
-(define-key xah-fly-n-keymap (kbd "e") 'revert-buffer-with-coding-system)
-(define-key xah-fly-n-keymap (kbd "i") 'file-metadata)
-
-(define-key xah-fly-t-keymap (kbd "b") 'ab-beautify-code)
-
-(define-key xah-fly-comma-keymap (kbd "l") 'dumb-jump-go)
-(define-key xah-fly-comma-keymap (kbd "k") 'dumb-jump-back)
-(define-key xah-fly-comma-keymap (kbd ".") 'dumb-jump-go)
-(define-key xah-fly-comma-keymap (kbd ",") 'dumb-jump-back)
-(define-key xah-fly-comma-keymap (kbd "o") 'dumb-jump-go-other-windocomma)
-(define-key xah-fly-comma-keymap (kbd "p") 'dumb-jump-go-prompt) 
-
-;; leader w
-(define-key xah-fly-comma-keymap (kbd "j") 'find-tag)
-(define-key xah-fly-comma-keymap (kbd "s") 'ag)
-(define-key xah-fly-comma-keymap (kbd "a") 'counsel-ag)
-(define-key xah-fly-comma-keymap (kbd "r") 'counsel-git-grep)
-(define-key xah-fly-comma-keymap (kbd "g") 'counsel-git)
-(define-key xah-fly-comma-keymap (kbd "f") 'find-grep)
-(define-key xah-fly-comma-keymap (kbd "x") 'counsel-M-x)
-
-(define-key xah-fly-comma-keymap (kbd "w") 'ivy-resume)
+                          ;; (define-key projectile-mode-map (kbd "p") nil)
+    )))
 
 
-(define-key xah-fly-comma-keymap (kbd "h") 'highlight-symbol-at-point)
-(define-key xah-fly-comma-keymap (kbd "x") 'highlight-regexp)
+    ;;(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+    (define-key xah-fly-r-keymap (kbd "c") 'mc/edit-lines)
+    (define-key xah-fly-r-keymap (kbd "m") 'mc/mark-more-like-this-extended)
+    (define-key xah-fly-r-keymap (kbd "M") 'mc/mark-all-like-this)
 
-;; (define-key xah-fly-c-keymap (kbd "q") 'helm-recentf)
+    ;; (define-key xah-fly-c-keymap (kbd "j") 'ab-goto-recent-file)
+    (define-key xah-fly-c-keymap (kbd "d") 'ab-goto-recent-directory)
+    (define-key xah-fly-c-keymap (kbd "w") 'xah-close-current-buffer)
+    (define-key xah-fly-c-keymap (kbd "m") 'file-metadata)
 
-(define-key xah-fly-leader-key-map (kbd "f") 'find-file)  
-(define-key xah-fly-leader-key-map (kbd "j") 'ab-goto-recent-file)
+    (define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
+    (define-key xah-fly-e-keymap (kbd "d") 'ab-change-bracket-pair)
 
-(define-key xah-fly-leader-key-map (kbd "y") 'ivy-resume)
+    (define-key xah-fly-n-keymap (kbd "e") 'revert-buffer-with-coding-system)
+    ;;(define-key xah-fly-n-keymap (kbd "i") 'file-metadata)
 
-(define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
-(define-key xah-fly-leader-key-map (kbd "p") 'projectile-command-map)
+    (define-key xah-fly-t-keymap (kbd "b") 'ab-beautify-code)
+    (define-key xah-fly-t-keymap (kbd "k") 'xah-close-current-buffer)
+    (define-key xah-fly-t-keymap (kbd "j") 'repeat)
 
-(define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
+    (define-key xah-fly-comma-keymap (kbd "l") 'dumb-jump-go)
+    (define-key xah-fly-comma-keymap (kbd "k") 'dumb-jump-back)
+    (define-key xah-fly-comma-keymap (kbd ".") 'dumb-jump-go)
+    (define-key xah-fly-comma-keymap (kbd ",") 'dumb-jump-back)
+    (define-key xah-fly-comma-keymap (kbd "o") 'dumb-jump-go-other-windocomma)
+    (define-key xah-fly-comma-keymap (kbd "p") 'dumb-jump-go-prompt) 
+
+    ;; leader w
+    (define-key xah-fly-comma-keymap (kbd "j") 'find-tag)
+    (define-key xah-fly-comma-keymap (kbd "s") 'ag)
+    (define-key xah-fly-comma-keymap (kbd "a") 'counsel-ag)
+    (define-key xah-fly-comma-keymap (kbd "r") 'counsel-git-grep)
+    (define-key xah-fly-comma-keymap (kbd "g") 'counsel-git)
+    (define-key xah-fly-comma-keymap (kbd "f") 'find-grep)
+    (define-key xah-fly-comma-keymap (kbd "x") 'counsel-M-x)
+
+    (define-key xah-fly-comma-keymap (kbd "w") 'ivy-resume)
 
 
-(define-key xah-fly-leader-key-map (kbd "u") 'neotree-toggle)
+    (define-key xah-fly-comma-keymap (kbd "h") 'highlight-symbol-at-point)
+    (define-key xah-fly-comma-keymap (kbd "x") 'highlight-regexp)
+
+    ;; (define-key xah-fly-c-keymap (kbd "q") 'helm-recentf)
+
+    (define-key xah-fly-leader-key-map (kbd "f") 'find-file)  
+    (define-key xah-fly-leader-key-map (kbd "j") 'ab-goto-recent-file)
+
+    (define-key xah-fly-leader-key-map (kbd "y") 'ivy-resume)
+
+    ;; (define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
+    (define-key xah-fly-leader-key-map (kbd "p") 'projectile-command-map)
+
+    (define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
 
 
-(define-key xah-fly-leader-key-map (kbd "7") 'ispell-region)  
-;; * Org mode
-(define-key key-translation-map (kbd "<menu>") (kbd "C-c"))
-
-(define-key org-mode-map (kbd "C-c q") 'org-set-tags)
-(define-key org-mode-map (kbd "C-c e") 'org-export-dispatch)
-(define-key org-mode-map (kbd "C-c d") 'org-deadline)
-(define-key org-mode-map (kbd "C-c t") 'org-todo)
+    (define-key xah-fly-leader-key-map (kbd "u") 'neotree-toggle)
 
 
+    (define-key xah-fly-leader-key-map (kbd "7") 'ispell-region)  
+    ;; * Org mode
+    (define-key key-translation-map (kbd "<menu>") (kbd "C-c"))
+
+    (define-key org-mode-map (kbd "C-c q") 'org-set-tags)
+    (define-key org-mode-map (kbd "C-c e") 'org-export-dispatch)
+    (define-key org-mode-map (kbd "C-c d") 'org-deadline)
+    (define-key org-mode-map (kbd "C-c t") 'org-todo)
 
 
-;; M-k.(kill-sentence &optional ARG)
-;;https://www.alexkorablev.ru/2017/06/10/emacs-got-keys/
-(defun reverse-input-method (input-method)
-  "Build the reverse mapping of single letters from INPUT-METHOD."
-  (interactive
-   (list (read-input-method-name "Use input method (default current): ")))
-  (if (and input-method (symbolp input-method))
-      (setq input-method (symbol-name input-method)))
-  (let ((current current-input-method)
-        (modifiers '(nil (control) (meta) (control meta))))
-    (when input-method
-      (activate-input-method input-method))
-    (when (and current-input-method quail-keyboard-layout)
-      (dolist (map (cdr (quail-map)))
-        (let* ((to (car map))
-               (from (quail-get-translation
-                      (cadr map) (char-to-string to) 1)))
-          (when (and (characterp from) (characterp to))
-            (dolist (mod modifiers)
-              (define-key local-function-key-map
-                (vector (append mod (list from)))
-                (vector (append mod (list to)))))))))
-    (when input-method
-      (activate-input-method current))))
 
-(reverse-input-method 'russian-computer)
+
+    ;; M-k.(kill-sentence &optional ARG)
+    ;;https://www.alexkorablev.ru/2017/06/10/emacs-got-keys/
+    (defun reverse-input-method (input-method)
+      "Build the reverse mapping of single letters from INPUT-METHOD."
+      (interactive
+       (list (read-input-method-name "Use input method (default current): ")))
+      (if (and input-method (symbolp input-method))
+          (setq input-method (symbol-name input-method)))
+      (let ((current current-input-method)
+            (modifiers '(nil (control) (meta) (control meta))))
+        (when input-method
+          (activate-input-method input-method))
+        (when (and current-input-method quail-keyboard-layout)
+          (dolist (map (cdr (quail-map)))
+            (let* ((to (car map))
+                   (from (quail-get-translation
+                          (cadr map) (char-to-string to) 1)))
+              (when (and (characterp from) (characterp to))
+                (dolist (mod modifiers)
+                  (define-key local-function-key-map
+                    (vector (append mod (list from)))
+                    (vector (append mod (list to)))))))))
+        (when input-method
+          (activate-input-method current))))
+
+    (reverse-input-method 'russian-computer)
 
 
   #+END_SRC
@@ -1658,8 +1721,11 @@
      "Insert a welcome message to help use the scratch buffer."
      (insert "// This buffer is for JavaScript evaluation.\n
 location.reload();
-$scope = angular.element(document.getElementById('checkPinController')).scope();
-$scope.askPin();
+var $scope = angular.element(document.getElementById('checkPinController')).scope();
+var dataService = angular.element(document.body).injector().get('dataService');
+var $filter = angular.element(document.body).injector().get('$filter');
+// angular.element($0).scope()
+
 \n"))
 
      ;; (define-key js-mode-map (kbd "SPC , m") ab-indium-eval) 
@@ -1681,6 +1747,17 @@ $scope.askPin();
 
 
 
+* Beacon
+
+#+BEGIN_SRC emacs-lisp
+ (use-package beacon
+  :ensure t
+  :config
+  (beacon-mode 1)
+  ; (setq beacon-color "#666600")
+  )
+#+END_SRC
+
 
 * Anzy
 
@@ -1697,6 +1774,281 @@ $scope.askPin();
 
 
   #+END_SRC
+
+* Mu4e
+#+BEGIN_SRC emacs-lisp
+
+        ;; https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/
+        (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+
+        (require 'mu4e)
+
+        (setq mu4e-maildir (expand-file-name "~/Maildir"))
+
+        ; get mail
+        (setq mu4e-get-mail-command "mbsync -a"
+          ;; mu4e-html2text-command "w3m -T text/html" ;;using the default mu4e-shr2text
+          mu4e-view-prefer-html t
+          mu4e-update-interval 180
+          mu4e-headers-auto-update t
+          mu4e-compose-signature-auto-include t
+          mu4e-compose-format-flowed t
+          mu4e-view-show-images t
+          mu4e-view-show-addresses t
+          mu4e-use-fancy-chars t
+          )
+
+
+
+        ;; to view selected message in the browser, no signin, just html mail
+        (add-to-list 'mu4e-view-actions '("browser view" . mu4e-action-view-in-browser) t)
+
+        ;; use imagemagick, if available
+        (when (fboundp 'imagemagick-register-types) (imagemagick-register-types))
+
+        ;; every new email composition gets its own frame!
+        (setq mu4e-compose-in-new-frame nil)
+
+        ;; don't save message to Sent Messages, IMAP takes care of this
+        (setq mu4e-sent-messages-behavior 'sent)
+
+        (add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+
+        ;; <tab> to navigate to links, <RET> to open them in browser
+        (add-hook 'mu4e-view-mode-hook
+          (lambda()
+        ;; try to emulate some of the eww key-bindings
+        (local-set-key (kbd "<RET>") 'mu4e~view-browse-url-from-binding)
+        (local-set-key (kbd "<tab>") 'shr-next-link)
+        (local-set-key (kbd "<backtab>") 'shr-previous-link)))
+
+        (define-key mu4e-headers-mode-map (kbd "k") 'mu4e-headers-next)
+        (define-key mu4e-headers-mode-map (kbd "i") 'mu4e-headers-prev)
+        (define-key mu4e-headers-mode-map (kbd "d") 'mu4e-view-mark-for-delete)
+        (define-key mu4e-headers-mode-map (kbd "n") 'swiper)
+        (define-key mu4e-headers-mode-map (kbd ",") 'xah-next-window-or-frame)
+
+        (define-key mu4e-view-mode-map (kbd "k") 'mu4e-view-headers-next)
+        (define-key mu4e-view-mode-map (kbd "i") 'mu4e-view-headers-prev)
+        (define-key mu4e-view-mode-map (kbd "d") 'mu4e-view-mark-for-delete)
+        (define-key mu4e-view-mode-map (kbd "n") 'swiper)
+        (define-key mu4e-view-mode-map (kbd ",") 'xah-next-window-or-frame)
+
+        (setq mu4e-use-fancy-chars t)
+        ;; from https://www.reddit.com/r/emacs/comments/bfsck6/mu4e_for_dummies/elgoumx
+          (add-hook 'mu4e-headers-mode-hook
+              (defun my/mu4e-change-headers ()
+                (interactive)
+                (setq mu4e-headers-fields
+                      `((:human-date . 18)
+                        (:flags . 6)
+                        (:from-or-to . 24)
+                        (:thread-subject . ,(- (window-body-width) 65))
+                        (:size . 8)
+
+                        ;;(:subject . ,(- (window-body-width) 47))
+                        ))))
+
+                        ;;(:thread-subject . nil)
+                        ;; (:thread-subject . ,(- (window-body-width) 70)) ;; alternatively, use :subject
+
+        (setq mu4e-headers-date-format "%d.%m.%Y %H:%M")
+        (setq mu4e-headers-attach-mark    '("a" . "↧"))
+        (setq mu4e-headers-unread-mark    '("*" . "*"))
+        (setq mu4e-headers-seen-mark    '("S" . "✔"))
+        (setq mu4e-headers-new-mark       '("N" . ""))
+
+        (setq mu4e-headers-results-limit  2000)
+
+        ;; if you use date instead of human-date in the above, use this setting
+        ;; give me ISO(ish) format date-time stamps in the header list
+        ;(setq mu4e-headers-date-format "%Y-%m-%d %H:%M")
+
+        ;; spell check
+        (add-hook 'mu4e-compose-mode-hook
+            (defun my-do-compose-stuff ()
+               "My settings for message composition."
+               (visual-line-mode)
+               ;; (org-mu4e-compose-org-mode)
+               (use-hard-newlines -1)
+               (flyspell-mode)))
+
+        (require 'smtpmail)
+
+        ;;rename files when moving
+        ;;NEEDED FOR MBSYNC
+        (setq mu4e-change-filenames-when-moving t)
+
+        ;;set up queue for offline email
+        ;;use mu mkdir  ~/Maildir/acc/queue to set up first
+        ;; start in normal mode
+
+        (setq smtpmail-queue-mail nil)  
+
+        ;;from the info manual
+        (setq mu4e-attachment-dir  "~/Загрузки")
+
+        (setq message-kill-buffer-on-exit t)
+        (setq mu4e-compose-dont-reply-to-self t)
+
+         (require 'org-mu4e) 
+
+        ;; replay format
+        (setq  message-citation-line-format "\n>%f в %d.%m.%Y %H:%I ")
+      (setq message-citation-line-function 'message-insert-formatted-citation-line)
+
+        ;; convert org mode to HTML automatically
+        (setq org-mu4e-convert-to-html t)
+
+
+        ;; don't ask when quitting
+        (setq mu4e-confirm-quit nil)
+
+        ;; don't ask when execute marks
+        (define-key mu4e-headers-mode-map (kbd "x") (lambda() (interactive) (mu4e-mark-execute-all t)))
+        (define-key mu4e-view-mode-map (kbd "x") (lambda() (interactive) (mu4e-mark-execute-all t)))
+
+        ;; mu4e-context
+        (setq mu4e-context-policy 'ask-if-none)
+        (setq mu4e-compose-context-policy 'ask-if-none)
+        (setq mu4e-contexts
+          (list
+           (make-mu4e-context
+            :name "gmail" ;;for acc1-gmail
+            :enter-func (lambda () (mu4e-message "Entering context work"))
+            :leave-func (lambda () (mu4e-message "Leaving context work"))
+            :match-func (lambda (msg)
+                          (when msg
+                        (mu4e-message-contact-field-matches
+                         msg '(:from :to :cc :bcc) "awalexwhite@gmail.com")))
+            :vars '((user-mail-address . "awalexwhite@gmail.com")
+                    (user-full-name . "Alexey")
+                    (mu4e-sent-folder . "/gmail/Sent")
+                    (mu4e-drafts-folder . "/gmail/Drafts")
+                    (mu4e-trash-folder . "/gmail/Trash")
+                    (mu4e-refile-folder . "/gmail/Archive")
+                    (mu4e-compose-signature .  "--- Alexey")
+                    (mu4e-compose-format-flowed . t)
+                    (smtpmail-queue-dir . "/gmail/cur")
+                    (message-send-mail-function . smtpmail-send-it)
+                    (smtpmail-smtp-user . "awalexwhite")
+                    (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
+                    (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
+                    (smtpmail-default-smtp-server . "smtp.gmail.com")
+                    (smtpmail-smtp-server . "smtp.gmail.com")
+                    (smtpmail-smtp-service . 587)
+                    (smtpmail-debug-info . t)
+                    (smtpmail-debug-verbose . t)
+                    (mu4e-maildir-shortcuts . ( ("/gmail/INBOX"            . ?i)
+                                                ("/gmail/Sent" . ?s)
+                                                ("/gmail/Trash"       . ?t)
+                                                ;; ("/gmail/All Mail"  . ?a)
+                                                ("/gmail/Drafts"    . ?d)
+
+  ))))
+
+            (make-mu4e-context
+             :name "it@adresat" ;;for acc2-gmail
+             :enter-func (lambda () (mu4e-message "Entering context personal"))
+             :leave-func (lambda () (mu4e-message "Leaving context personal"))
+             :match-func (lambda (msg)
+                        (when msg
+                      (mu4e-message-contact-field-matches
+                       msg '(:from :to :cc :bcc) "it@adresat34.ru")))
+             :vars '((user-mail-address . "it@adresat34.ru")
+                     (user-full-name . "Адресат34 IT")
+                    (mu4e-sent-folder . "/adresat/Sent")
+                    (mu4e-drafts-folder . "/adresat/Drafts")
+                    (mu4e-trash-folder . "/adresat/Trash")
+                    (mu4e-refile-folder . "/adresat/Archive")
+                    (mu4e-compose-signature . "Алексей\n+7(903)431-7243")
+                    (mu4e-compose-format-flowed . t)
+                    (smtpmail-queue-dir . "/adresat/cur")
+                    (message-send-mail-function . smtpmail-send-it)
+                    (smtpmail-smtp-user . "it@adresat34.ru")
+                    (smtpmail-starttls-credentials . (("smtp.yandex.ru" 587 nil nil)))
+                    (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
+                    (smtpmail-default-smtp-server . "smtp.yandex.ru")
+                    (smtpmail-smtp-server . "smtp.yandex.ru")
+                    (smtpmail-smtp-service . 587)
+                    (smtpmail-debug-info . t)
+                    (smtpmail-debug-verbose . t)
+                    (mu4e-maildir-shortcuts . ( ("/adresat/INBOX"            . ?i)
+                                                ("/adresat/Sent" . ?s)
+                                                ("/adresat/Trash"       . ?t)
+                                                ("/adresat/All Mail"  . ?a)
+                                                ("/adresat/Drafts"    . ?d)
+                                                ))))              
+
+    (make-mu4e-context
+             :name "alexey" ;;for acc2-gmail
+             :enter-func (lambda () (mu4e-message "Entering context personal"))
+             :leave-func (lambda () (mu4e-message "Leaving context personal"))
+             :match-func (lambda (msg)
+                        (when msg
+                      (mu4e-message-contact-field-matches
+                       msg '(:from :to :cc :bcc) "alexey@it-pr.ru")))
+             :vars '((user-mail-address . "alexey@it-pr.ru")
+                     (user-full-name . "Алексей Беликов")
+                    (mu4e-sent-folder . "/alexey/Sent")
+                    (mu4e-drafts-folder . "/alexey/Drafts")
+                    (mu4e-trash-folder . "/alexey/Trash")
+                    (mu4e-refile-folder . "/alexey/Archive")
+                    (mu4e-compose-signature . "Алексей Беликов\n+7(903)431-7243")
+                    (mu4e-compose-format-flowed . t)
+                    (smtpmail-queue-dir . "/alexey/cur")
+                    (message-send-mail-function . smtpmail-send-it)
+                    (smtpmail-smtp-user . "alexey@it-pr.ru")
+                    (smtpmail-starttls-credentials . (("smtp.yandex.ru" 587 nil nil)))
+                    (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
+                    (smtpmail-default-smtp-server . "smtp.yandex.ru")
+                    (smtpmail-smtp-server . "smtp.yandex.ru")
+                    (smtpmail-smtp-service . 587)
+                    (smtpmail-debug-info . t)
+                    (smtpmail-debug-verbose . t)
+                    (mu4e-maildir-shortcuts . ( ("/alexey/INBOX"            . ?i)
+                                                ("/alexey/Sent" . ?s)
+                                                ;; ("/alexey/Trash"       . ?t)
+                                                ("/alexey/Drafts"    . ?d)
+                                                ))))              
+
+        ))
+
+        (use-package mu4e-alert
+        :ensure t)
+
+
+        (mu4e-alert-set-default-style 'libnotify)
+        (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+        (add-hook 'after-init-hook #'mu4e-alert-enable-mode-line-display)
+
+#+END_SRC
+
+#+RESULTS:
+
+* Git-gutter & Timemashine
+
+#+BEGIN_SRC emacs-lisp
+    (use-package git-gutter
+     :ensure t
+     :config
+     (global-git-gutter-mode t)
+     (global-set-key (kbd "C-c i") 'git-gutter:previous-hunk)
+     (global-set-key (kbd "C-c k") 'git-gutter:next-hunk)
+     (global-set-key (kbd "C-c p") 'git-gutter:popup-hunk)
+     (global-set-key (kbd "C-c s") 'git-gutter:stage-hunk)
+     (global-set-key (kbd "C-c r") 'git-gutter:revert-hunk)
+     )
+
+     (custom-set-variables
+     '(git-gutter:modified-sign "*") 
+     '(git-gutter:added-sign "+")    
+     '(git-gutter:deleted-sign "-"))
+
+     (use-package git-timemachine
+     :ensure t
+     )
+#+END_SRC
 
 * Plstore
   #+BEGIN_SRC emacs-lisp
@@ -1724,7 +2076,7 @@ $scope.askPin();
          (get-buffer-create  "*scratch*"))
 
 
-         
+         (ivy-switch-buffer)         
   #+END_SRC
-  #+END_SRC
+
 
