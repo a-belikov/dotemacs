@@ -142,7 +142,6 @@
         magit
         ag
         ripgrep
-        dumb-jump
         flycheck
         xah-fly-keys
         org-bullets
@@ -780,12 +779,6 @@
             (set-background-color background-color))
             (ad-activate 'delete-frame)
 
-
-          
-
-
-          (setq dumb-jump-max-find-time 10)
-
           (blink-cursor-mode 0)
 
         ;;  (setq skewer-refresh-onsave nil) 
@@ -1398,8 +1391,6 @@
         ("M-u" . backward-word)
         ("M-h" . xah-beginning-of-line-or-block)
         ("M-;" . xah-end-of-line-or-block)
-        ("M-." . dumb-jump-go)
-        ("M-," . dumb-jump-back)
         ("<f5>" . call-last-kbd-macro)
         ("<f8>" . other-frame)
         )
@@ -1639,11 +1630,6 @@
     (define-key xah-fly-t-keymap (kbd "b") 'ab-beautify-code)
     (define-key xah-fly-t-keymap (kbd "k") 'xah-close-current-buffer)
     (define-key xah-fly-t-keymap (kbd "j") 'repeat)
-
-    (define-key xah-fly-comma-keymap (kbd ".") 'dumb-jump-go)
-    (define-key xah-fly-comma-keymap (kbd ",") 'dumb-jump-back)
-    (define-key xah-fly-comma-keymap (kbd "o") 'dumb-jump-go-other-windocomma)
-    (define-key xah-fly-comma-keymap (kbd "p") 'dumb-jump-go-prompt) 
 
     ;; leader w
     (define-key xah-fly-comma-keymap (kbd "j") 'find-tag)
@@ -2064,6 +2050,25 @@ var $filter = angular.element(document.body).injector().get('$filter');
      :ensure t
      )
 #+END_SRC
+
+* Dumb-jump
+
+#+BEGIN_SRC emacs-lisp
+    (use-package git-gutter
+     :ensure t
+     :config
+          (setq dumb-jump-max-find-time 8)
+          (setq dumb-jump-selector 'ivy)
+     ) 
+    (define-key xah-fly-comma-keymap (kbd ".") 'dumb-jump-go)
+    (define-key xah-fly-comma-keymap (kbd ",") 'dumb-jump-back)
+    (define-key xah-fly-comma-keymap (kbd "o") 'dumb-jump-go-other-windocomma)
+    (define-key xah-fly-comma-keymap (kbd "p") 'dumb-jump-go-prompt) 
+
+#+END_SRC
+
+
+
 
 * GGtags
 
