@@ -223,10 +223,8 @@
     ;; 
 
 
-
-
     (global-flycheck-mode t)
-
+    (global-set-key (kbd "C-c e") 'flycheck-next-error)
     ;; (add-hook 'prog-mode-hook 'flycheck-mode)
     ;; (add-hook 'text-mode-hook 'flycheck-mode)
 
@@ -710,12 +708,12 @@
 
 
           (setq org-todo-keywords
-          '((sequence "TODO" "PROCESS" "DELEGATED" "|" "DONE")))
+          '((sequence "TODO" "PROCESS" "DELEGATED" "|" "DONE" "CANCELED")))
 
         (setq org-todo-keyword-faces
           '(("TODO" . (:foreground "#ff39a3" :weight bold))
-        ("PROCESS" . "green")
-        ("CANCELED" . (:foreground "white" :background "#4d4d4d" :weight bold))
+          ("PROCESS" . "green")
+          ("CANCELED" . (:foreground "white" :background "#4d4d4d" :weight bold))
         ;;("DELEGATED" . "")
         ("POSTPONED" . "#008080")))
 
@@ -1092,38 +1090,41 @@
   (setq phpcbf-standard "PSR2")
   )
 
+  (use-package flymake-easy :ensure t)
 
-  (use-package flymake-php
-  :ensure t
-  :config
-  (add-hook 'php-mode-hook 'flymake-php-load)
-  )
+  (use-package flymake-php :ensure t)
 
   (use-package php-auto-yasnippets    
   :ensure t
   :config
   (setq php-auto-yasnippet-php-program "~/.emacs.d/ab/Create-PHP-YASnippet.php")
   )
+  
+  ;;(use-package php-eldoc   :ensure t)    
 
   ;; auto-complete & company-mode for php
-  (use-package ac-php :ensure t
-  :config
-  (ac-php-core-eldoc-setup))    
+  (use-package ac-php :ensure t)    
 
-  (add-hook 'php-mode-hook (lambda () 
-  (php-eldoc-enable)
-  (phpcbf-enable-on-save)
-  (define-key xah-fly-comma-keymap (kbd "l") 'ac-php-find-symbol-at-point)
-  (define-key xah-fly-comma-keymap (kbd "k") 'ac-php-location-stack-back)
-  (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
-  ))
-  
   (use-package company-php :ensure t)
 
   (setq geben-dbgp-default-port 9001)
 
-  #+END_SRC
+  (add-hook 'php-mode-hook 'ab-php-mode-stuff)
 
+;;(php-eldoc-enable)
+  
+  (defun ab-php-mode-stuff () 
+  (define-key xah-fly-comma-keymap (kbd "l") 'ac-php-find-symbol-at-point)
+  (define-key xah-fly-comma-keymap (kbd "k") 'ac-php-location-stack-back)
+  (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
+  (phpcbf-enable-on-save) 
+  (flymake-php-load))
+
+  
+  (define-key php-mode-map (kbd "C-c e") 'flymake-goto-next-error)
+  
+
+  #+END_SRC
 
 
   #+BEGIN_SRC emacs-lisp
@@ -1639,8 +1640,6 @@
     (define-key xah-fly-t-keymap (kbd "k") 'xah-close-current-buffer)
     (define-key xah-fly-t-keymap (kbd "j") 'repeat)
 
-    (define-key xah-fly-comma-keymap (kbd "l") 'dumb-jump-go)
-    (define-key xah-fly-comma-keymap (kbd "k") 'dumb-jump-back)
     (define-key xah-fly-comma-keymap (kbd ".") 'dumb-jump-go)
     (define-key xah-fly-comma-keymap (kbd ",") 'dumb-jump-back)
     (define-key xah-fly-comma-keymap (kbd "o") 'dumb-jump-go-other-windocomma)
@@ -1667,6 +1666,8 @@
     (define-key xah-fly-leader-key-map (kbd "j") 'ab-goto-recent-file)
 
     (define-key xah-fly-leader-key-map (kbd "y") 'ivy-resume)
+
+    (define-key xah-fly-leader-key-map (kbd "/") 'goto-line)
 
     ;; (define-key xah-fly-leader-key-map (kbd "b") 'imenu-list-smart-toggle)
     (define-key xah-fly-leader-key-map (kbd "p") 'projectile-command-map)
@@ -1763,9 +1764,6 @@ var $filter = angular.element(document.body).injector().get('$filter');
 
      ;; (define-key js2-mode-map (kbd "C-c C-c") ab-indium-eval)
   #+END_SRC
-
-
-
 * Beacon
 
 #+BEGIN_SRC emacs-lisp
@@ -1776,8 +1774,6 @@ var $filter = angular.element(document.body).injector().get('$filter');
   ; (setq beacon-color "#666600")
   )
 #+END_SRC
-
-
 * Anzy
 
   #+BEGIN_SRC emacs-lisp
@@ -2068,6 +2064,19 @@ var $filter = angular.element(document.body).injector().get('$filter');
      :ensure t
      )
 #+END_SRC
+
+* GGtags
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ggtags
+    :ensure t
+    :init
+    (push "GTAGS not found" debug-ignored-errors)
+    :config
+    ;; (add-hook 'prog-mode-hook 'ggtags-mode)
+  )
+#+END_SRC
+
 
 * Plstore
 
