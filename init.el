@@ -24,16 +24,3 @@
 ;; (load-file "~/.emacs.d/ab/00-sets.el.el")
 
 
-;; ligatures
-(load-file "~/.emacs.d/ab/10-pragmatapro.el")
-
-
-;; Config with secret key
-(load-file "~/.emacs.d/ab/11-private.el")
-
-
-;; (load-file "./custom.el")
-
-(set-default-font "Hack")
-
-
