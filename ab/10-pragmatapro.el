@@ -40,7 +40,10 @@
                         (- (length (car s)) 1)
                         (vector (decode-char 'ucs #X0020) '(Br . Bl))))
                 (vector (decode-char 'ucs (cadr s))))))
-          '(("[ERROR]"   #XE380)
+          '(
+            ;; #XE984 -> U+E984  https://github.com/fabrizioschiavi/pragmatapro
+            ("!"   #XF12A)
+            ("[ERROR]"   #XE380)
             ("[DEBUG]"   #XE381)
             ("[INFO]"    #XE382)
             ("[WARN]"    #XE383)
@@ -264,11 +267,15 @@
 ;;; Add the ligatures to all programming modes
 (add-hook 'prog-mode-hook #'add-pragmatapro-prettify-symbols-alist)
 
+
 ;;; `prettify':
 ;; Enables us to use ligatures in Emacs. It's awesome.
 (global-prettify-symbols-mode t)
 
 ;; (set-default-font "PragmataPro Liga")
+;; (custom-set-faces '(default ((t (:height 130)))))
+
+
 
 (provide 'pragmatapro)
 ;;; pragmatapro.el ends here
