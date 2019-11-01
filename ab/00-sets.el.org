@@ -1069,10 +1069,12 @@
 
     
   ;; Download from https://github.com/emacs-php/php-mode/releases and run "make"
-  (load "~/.emacs.d/php-mode/php-mode-autoloads.el")
+  ;; (load "~/.emacs.d/php-mode/php-mode-autoloads.el")
+  
   (setq php-mode-coding-style 'psr2) 
   (setq flycheck-phpcs-standard 'psr2)
-
+  (use-package php-mode  :ensure t)
+  
   ;; php code sniffer
   (use-package phpcbf
   :ensure t
