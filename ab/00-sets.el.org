@@ -1643,7 +1643,8 @@
     (define-key xah-fly-comma-keymap (kbd "x") 'highlight-regexp)
 
     ;; (define-key xah-fly-c-keymap (kbd "q") 'helm-recentf)
-
+    (define-key xah-fly-leader-key-map (kbd "k") 'kill-this-buffer)  
+    
     (define-key xah-fly-leader-key-map (kbd "f") 'find-file)  
     (define-key xah-fly-leader-key-map (kbd "j") 'ab-goto-recent-file)
 
@@ -1660,7 +1661,6 @@
     (define-key xah-fly-leader-key-map (kbd "u") 'neotree-toggle)
 
 
-    (define-key xah-fly-leader-key-map (kbd "7") 'ispell-region)  
     ;; * Org mode
     (define-key key-translation-map (kbd "<menu>") (kbd "C-c"))
 
@@ -1751,6 +1751,17 @@ var $filter = angular.element(document.body).injector().get('$filter');
   )
 #+END_SRC
 
+* Origami
+
+#+BEGIN_SRC emacs-lisp
+ (use-package origami
+  :ensure t
+  :config
+  (global-origami-mode 1)
+  (define-key xah-fly-leader-key-map (kbd "<tab>") 'origami-toggle-node))
+
+#+END_SRC
+
 * Anzy
 
   #+BEGIN_SRC emacs-lisp
@@ -1796,6 +1807,34 @@ var $filter = angular.element(document.body).injector().get('$filter');
      (use-package git-timemachine
      :ensure t
      )
+#+END_SRC
+
+* Spellcheck. Ispell & Langtool
+
+#+BEGIN_SRC emacs-lisp
+
+  (define-key xah-fly-leader-key-map (kbd "7") 'ispell-region)
+  (use-package langtool
+  :ensure t
+  :config
+  (setq langtool-language-tool-jar "~/LanguageTool/languagetool-commandline.jar")
+  ;; (setq langtool-default-language "en-US")
+  (setq langtool-mother-tongue "ru")
+  (define-key xah-fly-leader-key-map (kbd "8") 'langtool-check)
+  (define-key xah-fly-leader-key-map (kbd "9") 'langtool-check-done)
+  )
+
+  (defun langtool-autoshow-detail-popup (overlays)
+    (when (require 'popup nil t)
+      ;; Do not interrupt current popup
+      (unless (or popup-instances
+                  ;; suppress popup after type `C-g` .
+                  (memq last-command '(keyboard-quit)))
+        (let ((msg (langtool-details-error-message overlays)))
+          (popup-tip msg)))))
+  (setq langtool-autoshow-message-function
+        'langtool-autoshow-detail-popup)
+
 #+END_SRC
 
 * Dumb-jump
@@ -1869,7 +1908,6 @@ var $filter = angular.element(document.body).injector().get('$filter');
 
 
   #+END_SRC
-
 
 
 
