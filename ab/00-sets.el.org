@@ -568,6 +568,7 @@
                     '(("php" . "php")
                       ;; ("coffee" . "coffee -p")
                       ("pl" . "perl")
+                      ("cgi" . "perl")
                       ("py" . "python")
                       ("rb" . "ruby")
                       ("js" . "node")             ; node.js
@@ -1239,6 +1240,7 @@
 
 (define-key projectile-command-map (kbd "F") (lambda ()(interactive) (magit-pull-from-pushremote nil)))
 (define-key projectile-command-map (kbd "n") 'ab-set-project-name-manual)
+
   #+END_SRC
 
   #+BEGIN_SRC emacs-lisp
@@ -1324,14 +1326,30 @@
 (message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
   #+END_SRC
 
-* Neotree
-  
+
+* Ranger
+
   #+BEGIN_SRC emacs-lisp
-  (use-package neotree
+  (use-package ranger
   :ensure t 
   :config
-  (setq neo-smart-open t))
+  (define-key ranger-mode-map (kbd "C-c i") 'ranger-preview-toggle)
+  (define-key ranger-mode-map (kbd "C-c f") 'ranger-travel)
+  (define-key ranger-mode-map (kbd "a") 'smex)
+  (define-key ranger-mode-map (kbd "f") 'ivy-switch-buffer)
+  (define-key ranger-mode-map (kbd "i") 'previous-line)
+  (define-key ranger-mode-map (kbd "j") 'ranger-up-directory)
+  (define-key ranger-mode-map (kbd "k") 'forward-line)
+  (define-key ranger-mode-map (kbd "l") 'ranger-find-file)
+  (define-key xah-fly-leader-key-map (kbd "m") 'ranger)
+
+  (add-hook 'ranger-mode-hook (function (lambda ()
+  (xah-fly-insert-mode-activate)
+  )))
+
+  )
   #+END_SRC
+
 
 * Multiple cursors
 
@@ -1456,7 +1474,7 @@
     (define-key xah-fly-key-map (kbd "<f7>") 'run-current-file)
 
     ;; (define-key xah-fly-key-map (kbd "`") 'xah-fly-leader-key-map) 
-    (global-set-key (kbd "`") 'xah-fly-command-mode-activate)
+    ;; (global-set-key (kbd "`") 'xah-fly-command-mode-activate)
     ;; (global-set-key (kbd "<tab>") 'xah-fly-command-mode-activate) 
 
     (add-hook 'xah-fly-command-mode-activate-hook
@@ -1545,6 +1563,8 @@
      
                              ("[" . projectile-command-map)
                              ("з" . projectile-command-map)     
+
+                             
                              ))
 
 
@@ -1753,6 +1773,23 @@ var $filter = angular.element(document.body).injector().get('$filter');
   )
 #+END_SRC
 
+* Highlight indentation
+
+
+#+BEGIN_SRC emacs-lisp
+ 
+  (use-package highlight-indentation
+    :ensure t
+    :config
+    (add-hook 'prog-mode-hook 'highlight-indentation-mode)
+    ;; (set-face-background 'highlight-indentation-face "#2d2d2d")
+    (set-face-background 'highlight-indentation-current-column-face "#555555")
+  )
+
+#+END_SRC
+
+
+
 * Origami
 
 #+BEGIN_SRC emacs-lisp
@@ -1874,6 +1911,25 @@ var $filter = angular.element(document.body).injector().get('$filter');
 :ensure t
 :config
 (setq plstore-cache-passphrase-for-symmetric-encryption t)
+
+(defun plstore-open (file)
+  "Create a plstore instance associated with FILE."
+  (let* ((filename (file-truename file))
+         (buffer (or (find-buffer-visiting filename)
+                     (generate-new-buffer (format " plstore %s" filename))))
+         (store (plstore--make buffer)))
+    (with-current-buffer buffer
+      (erase-buffer)
+      (condition-case nil
+          (let ((coding-system-for-read 'raw-text))
+            (insert-file-contents file))
+        (error))
+      (setq buffer-file-name (file-truename file))
+      (set-buffer-modified-p nil)
+      (plstore--init-from-buffer store)
+      store)))
+
+
 )
   #+END_SRC
 
@@ -1908,7 +1964,7 @@ var $filter = angular.element(document.body).injector().get('$filter');
                           "))
          (get-buffer-create  "*scratch*"))
 
-
+         (recentf-open-files)
   #+END_SRC
 
 
