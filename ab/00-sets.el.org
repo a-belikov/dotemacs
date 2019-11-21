@@ -252,6 +252,16 @@
 (message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
   #+END_SRC
 
+
+* My command mode 
+#+BEGIN_SRC emacs-lisp
+   (load "~/.emacs.d/ab/pure-command-state.el")
+
+#+END_SRC
+
+
+
+  
 * All-The-Icons
   #+BEGIN_SRC emacs-lisp
 (use-package all-the-icons)
@@ -1341,6 +1351,8 @@
   (define-key ranger-mode-map (kbd "j") 'ranger-up-directory)
   (define-key ranger-mode-map (kbd "k") 'forward-line)
   (define-key ranger-mode-map (kbd "l") 'ranger-find-file)
+  (define-key ranger-mode-map (kbd "pp") 'ranger-paste)
+
   (define-key xah-fly-leader-key-map (kbd "m") 'ranger)
 
   (add-hook 'ranger-mode-hook (function (lambda ()
