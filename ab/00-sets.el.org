@@ -1754,7 +1754,6 @@ location.reload();
 var $scope = angular.element(document.getElementById('checkPinController')).scope();
 var dataService = angular.element(document.body).injector().get('dataService');
 var $filter = angular.element(document.body).injector().get('$filter');
-// angular.element($0).scope()
 
 \n"))
 
@@ -1771,6 +1770,18 @@ var $filter = angular.element(document.body).injector().get('$filter');
         (indium-eval-region (region-beginning) (region-end))
       (indium-eval-last-node nil)))
 
+
+  ;; (add-hook 'after-save-hook 'ab-indium-refresh-css)
+  (defun ab-indium-refresh-css-onsave ()
+    "set hook to refresh css "  
+    (interactive)
+    (add-hook 'after-save-hook 'ab-indium-refresh-css)
+  )
+
+  (defun ab-indium-refresh-css ()
+    "refresh css in browser without reload page."
+    (interactive)
+    (indium-eval "{let h, a, f;a = document.getElementsByTagName('link');for (h = 0; h < a.length; h++){f = a[h]; if (f.rel.toLowerCase().match(/stylesheet/) && f.href) {  let g = f.href.replace(/(&|\\?)rnd=\\d+/, '');  f.href = g + (g.match(/\\?/) ? '&' : '?'); f.href += 'rnd=' + (new Date().valueOf()); }};console.log('CSS RELOADED BY Indium');}"))
 
      ;; (define-key js2-mode-map (kbd "C-c C-c") ab-indium-eval)
   #+END_SRC
