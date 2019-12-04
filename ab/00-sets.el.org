@@ -1783,6 +1783,17 @@ var $filter = angular.element(document.body).injector().get('$filter');
     (interactive)
     (indium-eval "{let h, a, f;a = document.getElementsByTagName('link');for (h = 0; h < a.length; h++){f = a[h]; if (f.rel.toLowerCase().match(/stylesheet/) && f.href) {  let g = f.href.replace(/(&|\\?)rnd=\\d+/, '');  f.href = g + (g.match(/\\?/) ? '&' : '?'); f.href += 'rnd=' + (new Date().valueOf()); }};console.log('CSS RELOADED BY Indium');}"))
 
+    (defun ab-indium-reload-onsave ()
+    "set hook to refresh css "  
+    (interactive)
+    (add-hook 'after-save-hook 'ab-indium-reload)
+    )
+
+  (defun ab-indium-reload ()
+    "refresh css in browser without reload page."
+    (interactive)
+    (indium-eval "{location.reload();;}"))
+
      ;; (define-key js2-mode-map (kbd "C-c C-c") ab-indium-eval)
   #+END_SRC
 
