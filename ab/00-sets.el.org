@@ -246,6 +246,13 @@
     ;; (edit-server-start)
 
 
+    (defun new-window-on-right ()
+    (interactive)
+    (split-window-right -70)
+    )
+
+
+
   #+END_SRC
 
   #+BEGIN_SRC emacs-lisp
@@ -335,46 +342,75 @@
 
   - Org mode
   #+BEGIN_SRC emacs-lisp
-(use-package org
-:ensure t)
+    (use-package org
+    :ensure t
+    :config
+    (global-set-key (kbd "C-c a") 'org-agenda-list)
 
+    )
 
-(setq org-agenda-files '("~/Документы/org"))
+    ;; Добавить папку
+    ;; (setq org-agenda-files '("~/Документы/org"))
 
-(setq org-default-notes-file (concat org-directory "~/Документы/org/toDo.org"))
+    (setq org-agenda-files '("~/Документы/org/adresat-ToDo.org" "~/Документы/org/google.org" "~/Документы/org/toDo.org"))
 
-(setq org-capture-templates
-      '(
-        ("t" "Todo" entry (file "~/Документы/org/toDo.org" ) "* TODO %?\n  %i %a")
-        ("a" "Addresat-Todo" entry (file "~/Документы/org/adresat-ToDo.org") "* TODO %?\n  %i\n  %a") 
-        ))
+    (setq org-default-notes-file (concat org-directory "~/Документы/org/toDo.org"))
 
-(org-babel-do-load-languages
-   'org-babel-do-load-languages
-   '(
-     (sh . t)
-     (python . t)
-     (php . t)
-     (js . t)
-     ))
-
-;; (setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
-(add-hook 'org-mode-hook (lambda () 
-(org-bullets-mode 1)
-(yas-minor-mode)
-(add-pragmatapro-prettify-symbols-alist)
-(prettify-symbols-mode)
-))
-
-
-
-(setq org-agenda-span 'month)
-(setq org-agenda-start-day "-7d")
-
-(add-hook 'org-agenda-mode-hook
-(lambda () (local-set-key (kbd "r") 'org-agenda-earlier) 
-            ;; (local-set-key (kbd "") 'org-agenda-later) 
+    (setq org-capture-templates
+          '(
+            ("t" "Todo" entry (file "~/Документы/org/toDo.org" ) "* TODO %?\n  %i %a")
+            ("a" "Addresat-Todo" entry (file "~/Документы/org/adresat-ToDo.org") "* TODO %?\n  %i\n  %a") 
             ))
+
+
+
+    (org-babel-do-load-languages
+       'org-babel-do-load-languages
+       '(
+         (sh . t)
+         (python . t)
+         (php . t)
+         (js . t)
+         ))
+
+    ;; (setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
+    (add-hook 'org-mode-hook (lambda () 
+    (org-bullets-mode 1)
+    (yas-minor-mode)
+    (add-pragmatapro-prettify-symbols-alist)
+    (prettify-symbols-mode)
+    ))
+
+
+    ;; Export org mode to json file
+    (require 'json)
+    (defun org-export-json-buffer ()
+      (interactive)
+      (let* ((tree (org-element-parse-buffer 'object nil)))
+        (org-element-map tree (append org-element-all-elements
+                                      org-element-all-objects '(plain-text))
+          (lambda (x)
+            (if (org-element-property :parent x)
+                (org-element-put-property x :parent "none"))
+            (if (org-element-property :structure x)
+                (org-element-put-property x :structure "none"))))
+        (with-current-buffer (get-buffer-create "*ox-json*")
+          (erase-buffer)
+          (insert (json-encode tree))
+          (json-pretty-print-buffer))
+        (switch-to-buffer (get-buffer-create "*ox-json*"))
+        (write-file "ox-json.json")
+    ))
+
+    (setq org-agenda-span 'month)
+    (setq org-agenda-start-day "-7d")
+
+    (add-hook 'org-agenda-mode-hook
+    (lambda () 
+    (local-set-key (kbd "r") 'org-agenda-earlier) 
+    (local-set-key (kbd "C-c C-c") 'org-agenda-todo)
+    ;; (local-set-key (kbd "") 'org-agenda-later) 
+    ))
 
 
 
@@ -924,7 +960,7 @@
     (swiper initial-input)
     (when (file-writable-p buffer-file-name)
     (save-buffer))
-    (counsel-grep initial-input)))
+    (phi-search initial-input)))
 
     (setq counsel-grep-swiper-limit 1000000)
 
@@ -1353,7 +1389,7 @@
   (define-key ranger-mode-map (kbd "l") 'ranger-find-file)
   (define-key ranger-mode-map (kbd "pp") 'ranger-paste)
 
-  (define-key xah-fly-leader-key-map (kbd "m") 'ranger)
+;;  (define-key xah-fly-leader-key-map (kbd "m") 'ranger)
 
   (add-hook 'ranger-mode-hook (function (lambda ()
   (xah-fly-insert-mode-activate)
@@ -1394,8 +1430,8 @@
         ;; ("C-x C-f" . ido-find-file )
         ;; ("C-x C-r" . helm-recentf)
         ;; ("C-x k" . kill-this-buffer)
-    
-        ("C-c a" . org-agenda)
+
+        ;; ("C-c a" . org-agenda)
         ;; ("C-c a c" . org-caldav-sync);; sync with google calendar
         ("C-c t" . org-capture)
         ("C-w" . kill-this-buffer)
@@ -1497,7 +1533,7 @@
                           (local-unset-key (kbd "<f8>"))
                           (local-unset-key (kbd "<f9>"))
                           (local-unset-key (kbd "p"))
-                      
+
                           (define-key xah-fly-key-map (kbd "1") (lambda ()(interactive)  (bookmark-jump "1")))  
                           (define-key xah-fly-key-map (kbd "2") (lambda ()(interactive)  (bookmark-jump "2")))
 
@@ -1552,31 +1588,31 @@
 
                              ("a" . smex)
                              ("ф" . smex)
-                         
+
                              ("m" . imenu-list-smart-toggle)
                              ("ь" . imenu-list-smart-toggle)
 
                              ("-" . universal-argument)
                              ("э" . universal-argument)
-                         
+
 
                              ("b" . ab-swiper)
                              ("т" . ab-swiper)
-                         
-                         
+
+
                              ("i" . keyboard-quit)
                              ("п" . keyboard-quit)
-                         
+
                              ("u" . ivy-switch-buffer)     
                              ("а" . ivy-switch-buffer)
-                         
+
                              ("l" . projectile-command-map)
                              ("з" . projectile-command-map)
-     
+
                              ("[" . projectile-command-map)
                              ("з" . projectile-command-map)     
 
-                             
+
                              ))
 
 
@@ -1587,7 +1623,7 @@
 
     (add-hook 'xah-fly-insert-mode-activate-hook
               (function (lambda ()
-                      
+
                           (local-unset-key (kbd "1"))
                           (local-unset-key (kbd "2"))
                           (local-unset-key (kbd "<f8>"))
@@ -1595,7 +1631,7 @@
 
                           ;; (local-unset-key (kbd "p"))                      
                           ;; (local-unset-key (kbd "g"))
-                      
+
                           ;; (define-key xah-fly-key-map (kbd "<menu>") 'xah-fly-command-mode-activate)
                           (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-command-mode-activate)
                           ;; (define-key xah-fly-key-map (kbd "1") )
@@ -1678,7 +1714,9 @@
 
     ;; (define-key xah-fly-c-keymap (kbd "q") 'helm-recentf)
     (define-key xah-fly-leader-key-map (kbd "k") 'kill-this-buffer)  
-    
+
+    (define-key xah-fly-leader-key-map (kbd "3") 'new-window-on-right)  
+
     (define-key xah-fly-leader-key-map (kbd "f") 'find-file)  
     (define-key xah-fly-leader-key-map (kbd "j") 'ab-goto-recent-file)
 
