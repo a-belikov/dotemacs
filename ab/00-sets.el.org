@@ -34,6 +34,8 @@
 
   #+BEGIN_SRC emacs-lisp
 
+ (custom-set-faces '(default ((t (:height 130)))))
+
 (setq epg-gpg-program "gpg") 
 
 
@@ -132,11 +134,6 @@
         use-package
         imenu-list
         which-key
-        overcast-theme
-        color-theme-sanityinc-tomorrow
-
-        angular-mode
-        skewer-mode
         nginx-mode
         apache-mode
         magit
@@ -280,7 +277,7 @@
 
 (use-package kaolin-themes
   :config
-  (load-theme 'kaolin-aurora t)
+  (load-theme 'kaolin-galaxy t)
   (kaolin-treemacs-theme))
 
 (use-package doom-modeline
@@ -375,10 +372,11 @@
 
     ;; (setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
     (add-hook 'org-mode-hook (lambda () 
-    (org-bullets-mode 1)
-    (yas-minor-mode)
-    (add-pragmatapro-prettify-symbols-alist)
-    (prettify-symbols-mode)
+        (org-bullets-mode 1)
+;;        (yas-minor-mode)
+        (local-set-key (kbd "C-c C-c") 'org-todo)
+        (add-pragmatapro-prettify-symbols-alist)
+        (prettify-symbols-mode)
     ))
 
 
@@ -415,6 +413,7 @@
 
 
   #+END_SRC
+
 
   - Fonts
   #+BEGIN_SRC emacs-lisp
@@ -468,15 +467,15 @@
 * Yasnippet
 
   #+BEGIN_SRC emacs-lisp
-(use-package yasnippet
-:ensure t
-:config
-(yas-reload-all))
+    ;; (use-package yasnippet
+    ;; :ensure t
+    ;; :config
+    ;; (yas-reload-all))
 
-(use-package yasnippet-snippets
-:ensure t)
+    ;; (use-package yasnippet-snippets
+    ;; :ensure t)
 
-(add-hook 'prog-mode-hook #'yas-minor-mode)
+    ;; (add-hook 'prog-mode-hook #'yas-minor-mode)
   #+END_SRC
 
 
@@ -1042,42 +1041,42 @@
     (use-package company :ensure t
                  :config
                  (add-hook 'after-init-hook 'global-company-mode)
-                 (add-to-list 'company-backends 'company-web)
-                 (add-to-list 'company-backends 'company-quickhelp)
-                 (add-to-list 'company-backends 'company-php)
-                  (add-to-list 'company-backends 'company-ac-php-backend)
-                 (add-to-list 'company-backends 'php-extras-company)
-                 (add-to-list 'company-backends 'company-Yasnippet)
-                 (add-to-list 'company-backends 'company-dabbrev)
-                 (add-to-list 'company-backends 'company-capf)
-                 (add-to-list 'company-backends 'company-files)
-                 (setq company-tooltip-limit 20)
-                 (setq company-tooltip-align-annotations 't)
-                 (setq company-idle-delay .3)
-                 (setq company-minimum-prefix-length 1)
-                 (setq company-begin-commands '(self-insert-command))
-
-
-    (custom-set-faces
+                 ;; (add-to-list 'company-backends 'company-web)
+                 ;; (add-to-list 'company-backends 'company-quickhelp)
+                 ;; = (add-to-list 'company-backends 'company-php)
+                  ;; = (add-to-list 'company-backends 'company-ac-php-backend)
+                 ;; = (add-to-list 'company-backends 'php-extras-company)
+                 ;; (add-to-list 'company-backends 'company-Yasnippet)
+                 ;; (add-to-list 'company-backends 'company-dabbrev)
+                 ;; (add-to-list 'company-backends 'company-capf)
+                 ;; (add-to-list 'company-backends 'company-files)
+                 ;; (setq company-tooltip-limit 20)
+                 ;; (setq company-tooltip-align-annotations 't)
+                 ;; (setq company-idle-delay .3)
+                 ;; (setq company-minimum-prefix-length 1)
+    ;;              (setq company-begin-commands '(self-insert-command))
+     (
+     custom-set-faces
      '(company-preview
        ((t (:foreground "darkgray" :underline t))))
      '(company-preview-common
        ((t (:inherit company-preview))))
      '(company-tooltip
-       ((t (:background "lightgray" :foreground "black"))))
+       ((t (:background "gray18" :foreground "coral" :weight normal))))
      '(company-tooltip-selection
-       ((t (:background "black" :foreground "white"))))
+       ((t (:background "gray28" :foreground "coral" :weight bold))))
      '(company-tooltip-common
-       ((((type x)) (:inherit company-tooltip :weight bold))
+       ((((type x)) (:inherit company-tooltip :weight normal))
         (t (:inherit company-tooltip))))
      '(company-tooltip-common-selection
-       ((((type x)) (:inherit company-tooltip-selection :weight bold))
+       ((((type x)) (:inherit company-tooltip-selection :weight normal))
         (t (:inherit company-tooltip-selection)))))
 
     )
 
 
-    (use-package company-web :ensure t)
+    ;; (use-package company-web :ensure t)
+    ;; ;; 
     (use-package company-quickhelp :ensure t)
 
   #+END_SRC
@@ -1110,58 +1109,72 @@
 (message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
   #+END_SRC
 
+
+
+
 * PHP
 
   #+BEGIN_SRC emacs-lisp
 
     
-  ;; Download from https://github.com/emacs-php/php-mode/releases and run "make"
-  ;; (load "~/.emacs.d/php-mode/php-mode-autoloads.el")
+      ;; Download from https://github.com/emacs-php/php-mode/releases and run "make"
+      ;; (load "~/.emacs.d/php-mode/php-mode-autoloads.el")
   
-  (setq php-mode-coding-style 'psr2) 
-  (setq flycheck-phpcs-standard 'psr2)
-  (use-package php-mode  :ensure t)
+      (setq php-mode-coding-style 'psr2) 
+      (setq flycheck-phpcs-standard 'psr2)
+      (use-package php-mode  :ensure t)
   
-  ;; php code sniffer
-  (use-package phpcbf
-  :ensure t
-  :config
-  (setq phpcbf-standard "PSR2")
-  )
+      ;; php code sniffer
+      (use-package phpcbf
+      :ensure t
+      :config
+      (setq phpcbf-standard "PSR2")
+      )
 
-  (use-package flymake-easy :ensure t)
+      ;; (use-package flymake-easy :ensure t)
 
-  (use-package flymake-php :ensure t)
+    ;; = (use-package flymake-php :ensure t)
 
-  (use-package php-auto-yasnippets    
-  :ensure t
-  :config
-  (setq php-auto-yasnippet-php-program "~/.emacs.d/ab/Create-PHP-YASnippet.php")
-  )
+    ;; =   (use-package php-auto-yasnippets    
+      ;; = :ensure t
+      ;; = :config
+      ;; = (setq php-auto-yasnippet-php-program "~/.emacs.d/ab/Create-PHP-YASnippet.php")
+      ;; = )
   
-  ;;(use-package php-eldoc   :ensure t)    
+      ;;(use-package php-eldoc   :ensure t)    
 
-  ;; auto-complete & company-mode for php
-  (use-package ac-php :ensure t)    
+      ;; auto-complete & company-mode for php
+      ;; = (use-package ac-php :ensure t)    
 
-  (use-package company-php :ensure t)
+      ;; = (use-package company-php :ensure t)
 
-  (setq geben-dbgp-default-port 9001)
+      ;; = (setq geben-dbgp-default-port 9001)
 
-  (add-hook 'php-mode-hook 'ab-php-mode-stuff)
+      ;; = (add-hook 'php-mode-hook 'ab-php-mode-stuff)
 
-;;(php-eldoc-enable)
+    ;;(php-eldoc-enable)
   
-  (defun ab-php-mode-stuff () 
-  (define-key xah-fly-comma-keymap (kbd "l") 'ac-php-find-symbol-at-point)
-  (define-key xah-fly-comma-keymap (kbd "k") 'ac-php-location-stack-back)
-  (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
-  (phpcbf-enable-on-save) 
-  (flymake-php-load))
+      ;; = (defun ab-php-mode-stuff () 
+      ;; = (define-key xah-fly-comma-keymap (kbd "l") 'ac-php-find-symbol-at-point)
+      ;; = (define-key xah-fly-comma-keymap (kbd "k") 'ac-php-location-stack-back)
+      ;; = (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
+      ;; = (phpcbf-enable-on-save) 
+      ;; = (flymake-php-load))
 
   
-  (define-key php-mode-map (kbd "C-c e") 'flymake-goto-next-error)
-  
+      ;; = (define-key php-mode-map (kbd "C-c e") 'flymake-goto-next-error)
+
+      (add-hook 'php-mode-hook
+                  (function (lambda ()
+                              (local-unset-key (kbd "<M-tab>"))
+                              (local-unset-key (kbd "C-d"))
+                              (local-unset-key (kbd "C-b"))
+                              (local-unset-key (kbd "C-h"))
+                              (local-unset-key (kbd "C-."))
+                              (local-unset-key (kbd "C-,"))
+                              (local-unset-key (kbd "C-;"))
+        )))
+
 
   #+END_SRC
 
@@ -1405,13 +1418,16 @@
   (use-package multiple-cursors
   :ensure t
   :config
+    (define-key xah-fly-leader-key-map (kbd "v") 'mc/mark-more-like-this-extended)  
+    (define-key mc/mark-more-like-this-extended-keymap (kbd "C-i") 'mc/mmlte--up)
+    (define-key mc/mark-more-like-this-extended-keymap (kbd "C-k") 'mc/mmlte--down)
+    (define-key mc/mark-more-like-this-extended-keymap (kbd "C-j") 'mc/mmlte--left)
+    (define-key mc/mark-more-like-this-extended-keymap (kbd "C-l") 'mc/mmlte--right)
+
   )
-  #+END_SRC
 
-  #+BEGIN_SRC emacs-lisp
-(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
   #+END_SRC
-
+  
 * Keybindings
 
   #+BEGIN_SRC emacs-lisp
@@ -1495,17 +1511,7 @@
 
 
     ;; Xah fly keys                            
-    (add-hook 'php-mode-hook
-              (function (lambda ()
-                          (local-unset-key (kbd "<M-tab>"))
-                          (local-unset-key (kbd "C-d"))
-                          (local-unset-key (kbd "C-b"))
-                          (local-unset-key (kbd "C-h"))
-                          (local-unset-key (kbd "C-."))
-                          (local-unset-key (kbd "C-,"))
-                          (local-unset-key (kbd "C-;"))
-    )))
-
+    
 
     (add-hook 'xah-fly-key-hook
               (function (lambda ()
@@ -1715,7 +1721,7 @@
     ;; (define-key xah-fly-c-keymap (kbd "q") 'helm-recentf)
     (define-key xah-fly-leader-key-map (kbd "k") 'kill-this-buffer)  
 
-    (define-key xah-fly-leader-key-map (kbd "3") 'new-window-on-right)  
+    (define-key xah-fly-leader-key-map (kbd "3") 'delete-window)  
 
     (define-key xah-fly-leader-key-map (kbd "f") 'find-file)  
     (define-key xah-fly-leader-key-map (kbd "j") 'ab-goto-recent-file)
@@ -1961,6 +1967,26 @@ var $filter = angular.element(document.body).injector().get('$filter');
     (define-key xah-fly-comma-keymap (kbd ",") 'dumb-jump-back)
     (define-key xah-fly-comma-keymap (kbd "o") 'dumb-jump-go-other-windocomma)
     (define-key xah-fly-comma-keymap (kbd "p") 'dumb-jump-go-prompt) 
+
+#+END_SRC
+
+* LSP
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode  :ensure t
+    :hook (php-mode . lsp)
+    :commands lsp
+  )
+
+  (use-package company-lsp   
+  :ensure t
+  :commands company-lsp)
+
+  (define-key xah-fly-comma-keymap (kbd "k") 'lsp-find-references)
+  (define-key xah-fly-comma-keymap (kbd "l") 'lsp-find-definition)
+  (define-key xah-fly-comma-keymap (kbd "j") 'dumb-jump-back)
+  ;; (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
+
+
 
 #+END_SRC
 

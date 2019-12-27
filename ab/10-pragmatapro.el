@@ -274,6 +274,9 @@
 
 ;; (set-default-font "PragmataPro Liga")
 ;; (custom-set-faces '(default ((t (:height 130)))))
+;; (custom-set-faces '(default ((t (:height 122)))))
+;; (custom-set-faces '(default ((t (:height 130)))))
+;; (custom-set-faces '(default ((t (:height 130)))))
 
 
 
