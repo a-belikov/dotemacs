@@ -237,8 +237,9 @@
     (require 'recentf)
     ;; (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
     (recentf-mode 1)
-    (setq recentf-max-menu-items 300)
-    (setq recentf-max-saved-items 300)
+    (setq recentf-max-menu-items 20)
+    (setq recentf-max-saved-items 1000)
+    (run-at-time nil (* 60 60) 'recentf-save-list)
 
     ;; (edit-server-start)
 
@@ -1974,6 +1975,11 @@ var $filter = angular.element(document.body).injector().get('$filter');
 #+BEGIN_SRC emacs-lisp
   (use-package lsp-mode  :ensure t
     :hook (php-mode . lsp)
+    :hook (html-mode . lsp)
+    :hook (web-mode . lsp)
+    :hook (css-mode . lsp)
+    :hook (js-mode . lsp)
+    :hook (c-mode . lsp)
     :commands lsp
   )
 
