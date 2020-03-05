@@ -374,8 +374,8 @@
     ;; (setq org-bullets-bullet-list '("☯" "○" "✸" "✿" "~"))
     (add-hook 'org-mode-hook (lambda () 
         (org-bullets-mode 1)
-;;        (yas-minor-mode)
-        (local-set-key (kbd "C-c C-c") 'org-todo)
+;; (yas-minor-mode)
+;; (local-set-key (kbd "C-c C-c") 'org-todo)
         (add-pragmatapro-prettify-symbols-alist)
         (prettify-symbols-mode)
     ))
@@ -986,10 +986,6 @@
 :bind ("M-s" . avy-goto-char))
   #+END_SRC
 
-  #+BEGIN_SRC emacs-lisp
-(message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
-  #+END_SRC
-
 * Writable grep
 #+BEGIN_SRC emacs-lisp
 
@@ -1595,9 +1591,9 @@
 
                              ("a" . smex)
                              ("ф" . smex)
-
-                             ("m" . imenu-list-smart-toggle)
-                             ("ь" . imenu-list-smart-toggle)
+                             ;; ("m" . imenu-list-smart-toggle)
+                             ("m" . avy-goto-char)
+                             ("ь" . avy-goto-char)
 
                              ("-" . universal-argument)
                              ("э" . universal-argument)
@@ -1898,7 +1894,7 @@ var $filter = angular.element(document.body).injector().get('$filter');
 
 * Mu4e
 #+BEGIN_SRC emacs-lisp
-   (load-if-exists "~/.emacs.d/ab/12-mu4e.el")
+  ;; (load-if-exists "~/.emacs.d/ab/12-mu4e.el")
 #+END_SRC
 
 #+RESULTS:
@@ -1992,7 +1988,9 @@ var $filter = angular.element(document.body).injector().get('$filter');
   (define-key xah-fly-comma-keymap (kbd "j") 'dumb-jump-back)
   ;; (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
 
-
+  ;; Clear lsp-blacklist
+  ;; (setf (lsp-session-folders-blacklist (lsp-session)) nil)
+  ;; (lsp--persist-session (lsp-session))
 
 #+END_SRC
 
