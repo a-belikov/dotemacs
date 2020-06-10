@@ -238,7 +238,7 @@
     ;; (setq recentf-auto-cleanup 'never) ;; disable before we start recentf!
     (recentf-mode 1)
     (setq recentf-max-menu-items 20)
-    (setq recentf-max-saved-items 1000)
+    (setq recentf-max-saved-items 200)
     (run-at-time nil (* 60 60) 'recentf-save-list)
 
     ;; (edit-server-start)
@@ -1255,13 +1255,29 @@
   #+END_SRC
   - Set projec name in var for perfomance. 
   #+BEGIN_SRC emacs-lisp
-      (setq project-name (projectile-project-name))
+
+
+
+  (defun set-project-name-by-file ()
+  ;; Checks if Projectile is currently active, or this will ever run into undefinable errors.
+  (when (featurep 'projectile)
+    ;; Checks if the file ".custom-project-name" is currently located in the project root. 
+    (if (file-exists-p (concat (expand-file-name (projectile-project-root)) ".projectile"))
+        ;; If that's the case, write their contents into the buffer. 
+        (with-temp-buffer
+        (insert-file-contents (concat (expand-file-name (projectile-project-root)) ".projectile"))
+        (buffer-string))
+    ;; If not, then extract the projectname.
+    (projectile-project-name))))
+
+
+      (setq project-name (set-project-name-by-file))
       ;; Set my-projectile-project-name to projectile-project-name,
       ;; so that later I can also set projectile project name when in *Messages* buffer etc
       (defun my-projectile-switch-project-action ()
         (when (not (equal (projectile-project-name) "-"))
           (progn
-           (setq project-name (projectile-project-name))
+           (setq project-name (set-project-name-by-file))
            (setq frame-title-format '("Emacs: " "%b" (:eval (format " in [%s]" project-name) ))))))
 
 
@@ -1591,9 +1607,10 @@
 
                              ("a" . smex)
                              ("ф" . smex)
-                             ;; ("m" . imenu-list-smart-toggle)
-                             ("m" . avy-goto-char)
-                             ("ь" . avy-goto-char)
+                             ("m" . imenu-list-smart-toggle)
+                             ("ь" . imenu-list-smart-toggle)
+                             ;;("m" . avy-goto-char)
+                             ;;("ь" . avy-goto-char)
 
                              ("-" . universal-argument)
                              ("э" . universal-argument)
@@ -1876,6 +1893,12 @@ var $filter = angular.element(document.body).injector().get('$filter');
 
 #+END_SRC
 
+* Crontab
+#+BEGIN_SRC emacs-lisp
+ (use-package crontab-mode)
+#+END_SRC
+
+
 * Anzy
 
   #+BEGIN_SRC emacs-lisp
@@ -1969,24 +1992,23 @@ var $filter = angular.element(document.body).injector().get('$filter');
 
 * LSP
 #+BEGIN_SRC emacs-lisp
-  (use-package lsp-mode  :ensure t
-    :hook (php-mode . lsp)
-    :hook (html-mode . lsp)
-    :hook (web-mode . lsp)
-    :hook (css-mode . lsp)
-    :hook (js-mode . lsp)
-    :hook (c-mode . lsp)
-    :commands lsp
-  )
+    ;; ;; (use-package lsp-mode  :ensure t
+    ;; ;;:hook (php-mode . lsp)
+    ;; ;;:hook (html-mode . lsp)
+    ;; ;;:hook (web-mode . lsp)
+    ;; ;;:hook (css-mode . lsp)
+    ;; ;;:hook (js-mode . lsp)
+    ;; ;;:hook (c-mode . lsp)
+    ;; ;;:commands lsp
+  ;; ;;)
 
-  (use-package company-lsp   
-  :ensure t
-  :commands company-lsp)
+    ;;   ;; (use-package company-lsp   :ensure t   :commands company-lsp)
 
-  (define-key xah-fly-comma-keymap (kbd "k") 'lsp-find-references)
-  (define-key xah-fly-comma-keymap (kbd "l") 'lsp-find-definition)
-  (define-key xah-fly-comma-keymap (kbd "j") 'dumb-jump-back)
-  ;; (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
+    ;;   ;; (define-key xah-fly-comma-keymap (kbd "k") 'lsp-find-references)
+    ;;   ;; (define-key xah-fly-comma-keymap (kbd "l") 'lsp-find-definition)
+    ;;   ;; (define-key xah-fly-comma-keymap (kbd "j") 'dumb-jump-back)
+  
+;; (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
 
   ;; Clear lsp-blacklist
   ;; (setf (lsp-session-folders-blacklist (lsp-session)) nil)

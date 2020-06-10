@@ -23,3 +23,4 @@
 (org-babel-load-file (expand-file-name "~/.emacs.d/ab/00-sets.el.org"))
 
 
+(put 'narrow-to-page 'disabled nil)
