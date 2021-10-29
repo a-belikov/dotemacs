@@ -34,10 +34,25 @@
 
   #+BEGIN_SRC emacs-lisp
 
- (custom-set-faces '(default ((t (:height 130)))))
+(if (not (boundp 'url-http-method)) (setq-default url-http-method nil))
+(if (not (boundp 'url-http-data)) (setq-default url-http-data nil))
+(if (not (boundp 'url-http-extra-headers)) (setq-default url-http-extra-headers nil))
+(if (not (boundp 'oauth--token-data)) (setq-default oauth--token-data nil))
+(if (not (boundp 'url-callback-function)) (setq-default url-callback-function nil))
+(if (not (boundp 'url-callback-arguments)) (setq-default url-callback-arguments nil))
+
+(global-set-key (kbd "M-i") 'previous-line)
+(global-set-key (kbd "M-k") 'next-line)
+(global-set-key (kbd "M-j") 'left-char)
+(global-set-key (kbd "M-l") 'right-char)
+
+(custom-set-faces '(default ((t (:height 130)))))
 
 (setq epg-gpg-program "gpg") 
+(setq create-lockfiles nil) 
 
+;; 20.04
+;; (global-so-long-mode 1)
 
 
 (customize-set-variable 'tramp-use-ssh-controlmaster-options t)
@@ -74,7 +89,7 @@
 (setq neo-vc-integration nil) 
   
 
-(setq browse-url-browser-function 'browse-url-chromium)
+(setq browse-url-browser-function 'browse-url-chrome)
 (setq european-calendar-style 't)
 
 (setq calendar-week-start-day 1
@@ -82,9 +97,6 @@
             calendar-month-name-array ["Январь" "Февраль" "Март" "Апрель" "Май" 
                                        "Июнь" "Июль" "Август" "Сентябрь"
                                        "Октябрь" "Ноябрь" "Декабрь"])
-
-(global-so-long-mode 1)
-
 
 
 ;; (setq epa-pinentry-mode 'loopback)
@@ -155,7 +167,7 @@
             emacs-required-packages)
 
     (setq imenu-list-auto-resize nil)
-    (setq imenu-list-position 'left)
+    (setq imenu-list-position 'right)
     (setq imenu-list-size 0.12)
 
     ;; * Try
@@ -260,7 +272,7 @@
 
 * My command mode 
 #+BEGIN_SRC emacs-lisp
-   (load "~/.emacs.d/ab/pure-command-state.el")
+  ;; (load "~/.emacs.d/ab/pure-command-state.el")
 
 #+END_SRC
 
@@ -269,26 +281,29 @@
   
 * All-The-Icons
   #+BEGIN_SRC emacs-lisp
-(use-package all-the-icons)
-
+(use-package all-the-icons :ensure t)
+;; M-x all-the-icons-install-fonts
   #+END_SRC
 
 * Themes
   #+BEGIN_SRC emacs-lisp
 
-(use-package kaolin-themes
+(use-package doom-themes
+  :ensure t
   :config
-  (load-theme 'kaolin-galaxy t)
-  (kaolin-treemacs-theme))
+  (load-theme 'doom-Iosvkem t)
+  )
 
 (use-package doom-modeline
       :ensure t
       :hook (after-init . doom-modeline-mode))
 
+
+;;(load-theme 'kaolin-aurora t)
 ;; Highlight current row
 (global-hl-line-mode 1)
-;;(set-face-background hl-line-face "DarkSlateBlue")
-(set-face-background hl-line-face "gray13")
+;;(set-face-background hl-line-face "DarkMagenta")
+;;(set-face-background hl-line-face "gray13")
 
 
 (add-hook 'prog-mode-hook '(lambda () 
@@ -376,8 +391,8 @@
         (org-bullets-mode 1)
 ;; (yas-minor-mode)
 ;; (local-set-key (kbd "C-c C-c") 'org-todo)
-        (add-pragmatapro-prettify-symbols-alist)
-        (prettify-symbols-mode)
+        ;;(add-pragmatapro-prettify-symbols-alist)
+        ;;(prettify-symbols-mode)
     ))
 
 
@@ -487,28 +502,31 @@
 * Magit 
 
   #+BEGIN_SRC emacs-lisp
-  (use-package magit
-  :ensure t)
-  (add-hook 'magit-mode-hook 'xah-fly-insert-mode-activate)
+      (use-package magit
+      :ensure t)
+      (add-hook 'magit-mode-hook 'xah-fly-insert-mode-activate)
 
-  (defun ab-stage-commit-push(message)
-  "Stage all commit and pusht."
-    (interactive "sCommit Message: ")
-    ;; (magit-stage-modified t)
+      (defun ab-stage-commit-push(message)
+      "Stage all commit and pusht."
+        (interactive "sCommit Message: ")
+        ;; (magit-stage-modified t)
 
-    (magit-run-git "commit" "-am" message)
-    (magit-push-current-to-pushremote nil)
-  )
+        (magit-run-git "commit" "-am" message)
+        (magit-push-current-to-pushremote nil)
+      )
 
-  (defun ab-stage-commit(message)
-  "Stage all commit and pusht."
-    (interactive "sCommit Message: ")
-    ;; (magit-stage-modified t)
+      (defun ab-stage-commit(message)
+      "Stage all commit and pusht."
+        (interactive "sCommit Message: ")
+        ;; (magit-stage-modified t)
 
-    (magit-run-git "commit" "-am" message)
-  )
+        (magit-run-git "commit" "-am" message)
+      )
 
+    (use-package magit-gitflow :ensure t)
 
+    (add-hook 'magit-mode-hook 'turn-on-magit-gitflow)
+    (setq magit-gitflow-popup-key "C-f")
 
   #+END_SRC
 
@@ -617,7 +635,7 @@
                       ("cgi" . "perl")
                       ("py" . "python")
                       ("rb" . "ruby")
-                      ("js" . "node")             ; node.js
+                      ("js" . "node")             ; node babel-node
                       ("sh" . "bash")
                       ("ml" . "ocaml")
                       ("vbs" . "cscript")))
@@ -719,7 +737,8 @@
 
 
           (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-
+          (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+          ;; (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
 
           ;; grep search templete
           (setq grep-find-template "find . <X> -type f <F> -exec grep <C> -nH -e -i \"<R>\" \\{\\} +")
@@ -793,7 +812,7 @@
 
           (electric-pair-mode 1)
 
-          (skewer-setup)
+          ;;(skewer-setup)
 
           (setq visible-bell 1)
            (setq ring-bell-function 
@@ -889,7 +908,7 @@
 (message (number-to-string (cadr (time-subtract (current-time) ab-start-time))))
   #+END_SRC
 
-* Swiper, counsel, anzu and phi-search
+* Swiper, ivy, counsel, anzu and phi-search
   #+BEGIN_SRC emacs-lisp
 
     (use-package counsel
@@ -910,8 +929,14 @@
     ;; swiper for symbol at point
     (global-set-key (kbd "C-x l") 'counsel-locate)
     (define-key read-expression-map (kbd "C-r") 'counsel-minibuffer-history)
-    (define-key ivy-minibuffer-map (kbd "C-c o") 'ivy-occur)
     ))
+
+    (define-key ivy-minibuffer-map (kbd "C-c o") 'ivy-occur)
+
+    (define-key ivy-minibuffer-map (kbd "M-i") 'previous-line)
+    (define-key ivy-minibuffer-map (kbd "M-k") 'next-line)
+    (define-key ivy-minibuffer-map (kbd "M-j") 'left-char)
+    (define-key ivy-minibuffer-map (kbd "M-l") 'right-char)
 
 
 
@@ -1113,14 +1138,11 @@
 
   #+BEGIN_SRC emacs-lisp
 
-    
-      ;; Download from https://github.com/emacs-php/php-mode/releases and run "make"
-      ;; (load "~/.emacs.d/php-mode/php-mode-autoloads.el")
-  
+
       (setq php-mode-coding-style 'psr2) 
       (setq flycheck-phpcs-standard 'psr2)
       (use-package php-mode  :ensure t)
-  
+
       ;; php code sniffer
       (use-package phpcbf
       :ensure t
@@ -1130,14 +1152,14 @@
 
       ;; (use-package flymake-easy :ensure t)
 
-    ;; = (use-package flymake-php :ensure t)
+     ;; (use-package flymake-php :ensure t)
 
     ;; =   (use-package php-auto-yasnippets    
       ;; = :ensure t
       ;; = :config
       ;; = (setq php-auto-yasnippet-php-program "~/.emacs.d/ab/Create-PHP-YASnippet.php")
       ;; = )
-  
+
       ;;(use-package php-eldoc   :ensure t)    
 
       ;; auto-complete & company-mode for php
@@ -1147,18 +1169,20 @@
 
       ;; = (setq geben-dbgp-default-port 9001)
 
-      ;; = (add-hook 'php-mode-hook 'ab-php-mode-stuff)
+      (add-hook 'php-mode-hook 'ab-php-mode-stuff)
 
-    ;;(php-eldoc-enable)
-  
-      ;; = (defun ab-php-mode-stuff () 
-      ;; = (define-key xah-fly-comma-keymap (kbd "l") 'ac-php-find-symbol-at-point)
-      ;; = (define-key xah-fly-comma-keymap (kbd "k") 'ac-php-location-stack-back)
-      ;; = (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
-      ;; = (phpcbf-enable-on-save) 
-      ;; = (flymake-php-load))
+      ;; (php-eldoc-enable)
 
-  
+       (defun ab-php-mode-stuff () 
+
+       ;;(define-key xah-fly-comma-keymap (kbd "l") 'ac-php-find-symbol-at-point)
+       ;;(define-key xah-fly-comma-keymap (kbd "k") 'ac-php-location-stack-back)
+       ;;(define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
+       (phpcbf-enable-on-save) 
+       ;;(flymake-php-load)
+        )
+
+
       ;; = (define-key php-mode-map (kbd "C-c e") 'flymake-goto-next-error)
 
       (add-hook 'php-mode-hook
@@ -1170,6 +1194,7 @@
                               (local-unset-key (kbd "C-."))
                               (local-unset-key (kbd "C-,"))
                               (local-unset-key (kbd "C-;"))
+                              (local-unset-key (kbd "C-c ."))
         )))
 
 
@@ -1185,6 +1210,10 @@
     ;; (add-hook perl-mode-hook (lambda () (local-unset-key (kbd "tab"))))
   #+END_SRC
 
+* React
+  #+BEGIN_SRC emacs-lisp
+    (use-package rjsx-mode :ensure t)
+  #+END_SRC
 * Web Beautify
 
   #+BEGIN_SRC emacs-lisp
@@ -1376,7 +1405,7 @@
   (when (require 'dired+ nil 'noerror)
          (message "Hello"))
   ;; Reuse Dir in dired         
-  (diredp-toggle-find-file-reuse-dir 1)
+   
 
   ;; Style of omit files in dired
   (custom-set-faces
@@ -1384,8 +1413,9 @@
 
   ;; install dired+ from file
   (when (not (require 'dired+ nil 'noerror)) 
-    (package-install-file "dired+.el"))
+    (package-install-file "~/.emacs.d/ab/dired+.el"))
     (require 'dired+)
+    (diredp-toggle-find-file-reuse-dir 1)
 
 
 
@@ -1563,6 +1593,9 @@
                           (define-key xah-fly-key-map (kbd "<home>") 'xah-fly-insert-mode-activate)
 
                           ;; Set xah fly for russian keyboard
+
+
+
                           (xah-fly--define-keys
                            xah-fly-key-map
                            '(
@@ -1596,21 +1629,19 @@
                              ("б" . xah-next-window-or-frame)
                              ("и" . xah-toggle-letter-case)
                              ("е" . set-mark-command)
-                             ))
+                             ("{" . backward-paragraph)
+                             ("}" . forward-paragraph)
+                             ("(" . backward-sentence)
+                             (")" . forward-sentence)
 
 
-
-
-                          (xah-fly--define-keys 
-                           xah-fly-key-map
-                           '(
 
                              ("a" . smex)
                              ("ф" . smex)
-                             ("m" . imenu-list-smart-toggle)
-                             ("ь" . imenu-list-smart-toggle)
-                             ;;("m" . avy-goto-char)
-                             ;;("ь" . avy-goto-char)
+                             ;;("m" . imenu-list-smart-toggle)
+                             ;;("ь" . imenu-list-smart-toggle)
+                             ("m" . avy-goto-char)
+                             ("ь" . avy-goto-char)
 
                              ("-" . universal-argument)
                              ("э" . universal-argument)
@@ -1629,8 +1660,12 @@
                              ("l" . projectile-command-map)
                              ("з" . projectile-command-map)
 
+
                              ("[" . projectile-command-map)
                              ("з" . projectile-command-map)     
+
+                             ("Х" . backward-paragraph)
+                             ("Ъ" . forward-paragraph)
 
 
                              ))
@@ -1685,6 +1720,7 @@
                              ("к" . nil)
                              ("ч" . nil)
                              ("щ" . nil)
+                             ("ю" . nil)
                              ("ж" . nil)
                              ("л" . nil)
                              ("а" . nil)
@@ -1706,6 +1742,7 @@
     (define-key xah-fly-c-keymap (kbd "d") 'ab-goto-recent-directory)
     (define-key xah-fly-c-keymap (kbd "w") 'xah-close-current-buffer)
     (define-key xah-fly-c-keymap (kbd "m") 'file-metadata)
+    (define-key xah-fly-c-keymap (kbd "i") 'bookmark-jump)
 
     (define-key xah-fly-e-keymap (kbd "c") 'xah-delete-backward-bracket-pair)
     (define-key xah-fly-e-keymap (kbd "d") 'ab-change-bracket-pair)
@@ -1750,7 +1787,7 @@
     (define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
 
 
-    (define-key xah-fly-leader-key-map (kbd "u") 'neotree-toggle)
+    (define-key xah-fly-leader-key-map (kbd "u") 'imenu-list-smart-toggle)
 
 
     ;; * Org mode
@@ -1803,6 +1840,7 @@
     (use-package indium
      :ensure t
      :config
+     (setq indium-chrome-executable "/opt/google/chrome/chrome")
      (define-key js-mode-map (kbd "C-c C-c") 'ab-indium-eval) 
      (define-key js2-mode-map (kbd "C-c C-c") 'ab-indium-eval) 
      (defun indium-scratch-insert-welcome-message ()
@@ -1857,45 +1895,48 @@ var $filter = angular.element(document.body).injector().get('$filter');
 
 * Beacon
 #+BEGIN_SRC emacs-lisp
- (use-package beacon
-  :ensure t
-  :config
-  (beacon-mode 1)
-  ; (setq beacon-color "#666600")
-  )
+  (use-package beacon
+   :ensure t
+   :config
+   (beacon-mode 1)
+   (setq beacon-color "#aaaaaa")
+   )
 #+END_SRC
 
-* Highlight indentation
+* Highlight indentation guides
 
 
 #+BEGIN_SRC emacs-lisp
- 
-  (use-package highlight-indentation
+
+  (use-package highlight-indent-guides
     :ensure t
     :config
-    (add-hook 'prog-mode-hook 'highlight-indentation-mode)
-    ;; (set-face-background 'highlight-indentation-face "#2d2d2d")
-    (set-face-background 'highlight-indentation-current-column-face "#555555")
+    (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+    (setq highlight-indent-guides-method 'character)
+    (setq highlight-indent-guides-method 'fill)
+    (setq highlight-indent-guides-method 'column)
+    (setq highlight-indent-guides-method 'bitmap)
   )
 
 #+END_SRC
 
 
-
-* Origami
-
-#+BEGIN_SRC emacs-lisp
- (use-package origami
-  :ensure t
-  :config
-  (global-origami-mode 1)
-  (define-key xah-fly-leader-key-map (kbd "<tab>") 'origami-toggle-node))
-
-#+END_SRC
 
 * Crontab
 #+BEGIN_SRC emacs-lisp
- (use-package crontab-mode)
+ (use-package crontab-mode
+  :ensure t
+)
+#+END_SRC
+
+* Bm 
+#+BEGIN_SRC emacs-lisp
+    (use-package bm
+     :ensure t
+     :config
+     (global-set-key (kbd "C-c /") 'bm-toggle)
+     (global-set-key (kbd "C-c .")   'bm-next)
+     (global-set-key (kbd "C-c ,") 'bm-previous))
 #+END_SRC
 
 
@@ -1977,7 +2018,7 @@ var $filter = angular.element(document.body).injector().get('$filter');
 * Dumb-jump
 
 #+BEGIN_SRC emacs-lisp
-    (use-package git-gutter
+    (use-package dumb-jump
      :ensure t
      :config
           (setq dumb-jump-max-find-time 8)
@@ -1990,24 +2031,27 @@ var $filter = angular.element(document.body).injector().get('$filter');
 
 #+END_SRC
 
+
 * LSP
 #+BEGIN_SRC emacs-lisp
-    ;; ;; (use-package lsp-mode  :ensure t
-    ;; ;;:hook (php-mode . lsp)
-    ;; ;;:hook (html-mode . lsp)
-    ;; ;;:hook (web-mode . lsp)
-    ;; ;;:hook (css-mode . lsp)
-    ;; ;;:hook (js-mode . lsp)
-    ;; ;;:hook (c-mode . lsp)
-    ;; ;;:commands lsp
-  ;; ;;)
+    (use-package lsp-mode  :ensure t
+   :hook (php-mode . lsp)
+   :hook (html-mode . lsp)
+   :hook (web-mode . lsp)
+   :hook (css-mode . lsp)
+   :hook (js-mode . lsp)
+   :hook (c-mode . lsp)
+   :commands lsp
+ )
 
-    ;;   ;; (use-package company-lsp   :ensure t   :commands company-lsp)
+      (use-package company-lsp   :ensure t   :commands company-lsp)
 
-    ;;   ;; (define-key xah-fly-comma-keymap (kbd "k") 'lsp-find-references)
-    ;;   ;; (define-key xah-fly-comma-keymap (kbd "l") 'lsp-find-definition)
-    ;;   ;; (define-key xah-fly-comma-keymap (kbd "j") 'dumb-jump-back)
-  
+      (define-key xah-fly-comma-keymap (kbd "k") 'lsp-find-references)
+      (define-key xah-fly-comma-keymap (kbd "l") 'lsp-find-definition)
+      (define-key xah-fly-comma-keymap (kbd "j") 'dumb-jump-back)
+      (define-key xah-fly-comma-keymap (kbd "o") 'lsp-rename)
+(setq lsp-intelephense-multi-root nil)
+
 ;; (define-key xah-fly-comma-keymap (kbd "i") 'ac-php-show-tip)
 
   ;; Clear lsp-blacklist
@@ -2015,6 +2059,9 @@ var $filter = angular.element(document.body).injector().get('$filter');
   ;; (lsp--persist-session (lsp-session))
 
 #+END_SRC
+
+#+RESULTS:
+: dumb-jump-back
 
 * GGtags
 
@@ -2060,14 +2107,15 @@ var $filter = angular.element(document.body).injector().get('$filter');
 * Prettify-Symbols (Ligatures)
 
 #+BEGIN_SRC emacs-lisp
-  (load-file "~/.emacs.d/ab/10-pragmatapro.el")
-  (set-default-font "Hack")
+;;   (load-file "~/.emacs.d/ab/10-pragmatapro.el")
+   (set-default-font "Hack")
 #+END_SRC
 
 * Org-caldav
 
 #+BEGIN_SRC emacs-lisp
   ;; Config with secret key
+  (use-package org-caldav :ensure t)
   (load-if-exists "~/.emacs.d/ab/11-private.el")
   (global-set-key (kbd "C-c g") 'org-caldav-sync)
 #+END_SRC
